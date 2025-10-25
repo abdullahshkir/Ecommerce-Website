@@ -88,7 +88,7 @@ const Header: React.FC<HeaderProps> = ({ onSearchClick, onLoginClick }) => {
 
                         {/* Center (mobile) / Left (desktop): Logo */}
                         <div className="flex-1 lg:flex-initial flex justify-center lg:justify-start">
-                            <Link to="/" className="text-3xl font-extrabold tracking-tighter text-black">Mobixo</Link>
+                            <Link to="/" className="text-3xl font-extrabold tracking-wide text-black font-orbitron">Mobixo</Link>
                         </div>
                         
                         {/* Center: Desktop Nav */}
