@@ -1,6 +1,6 @@
 import React, { FC, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CloseIcon, EmptyCartIcon, TrashIcon, PlusIcon, MinusIcon, ClipboardIcon, CalendarIcon, TruckIcon, TagIcon, EyeIcon } from './icons';
+import { CloseIcon, EmptyCartIcon, TrashIcon, PlusIcon, MinusIcon, EyeIcon } from './icons';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { useCart } from '../contexts/CartContext';
 
@@ -83,7 +83,7 @@ const CartModal: FC<CartModalProps> = ({ isOpen, onClose }) => {
                         <>
                             <div className="flex-grow overflow-y-auto p-6">
                                 {/* Cart Items */}
-                                <div className="space-y-4">
+                                <div className="space-y-4 mb-6">
                                     {cartItems.map(item => (
                                         <div key={item.id} className="flex items-center space-x-4">
                                             <div className="w-20 h-20 flex-shrink-0">
@@ -92,14 +92,14 @@ const CartModal: FC<CartModalProps> = ({ isOpen, onClose }) => {
                                             <div className="flex-grow">
                                                 <p className="text-sm font-medium text-gray-800">{item.name}</p>
                                                 <p className="text-sm text-gray-600">{formatPrice(item.price)}</p>
-                                                <div className="flex items-center mt-2">
+                                                <div className="flex items-center justify-between mt-2">
                                                     <div className="flex items-center border border-gray-300 rounded-full">
-                                                        <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="px-2 py-1 text-gray-600"><MinusIcon className="w-3 h-3"/></button>
+                                                        <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-l-full transition-colors"><MinusIcon className="w-4 h-4"/></button>
                                                         <input type="text" value={item.quantity} readOnly className="w-8 text-center border-0 p-0 text-sm focus:outline-none focus:ring-0 bg-transparent"/>
-                                                        <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="px-2 py-1 text-gray-600"><PlusIcon className="w-3 h-3"/></button>
+                                                        <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-r-full transition-colors"><PlusIcon className="w-4 h-4"/></button>
                                                     </div>
-                                                    <button onClick={() => removeFromCart(item.id)} className="ml-4 text-gray-400 hover:text-red-500">
-                                                        <TrashIcon className="w-4 h-4" />
+                                                    <button onClick={() => removeFromCart(item.id)} className="ml-4 text-gray-500 hover:text-red-500 transition-colors">
+                                                        <TrashIcon className="w-5 h-5" />
                                                     </button>
                                                 </div>
                                             </div>
@@ -107,20 +107,6 @@ const CartModal: FC<CartModalProps> = ({ isOpen, onClose }) => {
                                     ))}
                                 </div>
                                 
-                                {/* Feature Icons */}
-                                <div className="flex justify-around my-6 py-4 border-y border-gray-200">
-                                    {[
-                                        { icon: <ClipboardIcon className="w-7 h-7"/> },
-                                        { icon: <CalendarIcon className="w-7 h-7"/> },
-                                        { icon: <TruckIcon className="w-7 h-7"/> },
-                                        { icon: <TagIcon className="w-7 h-7"/> }
-                                    ].map((item, index) => (
-                                        <div key={index} className="p-2 bg-gray-100 rounded-full text-gray-500 hover:bg-blue-100 hover:text-blue-600 cursor-pointer">
-                                            {item.icon}
-                                        </div>
-                                    ))}
-                                </div>
-
                                 {/* You may also like */}
                                 <div>
                                     <h4 className="font-semibold text-gray-800 mb-4">You may also like</h4>
