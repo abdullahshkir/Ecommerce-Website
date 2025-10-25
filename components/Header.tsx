@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PhoneIcon, MailIcon, SearchIcon, UserIcon, HeartIcon, CartIcon, ChevronDownIcon, ArrowRightIcon, CloseIcon, MenuIcon } from './icons';
 import SearchOverlay from './SearchOverlay';
+import LoginModal from './LoginModal';
 
 const NavItem: React.FC<{ href: string; children: React.ReactNode; new?: boolean; sale?: boolean }> = ({ href, children, new: isNew, sale: isSale }) => (
     <a href={href} className="text-gray-700 hover:text-black transition-colors relative group py-2">
@@ -24,6 +25,7 @@ const Header: React.FC = () => {
     const [isTopBarVisible, setTopBarVisible] = useState(true);
     const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [isSearchOpen, setSearchOpen] = useState(false);
+    const [isLoginOpen, setLoginOpen] = useState(false);
 
     const navLinks = [
         { name: 'Demo', href: '#' },
@@ -93,7 +95,7 @@ const Header: React.FC = () => {
                         {/* Right: Icons */}
                         <div className="flex items-center space-x-4">
                             <button onClick={() => setSearchOpen(true)} className="text-gray-700 hover:text-black"><SearchIcon /></button>
-                            <a href="#" className="hidden sm:block text-gray-700 hover:text-black"><UserIcon /></a>
+                            <button onClick={() => setLoginOpen(true)} className="hidden sm:block text-gray-700 hover:text-black"><UserIcon /></button>
                             <Link to="/wishlist" className="relative text-gray-700 hover:text-black">
                                 <HeartIcon />
                                 <span className="absolute -top-1 -right-2 bg-black text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">6</span>
@@ -127,6 +129,7 @@ const Header: React.FC = () => {
                 )}
             </header>
             <SearchOverlay isOpen={isSearchOpen} onClose={() => setSearchOpen(false)} />
+            <LoginModal isOpen={isLoginOpen} onClose={() => setLoginOpen(false)} />
         </>
     );
 };
