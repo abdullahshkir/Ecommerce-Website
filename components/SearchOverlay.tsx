@@ -1,7 +1,9 @@
 import React, { useEffect, FC, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { CloseIcon, SearchIcon, ChevronDownIcon, ArrowRightIcon } from './icons';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { products } from '../data/products';
+import { Product } from '../types';
 
 interface SearchOverlayProps {
   isOpen: boolean;
@@ -9,11 +11,17 @@ interface SearchOverlayProps {
   onProductClick: (id: number) => void;
 }
 const suggestedProducts = products.slice(1, 4);
+const uniqueCategories = ['All Categories', ...new Set(products.map(p => p.category))];
+
 
 const SearchOverlay: FC<SearchOverlayProps> = ({ isOpen, onClose, onProductClick }) => {
     const { formatPrice } = useCurrency();
     const [isMounted, setIsMounted] = useState(isOpen);
     const [isActive, setIsActive] = useState(isOpen);
+    
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('All Categories');
+    const [searchResults, setSearchResults] = useState<Product[]>([]);
 
     useEffect(() => {
         let mountTimeout: number;
@@ -30,6 +38,9 @@ const SearchOverlay: FC<SearchOverlayProps> = ({ isOpen, onClose, onProductClick
             activeTimeout = window.setTimeout(() => {
                 setIsMounted(false);
                 document.body.style.overflow = 'unset';
+                // Reset search state on close
+                setSearchQuery('');
+                setSelectedCategory('All Categories');
             }, 300); // Corresponds to animation duration
         }
         
@@ -41,8 +52,108 @@ const SearchOverlay: FC<SearchOverlayProps> = ({ isOpen, onClose, onProductClick
             }
         };
     }, [isOpen]);
+    
+    useEffect(() => {
+        if (searchQuery.trim() === '') {
+            setSearchResults([]);
+            return;
+        }
+
+        const lowercasedQuery = searchQuery.toLowerCase();
+        const filtered = products.filter(product => {
+            const nameMatch = product.name.toLowerCase().includes(lowercasedQuery);
+            const descriptionMatch = product.description?.toLowerCase().includes(lowercasedQuery) || false;
+            const categoryMatch = selectedCategory === 'All Categories' || product.category === selectedCategory;
+            
+            return (nameMatch || descriptionMatch) && categoryMatch;
+        });
+
+        setSearchResults(filtered);
+    }, [searchQuery, selectedCategory]);
+
 
   if (!isMounted) return null;
+
+  const renderContent = () => {
+    if (searchQuery.trim() === '') {
+        return (
+            <>
+                <h3 className="text-base font-semibold text-gray-800 mb-4">Need some inspiration?</h3>
+                <div className="space-y-5">
+                    {suggestedProducts.map(product => (
+                        <button
+                            onClick={() => {
+                                onClose();
+                                onProductClick(product.id);
+                            }}
+                            key={product.id}
+                            className="flex items-center space-x-4 group w-full text-left"
+                        >
+                            <div className="w-20 h-20 flex-shrink-0 bg-gray-100 rounded-md overflow-hidden">
+                                <img src={product.imageUrl} alt={product.name} className="w-full h-full object-contain" />
+                            </div>
+                            <div>
+                                <p className="text-sm font-medium text-gray-800 group-hover:text-blue-600 transition-colors">{product.name}</p>
+                                <div className="flex items-baseline space-x-2 mt-1">
+                                    <span className={`text-sm font-bold ${product.oldPrice ? 'text-red-600' : 'text-black'}`}>
+                                        {formatPrice(product.price)}
+                                    </span>
+                                    {product.oldPrice && (
+                                        <span className="text-xs text-gray-400 line-through">{formatPrice(product.oldPrice)}</span>
+                                    )}
+                                </div>
+                            </div>
+                        </button>
+                    ))}
+                </div>
+            </>
+        );
+    }
+    
+    if (searchResults.length > 0) {
+        return (
+             <>
+                <h3 className="text-base font-semibold text-gray-800 mb-4">
+                    {searchResults.length} {searchResults.length === 1 ? 'Result' : 'Results'} Found
+                </h3>
+                <div className="space-y-5">
+                    {searchResults.map(product => (
+                        <button
+                            onClick={() => {
+                                onClose();
+                                onProductClick(product.id);
+                            }}
+                            key={product.id}
+                            className="flex items-center space-x-4 group w-full text-left"
+                        >
+                            <div className="w-20 h-20 flex-shrink-0 bg-gray-100 rounded-md overflow-hidden">
+                                <img src={product.imageUrl} alt={product.name} className="w-full h-full object-contain" />
+                            </div>
+                            <div>
+                                <p className="text-sm font-medium text-gray-800 group-hover:text-blue-600 transition-colors">{product.name}</p>
+                                <div className="flex items-baseline space-x-2 mt-1">
+                                    <span className={`text-sm font-bold ${product.oldPrice ? 'text-red-600' : 'text-black'}`}>
+                                        {formatPrice(product.price)}
+                                    </span>
+                                    {product.oldPrice && (
+                                        <span className="text-xs text-gray-400 line-through">{formatPrice(product.oldPrice)}</span>
+                                    )}
+                                </div>
+                            </div>
+                        </button>
+                    ))}
+                </div>
+            </>
+        );
+    }
+
+    return (
+        <div className="text-center py-10">
+            <p className="text-gray-600">No products found matching your search.</p>
+        </div>
+    );
+  };
+
 
   return (
     <div 
@@ -74,12 +185,14 @@ const SearchOverlay: FC<SearchOverlayProps> = ({ isOpen, onClose, onProductClick
             {/* Search Form */}
             <div className="p-6 space-y-4">
                 <div className="relative">
-                    <select className="w-full appearance-none bg-white border border-gray-300 rounded-full px-5 py-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <option>All Categories</option>
-                        <option>Accesories</option>
-                        <option>Smart TV</option>
-                        <option>Camera</option>
-                        <option>Digital</option>
+                    <select 
+                        value={selectedCategory}
+                        onChange={(e) => setSelectedCategory(e.target.value)}
+                        className="w-full appearance-none bg-white border border-gray-300 rounded-full px-5 py-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                        {uniqueCategories.map(cat => (
+                            <option key={cat} value={cat}>{cat}</option>
+                        ))}
                     </select>
                     <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-700">
                         <ChevronDownIcon className="w-4 h-4" />
@@ -89,6 +202,8 @@ const SearchOverlay: FC<SearchOverlayProps> = ({ isOpen, onClose, onProductClick
                     <input
                         type="search"
                         placeholder="Search"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                         className="w-full bg-white border border-gray-300 rounded-full pl-5 pr-12 py-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                     <div className="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-500">
@@ -97,44 +212,17 @@ const SearchOverlay: FC<SearchOverlayProps> = ({ isOpen, onClose, onProductClick
                 </div>
             </div>
 
-            {/* Suggestions */}
+            {/* Suggestions/Results */}
             <div className="flex-grow overflow-y-auto px-6 pb-6">
-                <h3 className="text-base font-semibold text-gray-800 mb-4">Need some inspiration?</h3>
-                <div className="space-y-5">
-                    {suggestedProducts.map(product => (
-                        <button
-                            onClick={() => {
-                                onClose();
-                                onProductClick(product.id);
-                            }}
-                            key={product.id}
-                            className="flex items-center space-x-4 group w-full text-left"
-                        >
-                            <div className="w-20 h-20 flex-shrink-0 bg-gray-100 rounded-md overflow-hidden">
-                                <img src={product.imageUrl} alt={product.name} className="w-full h-full object-contain" />
-                            </div>
-                            <div>
-                                <p className="text-sm font-medium text-gray-800 group-hover:text-blue-600 transition-colors">{product.name}</p>
-                                <div className="flex items-baseline space-x-2 mt-1">
-                                    <span className={`text-sm font-bold ${product.oldPrice ? 'text-red-600' : 'text-black'}`}>
-                                        {formatPrice(product.price)}
-                                    </span>
-                                    {product.oldPrice && (
-                                        <span className="text-xs text-gray-400 line-through">{formatPrice(product.oldPrice)}</span>
-                                    )}
-                                </div>
-                            </div>
-                        </button>
-                    ))}
-                </div>
+                {renderContent()}
             </div>
             
             {/* View All Footer */}
             <div className="p-6 border-t border-gray-200 mt-auto">
-                 <a href="#" className="flex items-center justify-center text-base font-semibold text-gray-800 hover:text-blue-600 transition-colors">
-                    View All
+                 <Link to="/shop" onClick={onClose} className="flex items-center justify-center text-base font-semibold text-gray-800 hover:text-blue-600 transition-colors">
+                    View All Products
                     <ArrowRightIcon className="ml-2 w-4 h-4" />
-                </a>
+                </Link>
             </div>
         </div>
       </div>
