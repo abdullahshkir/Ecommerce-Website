@@ -24,6 +24,7 @@ import { SEO } from './components/SEO';
 import ShopPage from './components/ShopPage';
 import ContactPage from './components/ContactPage';
 import AboutPage from './components/AboutPage';
+import TermsPage from './components/TermsPage';
 
 const HomePage = ({ onProductQuickView, onProductClick }: { onProductQuickView: (product: Product) => void, onProductClick: (id: number) => void }) => (
   <>
@@ -155,6 +156,18 @@ const App: React.FC = () => {
                   description="Learn more about Mobixo, our mission, values, and the team dedicated to bringing you the best in modern electronics and gadgets."
                 />
                 <AboutPage />
+              </>
+            }
+          />
+           <Route
+            path="/terms"
+            element={
+              <>
+                <SEO
+                  title="Terms & Conditions | Mobixo"
+                  description="Read the terms and conditions for using the Mobixo website and services. Understand your rights and obligations."
+                />
+                <TermsPage />
               </>
             }
           />
