@@ -90,59 +90,9 @@ const CheckoutPage: React.FC = () => {
     return (
         <div className="bg-white">
             <div className="min-h-screen lg:grid lg:grid-cols-12">
-                {/* Left side - Information */}
-                <div className="lg:col-span-7 py-12 px-4 sm:px-6 lg:px-12 xl:px-20">
-                    <div className="max-w-2xl mx-auto">
-                        <form onSubmit={handlePlaceOrder} className="mt-10">
-                             <div className="space-y-8">
-                                <div>
-                                    <h2 className="text-xl font-semibold mb-4">Contact information</h2>
-                                    <FormInput id="email" label="Email address" type="email" autoComplete="email" value={formData.email} onChange={handleInputChange} />
-                                </div>
-
-                                <div>
-                                    <h2 className="text-xl font-semibold mb-4">Shipping address</h2>
-                                    <div className="space-y-6">
-                                        <select name="country" value={formData.country} onChange={handleInputChange} className="w-full p-3 border-b border-gray-300 bg-white focus:outline-none focus:border-black">
-                                            <option>Pakistan</option>
-                                            <option>United States</option>
-                                        </select>
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                            <FormInput id="firstName" label="First name" autoComplete="given-name" value={formData.firstName} onChange={handleInputChange}/>
-                                            <FormInput id="lastName" label="Last name" autoComplete="family-name" value={formData.lastName} onChange={handleInputChange}/>
-                                        </div>
-                                        <FormInput id="address" label="Address" autoComplete="street-address" value={formData.address} onChange={handleInputChange}/>
-                                        <FormInput id="apartment" label="Apartment, suite, etc." required={false} value={formData.apartment} onChange={handleInputChange}/>
-                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                                            <FormInput id="city" label="City" autoComplete="address-level2" value={formData.city} onChange={handleInputChange}/>
-                                            <FormInput id="state" label="State" autoComplete="address-level1" value={formData.state} onChange={handleInputChange}/>
-                                            <FormInput id="zip" label="ZIP code" autoComplete="postal-code" value={formData.zip} onChange={handleInputChange}/>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div>
-                                    <h2 className="text-xl font-semibold mb-4">Payment</h2>
-                                    <p className="text-sm text-gray-500 mb-2">All payments are handled via Cash on Delivery.</p>
-                                    <div className="border border-gray-300 rounded-lg p-4 bg-gray-50">
-                                        <p className="font-semibold text-gray-800">Cash on Delivery (COD)</p>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div className="flex flex-col-reverse sm:flex-row items-center justify-between mt-10">
-                                <Link to="/cart" className="text-sm text-gray-600 hover:text-black mt-4 sm:mt-0">&lt; Return to cart</Link>
-                                <button type="submit" className="w-full sm:w-auto bg-black text-white py-4 px-8 rounded-full font-bold hover:bg-gray-800 transition-colors">
-                                    Place Order
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
                 {/* Right side - Order Summary */}
-                <div className="lg:col-span-5 bg-gray-50 border-l border-gray-200">
-                    <div className="py-12 px-4 sm:px-6 lg:px-12 sticky top-0">
+                <div className="lg:col-span-5 lg:col-start-8 bg-gray-50 lg:border-l border-b lg:border-b-0 border-gray-200">
+                    <div className="py-12 px-4 sm:px-6 lg:px-12 lg:sticky top-0">
                          {/* Mobile summary toggle */}
                         <div className="lg:hidden">
                             <button onClick={() => setIsSummaryOpen(!isSummaryOpen)} className="w-full flex justify-between items-center text-lg">
@@ -196,6 +146,56 @@ const CheckoutPage: React.FC = () => {
                                 <span className="text-2xl font-bold">{formatPrice(totalToDisplay)}</span>
                             </div>
                         </div>
+                    </div>
+                </div>
+                
+                {/* Left side - Information */}
+                <div className="lg:col-span-7 lg:row-start-1 py-12 px-4 sm:px-6 lg:px-12 xl:px-20">
+                    <div className="max-w-2xl mx-auto">
+                        <form onSubmit={handlePlaceOrder} className="mt-10">
+                             <div className="space-y-8">
+                                <div>
+                                    <h2 className="text-xl font-semibold mb-4">Contact information</h2>
+                                    <FormInput id="email" label="Email address" type="email" autoComplete="email" value={formData.email} onChange={handleInputChange} />
+                                </div>
+
+                                <div>
+                                    <h2 className="text-xl font-semibold mb-4">Shipping address</h2>
+                                    <div className="space-y-6">
+                                        <select name="country" value={formData.country} onChange={handleInputChange} className="w-full p-3 border-b border-gray-300 bg-white focus:outline-none focus:border-black">
+                                            <option>Pakistan</option>
+                                            <option>United States</option>
+                                        </select>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                            <FormInput id="firstName" label="First name" autoComplete="given-name" value={formData.firstName} onChange={handleInputChange}/>
+                                            <FormInput id="lastName" label="Last name" autoComplete="family-name" value={formData.lastName} onChange={handleInputChange}/>
+                                        </div>
+                                        <FormInput id="address" label="Address" autoComplete="street-address" value={formData.address} onChange={handleInputChange}/>
+                                        <FormInput id="apartment" label="Apartment, suite, etc." required={false} value={formData.apartment} onChange={handleInputChange}/>
+                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                                            <FormInput id="city" label="City" autoComplete="address-level2" value={formData.city} onChange={handleInputChange}/>
+                                            <FormInput id="state" label="State" autoComplete="address-level1" value={formData.state} onChange={handleInputChange}/>
+                                            <FormInput id="zip" label="ZIP code" autoComplete="postal-code" value={formData.zip} onChange={handleInputChange}/>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <h2 className="text-xl font-semibold mb-4">Payment</h2>
+                                    <p className="text-sm text-gray-500 mb-2">All payments are handled via Cash on Delivery.</p>
+                                    <div className="border border-gray-300 rounded-lg p-4 bg-gray-50">
+                                        <p className="font-semibold text-gray-800">Cash on Delivery (COD)</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div className="flex flex-col-reverse sm:flex-row items-center justify-between mt-10">
+                                <Link to="/cart" className="text-sm text-gray-600 hover:text-black mt-4 sm:mt-0">&lt; Return to cart</Link>
+                                <button type="submit" className="w-full sm:w-auto bg-black text-white py-4 px-8 rounded-full font-bold hover:bg-gray-800 transition-colors">
+                                    Place Order
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
