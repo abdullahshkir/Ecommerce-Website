@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-// FIX: Import HeartIcon to be used in the empty wishlist view.
 import { TrashIcon, GridListIcon, Grid2Icon, Grid3Icon, Grid4Icon, ChevronUpIcon, HeartIcon } from './icons';
+import { useCurrency } from '../contexts/CurrencyContext';
 
 type Product = {
     id: number;
@@ -57,6 +57,7 @@ const initialWishlistData: Product[] = [
 
 const WishlistProductCard: React.FC<{ product: Product; onRemove: (id: number) => void; }> = ({ product, onRemove }) => {
     const salePercentage = product.oldPrice ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100) : 0;
+    const { formatPrice } = useCurrency();
 
     return (
         <div className="group relative border border-gray-200 rounded-md overflow-hidden transition-shadow hover:shadow-xl">
@@ -81,10 +82,10 @@ const WishlistProductCard: React.FC<{ product: Product; onRemove: (id: number) =
                 </h3>
                 <div className="flex justify-center items-baseline space-x-2">
                      <span className={`text-lg font-bold ${product.oldPrice ? 'text-red-600' : 'text-black'}`}>
-                        ${product.price.toFixed(2)}
+                        {formatPrice(product.price)}
                     </span>
                     {product.oldPrice && (
-                        <span className="text-sm text-gray-400 line-through">${product.oldPrice.toFixed(2)}</span>
+                        <span className="text-sm text-gray-400 line-through">{formatPrice(product.oldPrice)}</span>
                     )}
                 </div>
             </div>

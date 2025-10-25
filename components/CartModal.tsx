@@ -1,5 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import { CloseIcon, EmptyCartIcon, TrashIcon, PlusIcon, MinusIcon, ClipboardIcon, CalendarIcon, TruckIcon, TagIcon, EyeIcon } from './icons';
+import { useCurrency } from '../contexts/CurrencyContext';
 
 interface CartModalProps {
   isOpen: boolean;
@@ -34,6 +35,7 @@ const recommendedProduct = {
 
 const CartModal: FC<CartModalProps> = ({ isOpen, onClose, updateCartCount }) => {
     const [cartItems, setCartItems] = useState<CartItem[]>(initialCartItems);
+    const { formatPrice } = useCurrency();
 
     useEffect(() => {
         if (isOpen) {
@@ -109,7 +111,7 @@ const CartModal: FC<CartModalProps> = ({ isOpen, onClose, updateCartCount }) => 
                                             </div>
                                             <div className="flex-grow">
                                                 <p className="text-sm font-medium text-gray-800">{item.name}</p>
-                                                <p className="text-sm text-gray-600">${item.price.toFixed(2)}</p>
+                                                <p className="text-sm text-gray-600">{formatPrice(item.price)}</p>
                                                 <div className="flex items-center mt-2">
                                                     <div className="flex items-center border border-gray-300 rounded-full">
                                                         <button onClick={() => handleQuantityChange(item.id, -1)} className="px-2 py-1 text-gray-600"><MinusIcon className="w-3 h-3"/></button>
@@ -149,8 +151,8 @@ const CartModal: FC<CartModalProps> = ({ isOpen, onClose, updateCartCount }) => 
                                         <div className="flex-grow">
                                             <p className="text-sm font-medium text-gray-800">{recommendedProduct.name}</p>
                                             <div className="flex items-baseline space-x-2 mt-1">
-                                                <span className="text-sm font-bold text-red-600">${recommendedProduct.price.toFixed(2)}</span>
-                                                <span className="text-xs text-gray-400 line-through">${recommendedProduct.oldPrice.toFixed(2)}</span>
+                                                <span className="text-sm font-bold text-red-600">{formatPrice(recommendedProduct.price)}</span>
+                                                <span className="text-xs text-gray-400 line-through">{formatPrice(recommendedProduct.oldPrice)}</span>
                                             </div>
                                         </div>
                                         <button className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700">
@@ -163,7 +165,7 @@ const CartModal: FC<CartModalProps> = ({ isOpen, onClose, updateCartCount }) => 
                             <div className="p-6 border-t border-gray-200 mt-auto">
                                 <div className="flex justify-between items-center mb-4">
                                     <span className="text-lg font-semibold">Subtotal:</span>
-                                    <span className="text-lg font-bold">${subtotal.toFixed(2)} USD</span>
+                                    <span className="text-lg font-bold">{formatPrice(subtotal)}</span>
                                 </div>
                                 <p className="text-xs text-gray-500 mb-4">Taxes and shipping calculated at checkout</p>
                                 <div className="flex items-center mb-4">

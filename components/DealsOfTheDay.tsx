@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CartIcon, StarIcon } from './icons';
+import { useCurrency } from '../contexts/CurrencyContext';
 
 const dealsData = [
     {
@@ -82,27 +83,31 @@ const CountdownTimer: React.FC<{ endDate: string }> = ({ endDate }) => {
 };
 
 
-const SmallProductCard: React.FC<Omit<typeof dealsData[0], 'description' | 'dealEndDate' | 'rating'>> = ({ name, imageUrl, price, oldPrice }) => (
-    <div className="group relative flex items-center space-x-4 bg-gray-50 p-4 rounded-lg overflow-hidden">
-        <div className="w-1/3">
-            <img src={imageUrl} alt={name} className="w-full h-auto object-cover rounded transition-transform duration-300 group-hover:scale-110" />
-        </div>
-        <div className="w-2/3">
-            <h4 className="text-sm font-semibold text-gray-800 mb-1">
-                <a href="#" className="hover:text-black">{name}</a>
-            </h4>
-            <div className="flex items-baseline space-x-2">
-                <span className="text-base font-bold text-black">${price.toFixed(2)}</span>
-                {oldPrice && <span className="text-xs text-gray-400 line-through">${oldPrice.toFixed(2)}</span>}
+const SmallProductCard: React.FC<Omit<typeof dealsData[0], 'description' | 'dealEndDate' | 'rating'>> = ({ name, imageUrl, price, oldPrice }) => {
+    const { formatPrice } = useCurrency();
+    return (
+        <div className="group relative flex items-center space-x-4 bg-gray-50 p-4 rounded-lg overflow-hidden">
+            <div className="w-1/3">
+                <img src={imageUrl} alt={name} className="w-full h-auto object-cover rounded transition-transform duration-300 group-hover:scale-110" />
+            </div>
+            <div className="w-2/3">
+                <h4 className="text-sm font-semibold text-gray-800 mb-1">
+                    <a href="#" className="hover:text-black">{name}</a>
+                </h4>
+                <div className="flex items-baseline space-x-2">
+                    <span className="text-base font-bold text-black">{formatPrice(price)}</span>
+                    {oldPrice && <span className="text-xs text-gray-400 line-through">{formatPrice(oldPrice)}</span>}
+                </div>
             </div>
         </div>
-    </div>
-);
+    );
+};
 
 
 const DealsOfTheDay: React.FC = () => {
     const mainDeal = dealsData[0];
     const otherDeals = dealsData.slice(1);
+    const { formatPrice } = useCurrency();
 
     return (
         <section className="py-16 sm:py-24 bg-gray-100">
@@ -128,8 +133,8 @@ const DealsOfTheDay: React.FC = () => {
                             </h3>
                             <p className="text-gray-600 mb-4 text-sm">{mainDeal.description}</p>
                             <div className="flex justify-center md:justify-start items-baseline space-x-2 mb-4">
-                                <span className="text-3xl font-bold text-blue-600">${mainDeal.price.toFixed(2)}</span>
-                                <span className="text-lg text-gray-400 line-through">${mainDeal.oldPrice.toFixed(2)}</span>
+                                <span className="text-3xl font-bold text-blue-600">{formatPrice(mainDeal.price)}</span>
+                                <span className="text-lg text-gray-400 line-through">{formatPrice(mainDeal.oldPrice)}</span>
                             </div>
                             <div className="mb-6 flex justify-center md:justify-start">
                                 <CountdownTimer endDate={mainDeal.dealEndDate} />

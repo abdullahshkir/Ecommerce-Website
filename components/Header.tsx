@@ -4,6 +4,7 @@ import { PhoneIcon, MailIcon, SearchIcon, UserIcon, HeartIcon, CartIcon, Chevron
 import SearchOverlay from './SearchOverlay';
 import LoginModal from './LoginModal';
 import CartModal from './CartModal';
+import { useCurrency } from '../contexts/CurrencyContext';
 
 const NavItem: React.FC<{ href: string; children: React.ReactNode; new?: boolean; sale?: boolean }> = ({ href, children, new: isNew, sale: isSale }) => (
     <a href={href} className="text-gray-700 hover:text-black transition-colors relative group py-2">
@@ -21,6 +22,8 @@ const Header: React.FC = () => {
     const [isLoginOpen, setLoginOpen] = useState(false);
     const [isCartOpen, setCartOpen] = useState(false);
     const [cartItemCount, setCartItemCount] = useState(1);
+    const { currency, setCurrency } = useCurrency();
+    const [isCurrencyDropdownOpen, setCurrencyDropdownOpen] = useState(false);
 
     const navLinks = [
         { name: 'Demo', href: '#' },
@@ -103,9 +106,33 @@ const Header: React.FC = () => {
                                     </span>
                                 )}
                             </button>
-                            <div className="hidden sm:flex items-center space-x-1 cursor-pointer text-gray-700 hover:text-black">
-                                <span className="text-sm font-medium">PKR</span>
-                                <ChevronDownIcon />
+                             <div className="hidden sm:block relative">
+                                <button 
+                                    onClick={() => setCurrencyDropdownOpen(!isCurrencyDropdownOpen)}
+                                    onBlur={() => setTimeout(() => setCurrencyDropdownOpen(false), 150)}
+                                    className="flex items-center space-x-1 cursor-pointer text-gray-700 hover:text-black"
+                                >
+                                    <span className="text-sm font-medium">{currency}</span>
+                                    <ChevronDownIcon />
+                                </button>
+                                {isCurrencyDropdownOpen && (
+                                    <div className="absolute right-0 mt-2 w-24 bg-white rounded-md shadow-lg py-1 z-20 border">
+                                        <a
+                                            href="#"
+                                            onClick={(e) => { e.preventDefault(); setCurrency('USD'); setCurrencyDropdownOpen(false); }}
+                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                        >
+                                            USD
+                                        </a>
+                                        <a
+                                            href="#"
+                                            onClick={(e) => { e.preventDefault(); setCurrency('PKR'); setCurrencyDropdownOpen(false); }}
+                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                        >
+                                            PKR
+                                        </a>
+                                    </div>
+                                )}
                             </div>
                              {/* Mobile Menu Button */}
                             <button className="lg:hidden text-gray-700 hover:text-black" onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}>

@@ -1,5 +1,6 @@
 import React, { useEffect, FC } from 'react';
 import { CloseIcon, SearchIcon, ChevronDownIcon, ArrowRightIcon } from './icons';
+import { useCurrency } from '../contexts/CurrencyContext';
 
 interface SearchOverlayProps {
   isOpen: boolean;
@@ -31,6 +32,8 @@ const suggestedProducts = [
 ];
 
 const SearchOverlay: FC<SearchOverlayProps> = ({ isOpen, onClose }) => {
+    const { formatPrice } = useCurrency();
+    
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = 'hidden';
@@ -109,10 +112,10 @@ const SearchOverlay: FC<SearchOverlayProps> = ({ isOpen, onClose }) => {
                                 <p className="text-sm font-medium text-gray-800 group-hover:text-blue-600 transition-colors">{product.name}</p>
                                 <div className="flex items-baseline space-x-2 mt-1">
                                     <span className={`text-sm font-bold ${product.oldPrice ? 'text-red-600' : 'text-black'}`}>
-                                        ${product.price.toFixed(2)}
+                                        {formatPrice(product.price)}
                                     </span>
                                     {product.oldPrice && (
-                                        <span className="text-xs text-gray-400 line-through">${product.oldPrice.toFixed(2)}</span>
+                                        <span className="text-xs text-gray-400 line-through">{formatPrice(product.oldPrice)}</span>
                                     )}
                                 </div>
                             </div>

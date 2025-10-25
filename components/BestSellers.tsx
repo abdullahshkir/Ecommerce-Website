@@ -1,5 +1,6 @@
 import React from 'react';
 import { HeartIcon, EyeIcon, CartIcon, StarIcon } from './icons';
+import { useCurrency } from '../contexts/CurrencyContext';
 
 const productData = [
     {
@@ -82,47 +83,50 @@ const productData = [
     },
 ];
 
-const ProductCard: React.FC<typeof productData[0]> = ({ imageUrl, imageUrl2, category, name, price, oldPrice, isSale, isNew }) => (
-    <div className="group relative text-center">
-        <div className="relative overflow-hidden">
-            {/* Image Container */}
-            <div className="relative h-[300px] sm:h-[350px]">
-                <img src={imageUrl} alt={name} className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ease-in-out opacity-100 group-hover:opacity-0" />
-                <img src={imageUrl2} alt={`${name} hover`} className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ease-in-out opacity-0 group-hover:opacity-100" />
+const ProductCard: React.FC<typeof productData[0]> = ({ imageUrl, imageUrl2, category, name, price, oldPrice, isSale, isNew }) => {
+    const { formatPrice } = useCurrency();
+    return (
+        <div className="group relative text-center">
+            <div className="relative overflow-hidden">
+                {/* Image Container */}
+                <div className="relative h-[300px] sm:h-[350px]">
+                    <img src={imageUrl} alt={name} className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ease-in-out opacity-100 group-hover:opacity-0" />
+                    <img src={imageUrl2} alt={`${name} hover`} className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ease-in-out opacity-0 group-hover:opacity-100" />
+                </div>
+
+                {/* Action Buttons */}
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full flex justify-center items-center space-x-2 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <a href="#" className="bg-white p-2.5 rounded-full shadow-md hover:bg-black hover:text-white transition-colors"><HeartIcon className="w-5 h-5" /></a>
+                    <a href="#" className="bg-white p-2.5 rounded-full shadow-md hover:bg-black hover:text-white transition-colors"><EyeIcon className="w-5 h-5" /></a>
+                    <a href="#" className="bg-white p-2.5 rounded-full shadow-md hover:bg-black hover:text-white transition-colors"><CartIcon className="w-5 h-5" /></a>
+                </div>
+
+                {/* Labels */}
+                <div className="absolute top-4 left-4 flex flex-col space-y-2">
+                    {isSale && <span className="bg-red-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full">SALE</span>}
+                    {isNew && <span className="bg-cyan-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full">NEW</span>}
+                </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full flex justify-center items-center space-x-2 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <a href="#" className="bg-white p-2.5 rounded-full shadow-md hover:bg-black hover:text-white transition-colors"><HeartIcon className="w-5 h-5" /></a>
-                <a href="#" className="bg-white p-2.5 rounded-full shadow-md hover:bg-black hover:text-white transition-colors"><EyeIcon className="w-5 h-5" /></a>
-                <a href="#" className="bg-white p-2.5 rounded-full shadow-md hover:bg-black hover:text-white transition-colors"><CartIcon className="w-5 h-5" /></a>
-            </div>
-
-            {/* Labels */}
-            <div className="absolute top-4 left-4 flex flex-col space-y-2">
-                {isSale && <span className="bg-red-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full">SALE</span>}
-                {isNew && <span className="bg-cyan-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full">NEW</span>}
+            {/* Product Info */}
+            <div className="pt-4">
+                <a href="#" className="text-xs text-gray-500 uppercase tracking-wider hover:text-black">{category}</a>
+                <h3 className="text-base font-semibold text-gray-800 mt-1 mb-2">
+                    <a href="#" className="hover:text-black">{name}</a>
+                </h3>
+                <div className="flex justify-center items-center space-x-2">
+                    <span className="text-lg font-bold text-black">{formatPrice(price)}</span>
+                    {oldPrice && <span className="text-sm text-gray-400 line-through">{formatPrice(oldPrice)}</span>}
+                </div>
+                <div className="flex justify-center mt-2">
+                    {[...Array(5)].map((_, i) => (
+                        <StarIcon key={i} filled={i < 4} className="w-4 h-4 text-yellow-400" />
+                    ))}
+                </div>
             </div>
         </div>
-
-        {/* Product Info */}
-        <div className="pt-4">
-            <a href="#" className="text-xs text-gray-500 uppercase tracking-wider hover:text-black">{category}</a>
-            <h3 className="text-base font-semibold text-gray-800 mt-1 mb-2">
-                <a href="#" className="hover:text-black">{name}</a>
-            </h3>
-            <div className="flex justify-center items-center space-x-2">
-                <span className="text-lg font-bold text-black">${price.toFixed(2)}</span>
-                {oldPrice && <span className="text-sm text-gray-400 line-through">${oldPrice.toFixed(2)}</span>}
-            </div>
-            <div className="flex justify-center mt-2">
-                {[...Array(5)].map((_, i) => (
-                    <StarIcon key={i} filled={i < 4} className="w-4 h-4 text-yellow-400" />
-                ))}
-            </div>
-        </div>
-    </div>
-);
+    );
+}
 
 
 const BestSellers: React.FC = () => {
