@@ -4,11 +4,13 @@ import { useCurrency } from '../contexts/CurrencyContext';
 import { Product } from '../types';
 import { useWishlist } from '../contexts/WishlistContext';
 import { products } from '../data/products';
+import { useCart } from '../contexts/CartContext';
 
 const ProductCard: React.FC<{ product: Product, onQuickView: (product: Product) => void, onProductClick: (id: number) => void }> = ({ product, onQuickView, onProductClick }) => {
     const { imageUrl, imageUrl2, category, name, price, oldPrice, isSale, isNew, rating = 0 } = product;
     const { formatPrice } = useCurrency();
     const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+    const { addToCart, openCart } = useCart();
     const isWishlisted = isInWishlist(product.id);
 
     const handleWishlistClick = (e: React.MouseEvent) => {
@@ -22,6 +24,12 @@ const ProductCard: React.FC<{ product: Product, onQuickView: (product: Product) 
 
     const handleCardClick = () => {
         onProductClick(product.id);
+    };
+
+    const handleAddToCartClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        addToCart(product, 1);
+        openCart();
     };
     
     return (
@@ -39,7 +47,7 @@ const ProductCard: React.FC<{ product: Product, onQuickView: (product: Product) 
                         <HeartIcon filled={isWishlisted} className="w-5 h-5" />
                     </button>
                     <button onClick={(e) => { e.stopPropagation(); onQuickView(product); }} className="bg-white p-2.5 rounded-full shadow-md hover:bg-black hover:text-white transition-colors"><EyeIcon className="w-5 h-5" /></button>
-                    <button onClick={(e) => e.stopPropagation()} className="bg-white p-2.5 rounded-full shadow-md hover:bg-black hover:text-white transition-colors"><CartIcon className="w-5 h-5" /></button>
+                    <button onClick={handleAddToCartClick} className="bg-white p-2.5 rounded-full shadow-md hover:bg-black hover:text-white transition-colors"><CartIcon className="w-5 h-5" /></button>
                 </div>
 
                 {/* Labels */}

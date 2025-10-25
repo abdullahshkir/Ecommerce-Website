@@ -1,30 +1,12 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect } from 'react';
 import { CloseIcon, EmptyCartIcon, TrashIcon, PlusIcon, MinusIcon, ClipboardIcon, CalendarIcon, TruckIcon, TagIcon, EyeIcon } from './icons';
 import { useCurrency } from '../contexts/CurrencyContext';
+import { useCart } from '../contexts/CartContext';
 
 interface CartModalProps {
   isOpen: boolean;
   onClose: () => void;
-  updateCartCount: (count: number) => void;
 }
-
-type CartItem = {
-    id: number;
-    name: string;
-    price: number;
-    imageUrl: string;
-    quantity: number;
-};
-
-const initialCartItems: CartItem[] = [
-    {
-        id: 1,
-        name: 'X-Star Premium Dro...',
-        price: 450.00,
-        imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761464405/s2_zxf25n.jpg',
-        quantity: 1
-    }
-];
 
 const recommendedProduct = {
     name: 'Video & Air Quality...',
@@ -33,8 +15,8 @@ const recommendedProduct = {
     imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761464405/s1_kvtkrx.jpg',
 };
 
-const CartModal: FC<CartModalProps> = ({ isOpen, onClose, updateCartCount }) => {
-    const [cartItems, setCartItems] = useState<CartItem[]>(initialCartItems);
+const CartModal: FC<CartModalProps> = ({ isOpen, onClose }) => {
+    const { cartItems, removeFromCart, updateQuantity, subtotal } = useCart();
     const { formatPrice } = useCurrency();
 
     useEffect(() => {
@@ -45,22 +27,6 @@ const CartModal: FC<CartModalProps> = ({ isOpen, onClose, updateCartCount }) => 
         }
         return () => { document.body.style.overflow = 'unset'; };
     }, [isOpen]);
-
-    useEffect(() => {
-        updateCartCount(cartItems.length);
-    }, [cartItems, updateCartCount]);
-
-    const handleQuantityChange = (id: number, delta: number) => {
-        setCartItems(items => items.map(item =>
-            item.id === id ? { ...item, quantity: Math.max(1, item.quantity + delta) } : item
-        ));
-    };
-    
-    const handleRemoveItem = (id: number) => {
-        setCartItems(items => items.filter(item => item.id !== id));
-    };
-    
-    const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
     if (!isOpen) return null;
 
@@ -114,11 +80,11 @@ const CartModal: FC<CartModalProps> = ({ isOpen, onClose, updateCartCount }) => 
                                                 <p className="text-sm text-gray-600">{formatPrice(item.price)}</p>
                                                 <div className="flex items-center mt-2">
                                                     <div className="flex items-center border border-gray-300 rounded-full">
-                                                        <button onClick={() => handleQuantityChange(item.id, -1)} className="px-2 py-1 text-gray-600"><MinusIcon className="w-3 h-3"/></button>
+                                                        <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="px-2 py-1 text-gray-600"><MinusIcon className="w-3 h-3"/></button>
                                                         <input type="text" value={item.quantity} readOnly className="w-8 text-center border-0 p-0 text-sm focus:outline-none focus:ring-0 bg-transparent"/>
-                                                        <button onClick={() => handleQuantityChange(item.id, 1)} className="px-2 py-1 text-gray-600"><PlusIcon className="w-3 h-3"/></button>
+                                                        <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="px-2 py-1 text-gray-600"><PlusIcon className="w-3 h-3"/></button>
                                                     </div>
-                                                    <button onClick={() => handleRemoveItem(item.id)} className="ml-4 text-gray-400 hover:text-red-500">
+                                                    <button onClick={() => removeFromCart(item.id)} className="ml-4 text-gray-400 hover:text-red-500">
                                                         <TrashIcon className="w-4 h-4" />
                                                     </button>
                                                 </div>

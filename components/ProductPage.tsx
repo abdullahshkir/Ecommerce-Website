@@ -5,6 +5,7 @@ import { Product } from '../types';
 import { StarIcon, PlusIcon, MinusIcon, HeartIcon, ExpandIcon, FacebookIcon, TwitterIcon, InstagramIcon, PinterestIcon } from './icons';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { useWishlist } from '../contexts/WishlistContext';
+import { useCart } from '../contexts/CartContext';
 
 const ProductCard: React.FC<{ product: Product; onClick: (id: number) => void }> = ({ product, onClick }) => {
     const { formatPrice } = useCurrency();
@@ -36,6 +37,7 @@ const ProductPage: React.FC<{onProductClick: (id: number) => void}> = ({ onProdu
     const [activeTab, setActiveTab] = useState('description');
     const { formatPrice } = useCurrency();
     const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+    const { addToCart, openCart } = useCart();
 
     useEffect(() => {
         const productId = parseInt(id || '', 10);
@@ -60,6 +62,13 @@ const ProductPage: React.FC<{onProductClick: (id: number) => void}> = ({ onProdu
             removeFromWishlist(product.id);
         } else {
             addToWishlist(product);
+        }
+    };
+    
+    const handleAddToCart = () => {
+        if (product) {
+          addToCart(product, quantity);
+          openCart();
         }
     };
 
@@ -121,7 +130,7 @@ const ProductPage: React.FC<{onProductClick: (id: number) => void}> = ({ onProdu
                                 <input type="text" value={quantity} readOnly className="w-12 text-center border-0 p-0 text-lg focus:ring-0 bg-transparent" />
                                 <button onClick={() => setQuantity(quantity + 1)} className="px-4 py-2 text-gray-600"><PlusIcon /></button>
                             </div>
-                            <button className="flex-grow bg-blue-600 text-white py-3 px-6 rounded-full font-semibold hover:bg-blue-700">ADD TO CART</button>
+                            <button onClick={handleAddToCart} className="flex-grow bg-blue-600 text-white py-3 px-6 rounded-full font-semibold hover:bg-blue-700">ADD TO CART</button>
                              <button onClick={handleWishlistClick} className={`p-3 border rounded-full transition-colors ${isWishlisted ? 'bg-red-50 text-red-500 border-red-200' : 'border-gray-300 hover:bg-gray-100'}`}>
                                 <HeartIcon filled={isWishlisted} className={`w-6 h-6 ${isWishlisted ? 'text-red-500' : 'text-gray-700'}`}/>
                             </button>

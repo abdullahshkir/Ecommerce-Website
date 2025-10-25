@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { CartIcon, StarIcon } from './icons';
 import { useCurrency } from '../contexts/CurrencyContext';
+import { useCart } from '../contexts/CartContext';
+import { Product } from '../types';
 
 const dealsData = [
     {
@@ -108,6 +110,23 @@ const DealsOfTheDay: React.FC = () => {
     const mainDeal = dealsData[0];
     const otherDeals = dealsData.slice(1);
     const { formatPrice } = useCurrency();
+    const { addToCart, openCart } = useCart();
+
+    const handleAddToCart = () => {
+        const productToAdd: Product = {
+            id: mainDeal.id,
+            name: mainDeal.name,
+            price: mainDeal.price,
+            oldPrice: mainDeal.oldPrice,
+            category: 'Deals',
+            imageUrl: mainDeal.imageUrl,
+            imageUrl2: mainDeal.imageUrl,
+            description: mainDeal.description,
+            rating: mainDeal.rating
+        };
+        addToCart(productToAdd, 1);
+        openCart();
+    };
 
     return (
         <section className="py-16 sm:py-24 bg-gray-100">
@@ -139,10 +158,10 @@ const DealsOfTheDay: React.FC = () => {
                             <div className="mb-6 flex justify-center md:justify-start">
                                 <CountdownTimer endDate={mainDeal.dealEndDate} />
                             </div>
-                            <a href="#" className="inline-flex items-center justify-center bg-black text-white font-bold py-3 px-8 rounded-full hover:bg-gray-800 transition-colors duration-300">
+                            <button onClick={handleAddToCart} className="inline-flex items-center justify-center bg-black text-white font-bold py-3 px-8 rounded-full hover:bg-gray-800 transition-colors duration-300">
                                 <CartIcon className="w-5 h-5 mr-2" />
                                 Add to Cart
-                            </a>
+                            </button>
                         </div>
                     </div>
 

@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 import { PhoneIcon, MailIcon, SearchIcon, UserIcon, HeartIcon, CartIcon, ChevronDownIcon, ArrowRightIcon, CloseIcon, MenuIcon } from './icons';
 import SearchOverlay from './SearchOverlay';
 import LoginModal from './LoginModal';
-import CartModal from './CartModal';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { useWishlist } from '../contexts/WishlistContext';
+import { useCart } from '../contexts/CartContext';
 
 const NavItem: React.FC<{ href: string; children: React.ReactNode; new?: boolean; sale?: boolean }> = ({ href, children, new: isNew, sale: isSale }) => (
     <a href={href} className="text-gray-700 hover:text-black transition-colors relative group py-2">
@@ -21,13 +21,11 @@ const Header: React.FC = () => {
     const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [isSearchOpen, setSearchOpen] = useState(false);
     const [isLoginOpen, setLoginOpen] = useState(false);
-    const [isCartOpen, setCartOpen] = useState(false);
-    const [cartItemCount, setCartItemCount] = useState(1);
     const { currency, setCurrency } = useCurrency();
     const [isCurrencyDropdownOpen, setCurrencyDropdownOpen] = useState(false);
     const { wishlistItems } = useWishlist();
+    const { openCart, cartCount } = useCart();
 
-    // FIX: Add explicit type to navLinks to include optional `new` and `sale` properties to fix TypeScript errors.
     const navLinks: { name: string; href: string; new?: boolean; sale?: boolean }[] = [
         { name: 'Home', href: '/' },
         { name: 'Shop', href: '#', new: true, sale: true },
@@ -83,7 +81,7 @@ const Header: React.FC = () => {
                         </div>
                         
                         {/* Center: Desktop Nav */}
-                        <nav className="hidden lg:flex items-center space-x-6">
+                        <nav className="hidden lg:flex justify-center flex-1 space-x-6">
                             {navLinks.map((link) => (
                                 <NavItem key={link.name} href={link.href} new={link.new} sale={link.sale}>
                                     {link.name}
@@ -102,11 +100,11 @@ const Header: React.FC = () => {
                                         <span className="absolute -top-1 -right-2 bg-black text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">{wishlistItems.length}</span>
                                     )}
                                 </Link>
-                                <button onClick={() => setCartOpen(true)} className="relative text-gray-700 hover:text-black">
+                                <button onClick={openCart} className="relative text-gray-700 hover:text-black">
                                     <CartIcon />
-                                    {cartItemCount > 0 && (
+                                    {cartCount > 0 && (
                                         <span className="absolute -top-1 -right-2 bg-black text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
-                                            {cartItemCount}
+                                            {cartCount}
                                         </span>
                                     )}
                                 </button>
@@ -164,7 +162,6 @@ const Header: React.FC = () => {
             
             <SearchOverlay isOpen={isSearchOpen} onClose={() => setSearchOpen(false)} />
             <LoginModal isOpen={isLoginOpen} onClose={() => setLoginOpen(false)} />
-            <CartModal isOpen={isCartOpen} onClose={() => setCartOpen(false)} updateCartCount={setCartItemCount} />
         </>
     );
 };

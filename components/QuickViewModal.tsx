@@ -3,6 +3,7 @@ import { CloseIcon, StarIcon, PlusIcon, MinusIcon, HeartIcon } from './icons';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { Product } from '../types';
 import { useWishlist } from '../contexts/WishlistContext';
+import { useCart } from '../contexts/CartContext';
 
 interface QuickViewModalProps {
   product: Product | null;
@@ -14,6 +15,7 @@ const QuickViewModal: FC<QuickViewModalProps> = ({ product, onClose }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { formatPrice } = useCurrency();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { addToCart, openCart } = useCart();
 
   useEffect(() => {
     if (product) {
@@ -50,6 +52,12 @@ const QuickViewModal: FC<QuickViewModalProps> = ({ product, onClose }) => {
     setCurrentImageIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
   };
 
+  const handleAddToCart = () => {
+    addToCart(product, quantity);
+    openCart();
+    onClose();
+  };
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60"
@@ -74,10 +82,10 @@ const QuickViewModal: FC<QuickViewModalProps> = ({ product, onClose }) => {
           <div className="relative aspect-square w-full max-w-md">
             <img src={images[currentImageIndex]} alt={product.name} className="w-full h-full object-contain" />
             <button onClick={handlePrevImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/50 hover:bg-white/80 p-2 rounded-full shadow-md transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
+              <svg xmlns="http://www.w.org/2000/svg" className="h-6 w-6 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
             </button>
             <button onClick={handleNextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/50 hover:bg-white/80 p-2 rounded-full shadow-md transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
+              <svg xmlns="http://www.w.org/2000/svg" className="h-6 w-6 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
             </button>
           </div>
         </div>
@@ -105,7 +113,7 @@ const QuickViewModal: FC<QuickViewModalProps> = ({ product, onClose }) => {
               <input type="text" value={quantity} readOnly className="w-12 text-center border-0 p-0 text-base focus:outline-none focus:ring-0 bg-transparent"/>
               <button onClick={() => setQuantity(quantity + 1)} className="px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-r-md"><PlusIcon className="w-4 h-4"/></button>
             </div>
-            <button className="flex-grow bg-blue-600 text-white py-3 px-6 rounded-md font-semibold hover:bg-blue-700 transition-colors">ADD TO CART</button>
+            <button onClick={handleAddToCart} className="flex-grow bg-blue-600 text-white py-3 px-6 rounded-md font-semibold hover:bg-blue-700 transition-colors">ADD TO CART</button>
             <button onClick={handleWishlistClick} className={`p-3 border rounded-md transition-colors ${isWishlisted ? 'bg-red-50 text-red-500 border-red-200' : 'border-gray-300 hover:bg-gray-100'}`}>
               <HeartIcon filled={isWishlisted} className={`w-5 h-5 ${isWishlisted ? 'text-red-500' : 'text-gray-700'}`}/>
             </button>

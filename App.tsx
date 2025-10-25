@@ -12,6 +12,8 @@ import Footer from './components/Footer';
 import QuickViewModal from './components/QuickViewModal';
 import { Product } from './types';
 import ProductPage from './components/ProductPage';
+import CartModal from './components/CartModal';
+import { useCart } from './contexts/CartContext';
 
 const HomePage = ({ onProductQuickView, onProductClick }: { onProductQuickView: (product: Product) => void, onProductClick: (id: number) => void }) => (
   <>
@@ -27,6 +29,7 @@ const HomePage = ({ onProductQuickView, onProductClick }: { onProductQuickView: 
 const App: React.FC = () => {
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const navigate = useNavigate();
+  const { isCartOpen, closeCart } = useCart();
 
   const handleOpenQuickView = (product: Product) => {
     setQuickViewProduct(product);
@@ -52,6 +55,7 @@ const App: React.FC = () => {
       </main>
       <Footer />
       <QuickViewModal product={quickViewProduct} onClose={handleCloseQuickView} />
+      <CartModal isOpen={isCartOpen} onClose={closeCart} />
     </div>
   );
 };
