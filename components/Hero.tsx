@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 const Hero: React.FC = () => {
     const mobileImageUrl = 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761379165/Hero_Image_mbl_guepkf.jpg';
@@ -23,13 +24,13 @@ const Hero: React.FC = () => {
                     <p className="text-lg text-gray-800 mb-6 md:mb-8">
                         This is the phone that will change photography
                     </p>
-                    <a
-                        href="#"
+                    <Link
+                        to="/shop"
                         className="inline-block bg-black text-white text-sm font-bold py-4 px-10 rounded-full hover:bg-gray-800 transition-colors"
-                        aria-label="Explore the new Galaxy phones"
+                        aria-label="Explore our shop"
                     >
                         Explore Now
-                    </a>
+                    </Link>
                 </div>
             </div>
         );
