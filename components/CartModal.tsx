@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { CloseIcon, EmptyCartIcon, TrashIcon, PlusIcon, MinusIcon, EyeIcon } from './icons';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { useCart } from '../contexts/CartContext';
@@ -88,12 +88,13 @@ const CartModal: FC<CartModalProps> = ({ isOpen, onClose, onProductClick }) => {
                         <div className="flex flex-col items-center justify-center h-full text-center p-6">
                             <EmptyCartIcon className="w-20 h-20 text-gray-300 mb-4" />
                             <p className="text-lg text-gray-600 mb-6">Your cart is empty.</p>
-                            <button
+                            <Link
+                                to="/shop"
                                 onClick={onClose}
                                 className="w-full max-w-xs flex justify-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none"
                             >
                                 RETURN TO SHOP
-                            </button>
+                            </Link>
                         </div>
                     ) : (
                         <>

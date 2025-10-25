@@ -69,7 +69,7 @@ const CartPage: React.FC = () => {
                 {cartItems.length === 0 ? (
                     <div className="text-center py-20">
                         <h2 className="text-2xl font-semibold text-gray-800">Your cart is currently empty.</h2>
-                        <Link to="/" className="mt-6 inline-block bg-black text-white font-bold py-3 px-8 rounded-full hover:bg-gray-800 transition-colors">
+                        <Link to="/shop" className="mt-6 inline-block bg-black text-white font-bold py-3 px-8 rounded-full hover:bg-gray-800 transition-colors">
                             RETURN TO SHOP
                         </Link>
                     </div>
