@@ -104,17 +104,21 @@ const Footer: React.FC = () => {
                 </div>
             </div>
 
-            {/* Bottom Section: Copyright & Payments */}
+            {/* Bottom Section: Copyright & Developer Credit */}
             <div className="bg-[#1a1a1a]">
                 <div className="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center text-xs">
-                    <p className="mb-4 md:mb-0">&copy; 2024 Mobixo. All Rights Reserved.</p>
-                    <div className="flex items-center space-x-2">
-                        <span>Accepted Payments</span>
-                        <VisaIcon className="h-6 w-auto" />
-                        <MastercardIcon className="h-6 w-auto" />
-                        <PaypalIcon className="h-6 w-auto" />
-                        <AmexIcon className="h-6 w-auto" />
-                    </div>
+                    <p className="mb-4 md:mb-0">&copy; 2025 Mobixo. All Rights Reserved.</p>
+                    <p>
+                        Developed by{' '}
+                        <a 
+                            href="https://abdullahshakir.vercel.app/" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="font-semibold text-white hover:underline"
+                        >
+                            Abdullah Shakir
+                        </a>
+                    </p>
                 </div>
             </div>
         </footer>
