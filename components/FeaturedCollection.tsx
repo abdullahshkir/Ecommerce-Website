@@ -147,12 +147,12 @@ const FeaturedCollection: React.FC = () => {
                     <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Featured Collection</h2>
                 </div>
 
-                <div className="flex justify-center items-center space-x-4 sm:space-x-8 mb-12">
+                <div className="flex items-center space-x-4 sm:space-x-8 mb-12 overflow-x-auto pb-4 sm:pb-0 sm:justify-center flex-nowrap">
                     {categories.map(category => (
                         <button
                             key={category}
                             onClick={() => setActiveCategory(category)}
-                            className={`text-base font-medium transition-all duration-300 ${activeCategory === category ? 'text-black' : 'text-gray-500 hover:text-black'}`}
+                            className={`text-base font-medium transition-all duration-300 flex-shrink-0 ${activeCategory === category ? 'text-black' : 'text-gray-500 hover:text-black'}`}
                         >
                             <span className={`px-5 py-2 rounded-full ${activeCategory === category ? 'border-2 border-dotted border-gray-800' : 'border-2 border-transparent'}`}>
                                 {category}
