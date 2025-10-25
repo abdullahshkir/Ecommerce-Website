@@ -17,11 +17,14 @@ const NavItem: React.FC<{ href: string; children: React.ReactNode; new?: boolean
     </a>
 );
 
-const Header: React.FC = () => {
+interface HeaderProps {
+    onSearchClick: () => void;
+    onLoginClick: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ onSearchClick, onLoginClick }) => {
     const [isTopBarVisible, setTopBarVisible] = useState(true);
     const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [isSearchOpen, setSearchOpen] = useState(false);
-    const [isLoginOpen, setLoginOpen] = useState(false);
     const { currency, setCurrency } = useCurrency();
     const [isCurrencyDropdownOpen, setCurrencyDropdownOpen] = useState(false);
     const { wishlistItems } = useWishlist();
@@ -95,8 +98,8 @@ const Header: React.FC = () => {
                         {/* Right: Icons & Mobile Menu Button */}
                         <div className="lg:flex-1 lg:flex lg:justify-end">
                              <div className="flex items-center space-x-4">
-                                <button onClick={() => setSearchOpen(true)} className="text-gray-700 hover:text-black"><SearchIcon /></button>
-                                <button onClick={() => setLoginOpen(true)} className="hidden sm:block text-gray-700 hover:text-black"><UserIcon /></button>
+                                <button onClick={onSearchClick} className="text-gray-700 hover:text-black"><SearchIcon /></button>
+                                <button onClick={onLoginClick} className="hidden sm:block text-gray-700 hover:text-black"><UserIcon /></button>
                                 <Link to="/wishlist" className="relative text-gray-700 hover:text-black">
                                     <HeartIcon />
                                     {wishlistItems.length > 0 && (
@@ -153,15 +156,13 @@ const Header: React.FC = () => {
                 onClose={handleMobileMenuClose}
                 onSearchClick={() => {
                     handleMobileMenuClose();
-                    setSearchOpen(true);
+                    onSearchClick();
                 }}
                 onLoginClick={() => {
                     handleMobileMenuClose();
-                    setLoginOpen(true);
+                    onLoginClick();
                 }}
             />
-            <SearchOverlay isOpen={isSearchOpen} onClose={() => setSearchOpen(false)} />
-            <LoginModal isOpen={isLoginOpen} onClose={() => setLoginOpen(false)} />
         </>
     );
 };

@@ -17,6 +17,9 @@ import { useCart } from './contexts/CartContext';
 import CartPage from './components/CartPage';
 import CheckoutPage from './components/CheckoutPage';
 import ThankYouPage from './components/ThankYouPage';
+import SearchOverlay from './components/SearchOverlay';
+import LoginModal from './components/LoginModal';
+import MobileBottomNav from './components/MobileBottomNav';
 
 const HomePage = ({ onProductQuickView, onProductClick }: { onProductQuickView: (product: Product) => void, onProductClick: (id: number) => void }) => (
   <>
@@ -31,6 +34,8 @@ const HomePage = ({ onProductQuickView, onProductClick }: { onProductQuickView: 
 
 const App: React.FC = () => {
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
+  const [isSearchOpen, setSearchOpen] = useState(false);
+  const [isLoginOpen, setLoginOpen] = useState(false);
   const navigate = useNavigate();
   const { isCartOpen, closeCart } = useCart();
 
@@ -47,8 +52,8 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="bg-white font-sans">
-      <Header />
+    <div className="bg-white font-sans pb-16 lg:pb-0">
+      <Header onSearchClick={() => setSearchOpen(true)} onLoginClick={() => setLoginOpen(true)} />
       <main>
         <Routes>
           <Route path="/" element={<HomePage onProductQuickView={handleOpenQuickView} onProductClick={handleProductClick} />} />
@@ -62,6 +67,12 @@ const App: React.FC = () => {
       <Footer />
       <QuickViewModal product={quickViewProduct} onClose={handleCloseQuickView} />
       <CartModal isOpen={isCartOpen} onClose={closeCart} />
+      <SearchOverlay isOpen={isSearchOpen} onClose={() => setSearchOpen(false)} />
+      <LoginModal isOpen={isLoginOpen} onClose={() => setLoginOpen(false)} />
+      <MobileBottomNav 
+        onSearchClick={() => setSearchOpen(true)} 
+        onAccountClick={() => setLoginOpen(true)} 
+      />
     </div>
   );
 };
