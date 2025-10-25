@@ -1,5 +1,6 @@
 import React from 'react';
 import Header from './components/Header';
+// import WishlistPage from './components/WishlistPage';
 import Hero from './components/Hero';
 import Features from './components/Features';
 import PromoGrid from './components/PromoGrid';
@@ -19,6 +20,7 @@ const App: React.FC = () => {
         <BestSellers />
         <DealsOfTheDay />
         <FeaturedCollection />
+        {/* <WishlistPage /> */}
       </main>
       <Footer />
     </div>

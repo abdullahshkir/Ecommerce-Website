@@ -104,6 +104,100 @@ export const StarIcon: React.FC<IconProps & { filled?: boolean }> = ({ className
     </svg>
 );
 
+export const TrashIcon: React.FC<IconProps> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="3 6 5 6 21 6"></polyline>
+        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+    </svg>
+);
+
+
+const GridIcon: React.FC<IconProps & { children: React.ReactNode }> = ({ className, children }) => (
+    <svg className={className} viewBox="0 0 20 18" version="1.1" xmlns="http://www.w3.org/2000/svg">
+        {children}
+    </svg>
+);
+
+export const GridListIcon: React.FC<IconProps> = ({ className }) => (
+    <GridIcon className={className}>
+        <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+            <g transform="translate(-1370.000000, -204.000000)" fill="currentColor">
+                <g transform="translate(1370.000000, 204.000000)">
+                    <rect x="0" y="0" width="20" height="2"></rect>
+                    <rect x="0" y="8" width="20" height="2"></rect>
+                    <rect x="0" y="16" width="20" height="2"></rect>
+                </g>
+            </g>
+        </g>
+    </GridIcon>
+);
+
+export const Grid2Icon: React.FC<IconProps> = ({ className }) => (
+    <GridIcon className={className}>
+        <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+            <g transform="translate(-1410.000000, -204.000000)" fill="currentColor">
+                <g transform="translate(1410.000000, 204.000000)">
+                    <rect x="0" y="0" width="8" height="8"></rect>
+                    <rect x="12" y="0" width="8" height="8"></rect>
+                    <rect x="0" y="10" width="8" height="8"></rect>
+                    <rect x="12" y="10" width="8" height="8"></rect>
+                </g>
+            </g>
+        </g>
+    </GridIcon>
+);
+
+export const Grid3Icon: React.FC<IconProps> = ({ className }) => (
+    <GridIcon className={className}>
+         <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+            <g transform="translate(-1450.000000, -204.000000)" fill="currentColor">
+                <g transform="translate(1450.000000, 204.000000)">
+                    <rect x="0" y="0" width="5" height="5"></rect>
+                    <rect x="7" y="0" width="5" height="5"></rect>
+                    <rect x="14" y="0" width="5" height="5"></rect>
+                    <rect x="0" y="7" width="5" height="5"></rect>
+                    <rect x="7" y="7" width="5" height="5"></rect>
+                    <rect x="14" y="7" width="5" height="5"></rect>
+                    <rect x="0" y="14" width="5" height="5"></rect>
+                    <rect x="7" y="14" width="5" height="5"></rect>
+                    <rect x="14" y="14" width="5" height="5"></rect>
+                </g>
+            </g>
+        </g>
+    </GridIcon>
+);
+
+export const Grid4Icon: React.FC<IconProps> = ({ className }) => (
+    <GridIcon className={className}>
+        <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+            <g transform="translate(-1490.000000, -204.000000)" fill="currentColor">
+                <g transform="translate(1490.000000, 204.000000)">
+                    <rect x="0" y="0" width="4" height="4"></rect>
+                    <rect x="6" y="0" width="4" height="4"></rect>
+                    <rect x="12" y="0" width="4" height="4"></rect>
+                    <rect x="18" y="0" width="4" height="4"></rect>
+                    <rect x="0" y="6" width="4" height="4"></rect>
+                    <rect x="6" y="6" width="4" height="4"></rect>
+                    <rect x="12" y="6" width="4" height="4"></rect>
+                    <rect x="18" y="6" width="4" height="4"></rect>
+                    <rect x="0" y="12" width="4" height="4"></rect>
+                    <rect x="6" y="12" width="4" height="4"></rect>
+                    <rect x="12" y="12" width="4" height="4"></rect>
+                    <rect x="18" y="12" width="4" height="4"></rect>
+                </g>
+            </g>
+        </g>
+    </GridIcon>
+);
+
+
+export const ChevronUpIcon: React.FC<IconProps> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="18 15 12 9 6 15"></polyline>
+    </svg>
+);
+
+
 // Social Icons
 export const FacebookIcon: React.FC<IconProps> = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
