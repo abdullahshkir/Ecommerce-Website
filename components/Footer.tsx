@@ -24,7 +24,7 @@ const Footer: React.FC = () => {
             { href: '#/contact', text: 'Contact Us' },
             { href: '#/terms', text: 'Terms & Conditions' },
             { href: '#/returns', text: 'Returns & Exchanges' },
-            { href: '#', text: 'Shipping & Delivery' },
+            { href: '#/shipping', text: 'Shipping & Delivery' },
         ],
         'Account': [
             { href: '#', text: 'My Account' },
