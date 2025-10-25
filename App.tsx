@@ -6,6 +6,7 @@ import PromoGrid from './components/PromoGrid';
 import BestSellers from './components/BestSellers';
 import DealsOfTheDay from './components/DealsOfTheDay';
 import FeaturedCollection from './components/FeaturedCollection';
+import Footer from './components/Footer';
 
 const App: React.FC = () => {
   return (
@@ -19,6 +20,7 @@ const App: React.FC = () => {
         <DealsOfTheDay />
         <FeaturedCollection />
       </main>
+      <Footer />
     </div>
   );
 };
