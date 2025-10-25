@@ -11,13 +11,6 @@ const AboutPage: React.FC = () => {
         return () => clearTimeout(timer);
     }, []);
 
-    const teamMembers = [
-        { name: 'John Doe', role: 'Founder & CEO', imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761566444/team1_bavpaf.jpg' },
-        { name: 'Jane Smith', role: 'Chief Marketing Officer', imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761566445/team2_w00h3r.jpg' },
-        { name: 'Peter Jones', role: 'Lead Developer', imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761566444/team3_ev7sji.jpg' },
-        { name: 'Sarah Williams', role: 'Product Designer', imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761566444/team4_wz8w8z.jpg' },
-    ];
-
     const stats = [
         { value: '10K+', label: 'Happy Customers' },
         { value: '5K+', label: 'Products In Store' },
@@ -67,7 +60,7 @@ const AboutPage: React.FC = () => {
                             </Link>
                         </div>
                         <div className="order-1 lg:order-2">
-                            <img src="https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761565578/about-us_tjd6jw.jpg" alt="Our team working" className="rounded-lg shadow-lg w-full h-auto object-cover" />
+                            <img src="https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761402920/Store_jusivi.jpg" alt="Our team working" className="rounded-lg shadow-lg w-full h-auto object-cover" />
                         </div>
                     </div>
                 </section>
@@ -90,25 +83,6 @@ const AboutPage: React.FC = () => {
                                 </div>
                             ))}
                         </div>
-                    </div>
-                </section>
-
-                {/* Team Section */}
-                <section className="container mx-auto px-4 py-16 md:py-24">
-                    <div className="text-center max-w-2xl mx-auto mb-12">
-                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Our Awesome Team</h2>
-                        <p className="mt-4 text-gray-600">Meet the passionate individuals who make Mobixo a reality.</p>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                        {teamMembers.map((member, index) => (
-                            <div key={index} className="group text-center">
-                                <div className="relative overflow-hidden rounded-lg mb-4">
-                                    <img src={member.imageUrl} alt={member.name} className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-300" />
-                                </div>
-                                <h4 className="font-bold text-lg text-gray-800">{member.name}</h4>
-                                <p className="text-gray-500">{member.role}</p>
-                            </div>
-                        ))}
                     </div>
                 </section>
                 
