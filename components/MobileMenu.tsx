@@ -111,10 +111,10 @@ const MobileMenu: FC<MobileMenuProps> = ({ isOpen, onClose, onSearchClick, onLog
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex justify-end" aria-modal="true" role="dialog">
+        <div className="fixed inset-0 z-50 flex justify-start" aria-modal="true" role="dialog">
             <div className="absolute inset-0 bg-black bg-opacity-50 transition-opacity duration-300" onClick={onClose} aria-hidden="true"></div>
             
-            <div className={`relative w-full max-w-sm bg-white h-full shadow-xl transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+            <div className={`relative w-full max-w-sm bg-white h-full shadow-xl transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
                 <div className="flex flex-col h-full">
                     <div className="flex-shrink-0 flex items-stretch border-b">
                         <div className="grid grid-cols-2 flex-grow text-center font-semibold text-gray-500">
