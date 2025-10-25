@@ -1,4 +1,5 @@
 import React, { FC, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { CloseIcon, EmptyCartIcon, TrashIcon, PlusIcon, MinusIcon, ClipboardIcon, CalendarIcon, TruckIcon, TagIcon, EyeIcon } from './icons';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { useCart } from '../contexts/CartContext';
@@ -18,6 +19,7 @@ const recommendedProduct = {
 const CartModal: FC<CartModalProps> = ({ isOpen, onClose }) => {
     const { cartItems, removeFromCart, updateQuantity, subtotal } = useCart();
     const { formatPrice } = useCurrency();
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (isOpen) {
@@ -29,6 +31,11 @@ const CartModal: FC<CartModalProps> = ({ isOpen, onClose }) => {
     }, [isOpen]);
 
     if (!isOpen) return null;
+
+    const handleViewCart = () => {
+        onClose();
+        navigate('/cart');
+    };
 
     return (
         <div 
@@ -139,7 +146,7 @@ const CartModal: FC<CartModalProps> = ({ isOpen, onClose }) => {
                                     <label htmlFor="terms" className="ml-2 block text-sm text-gray-700">I agree with the terms and conditions.</label>
                                 </div>
                                 <div className="space-y-3">
-                                    <button className="w-full bg-gray-100 text-gray-800 py-3 rounded-full font-bold hover:bg-gray-200">VIEW CART</button>
+                                    <button onClick={handleViewCart} className="w-full bg-gray-100 text-gray-800 py-3 rounded-full font-bold hover:bg-gray-200">VIEW CART</button>
                                     <button className="w-full bg-blue-600 text-white py-3 rounded-full font-bold hover:bg-blue-700">CHECK OUT</button>
                                 </div>
                             </div>
