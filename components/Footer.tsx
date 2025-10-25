@@ -4,13 +4,13 @@ import {
     TwitterIcon,
     InstagramIcon,
     YoutubeIcon,
-    VisaIcon,
-    MastercardIcon,
-    PaypalIcon,
-    AmexIcon
 } from './icons';
 
-const Footer: React.FC = () => {
+interface FooterProps {
+    onLoginClick: () => void;
+}
+
+const Footer: React.FC<FooterProps> = ({ onLoginClick }) => {
     const socialLinks = [
         { href: '#', icon: <FacebookIcon className="w-5 h-5" /> },
         { href: '#', icon: <TwitterIcon className="w-5 h-5" /> },
@@ -29,14 +29,12 @@ const Footer: React.FC = () => {
         'Account': [
             { href: '#', text: 'My Account' },
             { href: '#', text: 'Track your Order' },
-            { href: '#', text: 'Wishlist' },
+            { href: '#/wishlist', text: 'Wishlist' },
             { href: '#', text: 'Payment Methods' },
         ],
         'Useful Links': [
-            { href: '#', text: 'New Products' },
-            { href: '#', text: 'Best Sales' },
-            { href: '#', text: 'Login' },
-            { href: '#', text: 'Register' },
+            { href: '#/shop', text: 'New Products' },
+            { href: '/#best-sellers', text: 'Best Sales' },
         ],
     };
 
@@ -98,6 +96,16 @@ const Footer: React.FC = () => {
                                         <a href={link.href} className="text-sm hover:text-white transition-colors">{link.text}</a>
                                     </li>
                                 ))}
+                                {title === 'Useful Links' && (
+                                    <>
+                                        <li>
+                                            <button onClick={onLoginClick} className="text-sm hover:text-white transition-colors text-left bg-transparent border-none p-0 cursor-pointer focus:outline-none">Login</button>
+                                        </li>
+                                        <li>
+                                            <button onClick={onLoginClick} className="text-sm hover:text-white transition-colors text-left bg-transparent border-none p-0 cursor-pointer focus:outline-none">Register</button>
+                                        </li>
+                                    </>
+                                )}
                             </ul>
                         </div>
                     ))}

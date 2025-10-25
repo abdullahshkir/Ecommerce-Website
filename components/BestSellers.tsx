@@ -15,7 +15,7 @@ const BestSellers: React.FC<{ onProductQuickView: (product: Product) => void, on
     const bestSellerProducts = products.slice(0, 8);
 
     return (
-        <section className={`py-16 sm:py-24 bg-white transition-opacity duration-1000 ease-out ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
+        <section id="best-sellers" className={`py-16 sm:py-24 bg-white transition-opacity duration-1000 ease-out ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
             <div className="container mx-auto px-4">
                 <div className="text-center mb-12">
                     <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Best Selling Products</h2>

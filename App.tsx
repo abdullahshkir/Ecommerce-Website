@@ -199,7 +199,7 @@ const App: React.FC = () => {
           />
         </Routes>
       </main>
-      <Footer />
+      <Footer onLoginClick={() => setLoginOpen(true)} />
       <QuickViewModal product={quickViewProduct} onClose={handleCloseQuickView} />
       <CartModal isOpen={isCartOpen} onClose={closeCart} onProductClick={handleProductClick} />
       <SearchOverlay isOpen={isSearchOpen} onClose={() => setSearchOpen(false)} onProductClick={handleProductClick} />
