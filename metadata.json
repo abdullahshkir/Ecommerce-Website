@@ -1,5 +1,5 @@
 {
-  "name": "Kalles Ecommerce Frontend",
-  "description": "A modern e-commerce storefront showcasing a sleek design for product displays and navigation. This application replicates the header and hero banner of a premium online shop, built with React, TypeScript, and Tailwind CSS.",
+  "name": "Mobixo",
+  "description": "Mobixo is a modern e-commerce storefront showcasing a sleek design for product displays and navigation, built with React, TypeScript, and Tailwind CSS.",
   "requestFramePermissions": []
 }

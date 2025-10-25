@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { PhoneIcon, MailIcon, SearchIcon, UserIcon, HeartIcon, CartIcon, ChevronDownIcon, ArrowRightIcon, CloseIcon, MenuIcon } from './icons';
 
@@ -61,9 +60,9 @@ const Header: React.FC = () => {
                             <PhoneIcon className="mr-1.5" />
                             +01 23456789
                         </a>
-                        <a href="mailto:Kalles@domain.com" className="flex items-center hover:text-black">
+                        <a href="mailto:Mobixo@domain.com" className="flex items-center hover:text-black">
                             <MailIcon className="mr-1.5" />
-                            Kalles@domain.com
+                            Mobixo@domain.com
                         </a>
                     </div>
                     <div>
@@ -77,7 +76,7 @@ const Header: React.FC = () => {
                 <div className="flex justify-between items-center py-4">
                     {/* Left & Center: Logo and Nav */}
                     <div className="flex items-center flex-grow">
-                        <a href="#" className="text-3xl font-extrabold tracking-tighter text-black">kalles</a>
+                        <a href="#" className="text-3xl font-extrabold tracking-tighter text-black">Mobixo</a>
                         <nav className="hidden lg:flex items-center space-x-6 ml-10">
                             {navLinks.map((link) => (
                                 <NavItem key={link.name} href={link.href} new={link.new} sale={link.sale}>
