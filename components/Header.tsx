@@ -38,44 +38,44 @@ const Header: React.FC = () => {
 
     return (
         <>
-            <header className="sticky top-0 bg-white shadow-sm z-10">
-                {/* Top Announcement Bar */}
-                {isTopBarVisible && (
-                    <div className="bg-blue-600 text-white text-sm font-medium">
-                        <div className="container mx-auto px-4 py-2 flex justify-center items-center relative">
-                            <p>
-                                Today deal sale off <span className="font-bold">70%</span>. End in. Hurry Up
-                                <a href="#" className="inline-flex items-center ml-2 underline">
-                                    <ArrowRightIcon className="w-4 h-4" />
-                                </a>
-                            </p>
-                            <button onClick={() => setTopBarVisible(false)} className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-white/20 rounded-full">
-                               <CloseIcon className="w-4 h-4"/>
-                            </button>
-                        </div>
-                    </div>
-                )}
-
-                {/* Secondary Header */}
-                <div className="hidden md:block border-b border-gray-200 text-xs text-gray-500">
-                    <div className="container mx-auto px-4 py-2 flex justify-between items-center">
-                        <div className="flex items-center space-x-4">
-                            <a href="tel:+0123456789" className="flex items-center hover:text-black">
-                                <PhoneIcon className="mr-1.5" />
-                                +01 23456789
+            {/* Top Announcement Bar (Not sticky) */}
+            {isTopBarVisible && (
+                <div className="bg-blue-600 text-white text-sm font-medium">
+                    <div className="container mx-auto px-4 py-2 flex justify-center items-center relative">
+                        <p>
+                            Today deal sale off <span className="font-bold">70%</span>. End in. Hurry Up
+                            <a href="#" className="inline-flex items-center ml-2 underline">
+                                <ArrowRightIcon className="w-4 h-4" />
                             </a>
-                            <a href="mailto:Mobixo@domain.com" className="flex items-center hover:text-black">
-                                <MailIcon className="mr-1.5" />
-                                Mobixo@domain.com
-                            </a>
-                        </div>
-                        <div>
-                            <p>Summer sale discount off <span className="text-red-500 font-semibold">50%</span>! <a href="#" className="underline font-semibold hover:text-black">Shop Now</a></p>
-                        </div>
+                        </p>
+                        <button onClick={() => setTopBarVisible(false)} className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-white/20 rounded-full">
+                           <CloseIcon className="w-4 h-4"/>
+                        </button>
                     </div>
                 </div>
+            )}
 
-                {/* Main Navigation */}
+            {/* Secondary Header (Not sticky) */}
+            <div className="hidden md:block border-b border-gray-200 text-xs text-gray-500">
+                <div className="container mx-auto px-4 py-2 flex justify-between items-center">
+                    <div className="flex items-center space-x-4">
+                        <a href="tel:+0123456789" className="flex items-center hover:text-black">
+                            <PhoneIcon className="mr-1.5" />
+                            +01 23456789
+                        </a>
+                        <a href="mailto:Mobixo@domain.com" className="flex items-center hover:text-black">
+                            <MailIcon className="mr-1.5" />
+                            Mobixo@domain.com
+                        </a>
+                    </div>
+                    <div>
+                        <p>Summer sale discount off <span className="text-red-500 font-semibold">50%</span>! <a href="#" className="underline font-semibold hover:text-black">Shop Now</a></p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Main Header (Sticky) */}
+            <header className="sticky top-0 bg-white shadow-sm z-10">
                 <div className="container mx-auto px-4">
                     <div className="flex justify-between items-center py-4">
                         {/* Left & Center: Logo and Nav */}
@@ -156,6 +156,7 @@ const Header: React.FC = () => {
                      </div>
                 )}
             </header>
+            
             <SearchOverlay isOpen={isSearchOpen} onClose={() => setSearchOpen(false)} />
             <LoginModal isOpen={isLoginOpen} onClose={() => setLoginOpen(false)} />
             <CartModal isOpen={isCartOpen} onClose={() => setCartOpen(false)} updateCartCount={setCartItemCount} />
