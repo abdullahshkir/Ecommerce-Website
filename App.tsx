@@ -22,6 +22,7 @@ import LoginModal from './components/LoginModal';
 import MobileBottomNav from './components/MobileBottomNav';
 import { SEO } from './components/SEO';
 import ShopPage from './components/ShopPage';
+import ContactPage from './components/ContactPage';
 
 const HomePage = ({ onProductQuickView, onProductClick }: { onProductQuickView: (product: Product) => void, onProductClick: (id: number) => void }) => (
   <>
@@ -129,6 +130,18 @@ const App: React.FC = () => {
                   description="Thank you for your purchase from Mobixo. Your order has been confirmed."
                 />
                 <ThankYouPage />
+              </>
+            }
+          />
+          <Route
+            path="/contact"
+            element={
+              <>
+                <SEO
+                  title="Contact Us | Mobixo"
+                  description="Get in touch with Mobixo. We are here to help you with any questions or concerns."
+                />
+                <ContactPage />
               </>
             }
           />

@@ -115,7 +115,7 @@ const MobileMenu: FC<MobileMenuProps> = ({ isOpen, onClose, onSearchClick, onLog
             ]
         },
         { name: 'About', href: '#' },
-        { name: 'Contact', href: '#' },
+        { name: 'Contact', href: '/contact' },
         { name: 'Wishlist', href: '/wishlist', icon: HeartIcon },
         { name: 'Search', icon: SearchIcon, action: 'search' },
         { name: 'My account', icon: UserIcon, action: 'login' },

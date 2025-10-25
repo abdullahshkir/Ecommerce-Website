@@ -32,7 +32,7 @@ const Header: React.FC<HeaderProps> = ({ onSearchClick, onLoginClick }) => {
         { name: 'Home', to: '/' },
         { name: 'Shop', to: '/shop', new: true, sale: true },
         { name: 'About', to: '#' },
-        { name: 'Contact', to: '#' },
+        { name: 'Contact', to: '/contact' },
     ];
     
     const handleMobileMenuClose = () => setMobileMenuOpen(false);
