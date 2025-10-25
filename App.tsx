@@ -16,6 +16,7 @@ import CartModal from './components/CartModal';
 import { useCart } from './contexts/CartContext';
 import CartPage from './components/CartPage';
 import CheckoutPage from './components/CheckoutPage';
+import ThankYouPage from './components/ThankYouPage';
 
 const HomePage = ({ onProductQuickView, onProductClick }: { onProductQuickView: (product: Product) => void, onProductClick: (id: number) => void }) => (
   <>
@@ -55,6 +56,7 @@ const App: React.FC = () => {
           <Route path="/product/:id" element={<ProductPage onProductClick={handleProductClick} />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/thank-you" element={<ThankYouPage />} />
         </Routes>
       </main>
       <Footer />

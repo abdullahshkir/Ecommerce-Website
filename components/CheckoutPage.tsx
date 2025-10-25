@@ -1,47 +1,10 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../contexts/CartContext';
 import { useCurrency } from '../contexts/CurrencyContext';
-import { ChevronRightIcon, CartIcon, ChevronDownIcon, ChevronUpIcon, TagIcon } from './icons';
+import { CartIcon, ChevronDownIcon, ChevronUpIcon } from './icons';
 
-interface StepProps {
-  number: number;
-  label: string;
-  isActive?: boolean;
-  isCompleted?: boolean;
-}
-
-const Step: React.FC<StepProps> = ({ number, label, isActive, isCompleted }) => {
-  const circleClasses = isActive
-    ? 'bg-black text-white'
-    : isCompleted
-    ? 'bg-gray-800 text-white'
-    : 'bg-gray-200 text-gray-500';
-
-  const textClasses = isActive ? 'text-black font-semibold' : 'text-gray-500';
-
-  return (
-    <div className="flex items-center">
-      <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm transition-colors ${circleClasses}`}>
-        {isCompleted ? '✓' : number}
-      </div>
-      <span className={`ml-3 text-sm hidden sm:inline ${textClasses}`}>{label}</span>
-    </div>
-  );
-};
-
-const CheckoutStepper: React.FC<{ currentStep: number }> = ({ currentStep }) => (
-    <div className="flex items-center justify-between w-full max-w-md mx-auto">
-        <Step number={1} label="Shopping Cart" isCompleted={currentStep > 1} isActive={currentStep === 1} />
-        <div className="flex-1 h-px bg-gray-200 mx-2"></div>
-        <Step number={2} label="Checkout Details" isCompleted={currentStep > 2} isActive={currentStep === 2} />
-        <div className="flex-1 h-px bg-gray-200 mx-2"></div>
-        <Step number={3} label="Payment" isCompleted={currentStep > 3} isActive={currentStep === 3} />
-    </div>
-);
-
-
-const FormInput: React.FC<{ id: string; label: string; type?: string; autoComplete?: string; }> = ({ id, label, type = 'text', autoComplete }) => (
+const FormInput: React.FC<{ id: string; label: string; type?: string; autoComplete?: string; required?: boolean; value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; }> = ({ id, label, type = 'text', autoComplete, required = true, value, onChange }) => (
     <div className="relative">
         <input
             id={id}
@@ -50,6 +13,9 @@ const FormInput: React.FC<{ id: string; label: string; type?: string; autoComple
             autoComplete={autoComplete}
             className="peer w-full border-b border-gray-300 focus:border-black p-3 pt-6 bg-transparent placeholder-transparent focus:outline-none transition-colors"
             placeholder={label}
+            required={required}
+            value={value}
+            onChange={onChange}
         />
         <label
             htmlFor={id}
@@ -57,16 +23,55 @@ const FormInput: React.FC<{ id: string; label: string; type?: string; autoComple
                        peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-4
                        peer-focus:top-1 peer-focus:text-xs peer-focus:text-gray-500"
         >
-            {label}
+            {label} {required && '*'}
         </label>
     </div>
 );
 
 
 const CheckoutPage: React.FC = () => {
-    const { cartItems, subtotal } = useCart();
+    const { cartItems, subtotal, clearCart } = useCart();
     const { formatPrice } = useCurrency();
     const [isSummaryOpen, setIsSummaryOpen] = useState(false);
+    const navigate = useNavigate();
+
+    const [formData, setFormData] = useState({
+        email: '',
+        country: 'Pakistan',
+        firstName: '',
+        lastName: '',
+        address: '',
+        apartment: '',
+        city: '',
+        state: '',
+        zip: '',
+    });
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handlePlaceOrder = (e: React.FormEvent) => {
+        e.preventDefault();
+        
+        const orderNumber = `MX${Math.floor(Math.random() * 90000) + 10000}`;
+        const today = new Date();
+        const deliveryDate = new Date(today.setDate(today.getDate() + 5)).toLocaleDateString('en-US', {
+            year: 'numeric', month: 'long', day: 'numeric'
+        });
+
+        const orderDetails = {
+            orderNumber,
+            deliveryDate,
+            shippingAddress: formData,
+            items: cartItems,
+            total: subtotal
+        };
+
+        navigate('/thank-you', { state: { orderDetails } });
+        clearCart();
+    };
 
     const shippingCost = 0; // Placeholder
     const total = subtotal + shippingCost;
@@ -79,35 +84,47 @@ const CheckoutPage: React.FC = () => {
                     <div className="max-w-2xl mx-auto">
                         <Link to="/" className="text-4xl font-extrabold tracking-tighter text-black">Mobixo</Link>
 
-                        <div className="my-10">
-                            <CheckoutStepper currentStep={2} />
-                        </div>
-                        
-                        <form>
+                        <form onSubmit={handlePlaceOrder} className="mt-10">
                              <div className="space-y-8">
                                 <div>
                                     <h2 className="text-xl font-semibold mb-4">Contact information</h2>
-                                    <FormInput id="email" label="Email address" type="email" autoComplete="email" />
+                                    {/* FIX: Removed invalid 'name' prop from FormInput component call. The 'name' is derived from the 'id' prop within the component. */}
+                                    <FormInput id="email" label="Email address" type="email" autoComplete="email" value={formData.email} onChange={handleInputChange} />
                                 </div>
 
                                 <div>
                                     <h2 className="text-xl font-semibold mb-4">Shipping address</h2>
                                     <div className="space-y-6">
-                                        <select className="w-full p-3 border-b border-gray-300 bg-white focus:outline-none focus:border-black">
+                                        <select name="country" value={formData.country} onChange={handleInputChange} className="w-full p-3 border-b border-gray-300 bg-white focus:outline-none focus:border-black">
                                             <option>Pakistan</option>
                                             <option>United States</option>
                                         </select>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                            <FormInput id="firstName" label="First name" autoComplete="given-name"/>
-                                            <FormInput id="lastName" label="Last name" autoComplete="family-name"/>
+                                            {/* FIX: Removed invalid 'name' prop from FormInput component call. The 'name' is derived from the 'id' prop within the component. */}
+                                            <FormInput id="firstName" label="First name" autoComplete="given-name" value={formData.firstName} onChange={handleInputChange}/>
+                                            {/* FIX: Removed invalid 'name' prop from FormInput component call. The 'name' is derived from the 'id' prop within the component. */}
+                                            <FormInput id="lastName" label="Last name" autoComplete="family-name" value={formData.lastName} onChange={handleInputChange}/>
                                         </div>
-                                        <FormInput id="address" label="Address" autoComplete="street-address"/>
-                                        <FormInput id="apartment" label="Apartment, suite, etc. (optional)" />
+                                        {/* FIX: Removed invalid 'name' prop from FormInput component call. The 'name' is derived from the 'id' prop within the component. */}
+                                        <FormInput id="address" label="Address" autoComplete="street-address" value={formData.address} onChange={handleInputChange}/>
+                                        {/* FIX: Removed invalid 'name' prop from FormInput component call. The 'name' is derived from the 'id' prop within the component. */}
+                                        <FormInput id="apartment" label="Apartment, suite, etc." required={false} value={formData.apartment} onChange={handleInputChange}/>
                                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                                            <FormInput id="city" label="City" autoComplete="address-level2"/>
-                                            <FormInput id="state" label="State" autoComplete="address-level1"/>
-                                            <FormInput id="zip" label="ZIP code" autoComplete="postal-code"/>
+                                            {/* FIX: Removed invalid 'name' prop from FormInput component call. The 'name' is derived from the 'id' prop within the component. */}
+                                            <FormInput id="city" label="City" autoComplete="address-level2" value={formData.city} onChange={handleInputChange}/>
+                                            {/* FIX: Removed invalid 'name' prop from FormInput component call. The 'name' is derived from the 'id' prop within the component. */}
+                                            <FormInput id="state" label="State" autoComplete="address-level1" value={formData.state} onChange={handleInputChange}/>
+                                            {/* FIX: Removed invalid 'name' prop from FormInput component call. The 'name' is derived from the 'id' prop within the component. */}
+                                            <FormInput id="zip" label="ZIP code" autoComplete="postal-code" value={formData.zip} onChange={handleInputChange}/>
                                         </div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <h2 className="text-xl font-semibold mb-4">Payment</h2>
+                                    <p className="text-sm text-gray-500 mb-2">All payments are handled via Cash on Delivery.</p>
+                                    <div className="border border-gray-300 rounded-lg p-4 bg-gray-50">
+                                        <p className="font-semibold text-gray-800">Cash on Delivery (COD)</p>
                                     </div>
                                 </div>
                             </div>
@@ -115,7 +132,7 @@ const CheckoutPage: React.FC = () => {
                             <div className="flex flex-col-reverse sm:flex-row items-center justify-between mt-10">
                                 <Link to="/cart" className="text-sm text-gray-600 hover:text-black mt-4 sm:mt-0">&lt; Return to cart</Link>
                                 <button type="submit" className="w-full sm:w-auto bg-black text-white py-4 px-8 rounded-full font-bold hover:bg-gray-800 transition-colors">
-                                    Continue to shipping
+                                    Place Order
                                 </button>
                             </div>
                         </form>
@@ -169,7 +186,7 @@ const CheckoutPage: React.FC = () => {
                                 </div>
                                 <div className="flex justify-between">
                                     <span>Shipping</span>
-                                    <span className="text-sm">Calculated at next step</span>
+                                    <span className="font-medium">{formatPrice(shippingCost)}</span>
                                 </div>
                             </div>
 
