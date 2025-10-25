@@ -8,6 +8,7 @@ interface LoginModalProps {
 
 const LoginModal: FC<LoginModalProps> = ({ isOpen, onClose }) => {
     const [showPassword, setShowPassword] = useState(false);
+    const [formType, setFormType] = useState<'login' | 'register'>('login');
 
     useEffect(() => {
         if (isOpen) {
@@ -15,6 +16,14 @@ const LoginModal: FC<LoginModalProps> = ({ isOpen, onClose }) => {
         } else {
             document.body.style.overflow = 'unset';
         }
+
+        // Reset to login form when modal is closed
+        if (!isOpen) {
+            // Delay to match closing animation and prevent flickering
+            const timer = setTimeout(() => setFormType('login'), 300);
+            return () => clearTimeout(timer);
+        }
+
         return () => {
             document.body.style.overflow = 'unset';
         };
@@ -42,15 +51,46 @@ const LoginModal: FC<LoginModalProps> = ({ isOpen, onClose }) => {
         <div className="flex flex-col h-full">
             {/* Header */}
             <div className="flex justify-between items-center p-6 border-b border-gray-200">
-                <h2 className="text-xl font-bold tracking-wider text-gray-800 uppercase">LOGIN</h2>
+                <h2 className="text-xl font-bold tracking-wider text-gray-800 uppercase">
+                    {formType === 'login' ? 'LOGIN' : 'CREATE ACCOUNT'}
+                </h2>
                 <button onClick={onClose} className="text-gray-500 hover:text-black">
                     <CloseIcon className="w-6 h-6" />
                 </button>
             </div>
 
-            {/* Login Form */}
-            <div className="flex-grow p-8">
+            {/* Form Container */}
+            <div className="flex-grow p-8 overflow-y-auto">
                 <form className="space-y-6">
+                    {formType === 'register' && (
+                        <>
+                            <div>
+                                <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
+                                    First Name <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    id="firstName"
+                                    name="firstName"
+                                    type="text"
+                                    required
+                                    className="bg-white appearance-none block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
+                                    Last Name <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    id="lastName"
+                                    name="lastName"
+                                    type="text"
+                                    required
+                                    className="bg-white appearance-none block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                />
+                            </div>
+                        </>
+                    )}
+
                     <div>
                         <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                             Email <span className="text-red-500">*</span>
@@ -96,28 +136,49 @@ const LoginModal: FC<LoginModalProps> = ({ isOpen, onClose }) => {
                         </div>
                     </div>
 
-                    <div className="text-sm">
-                        <a href="#" className="font-medium text-gray-600 hover:text-blue-500 underline">
-                            Forgot your password?
-                        </a>
-                    </div>
+                    {formType === 'login' && (
+                      <div className="text-sm">
+                          <a href="#" className="font-medium text-gray-600 hover:text-blue-500 underline">
+                              Forgot your password?
+                          </a>
+                      </div>
+                    )}
                     
                     <div>
                         <button
                             type="submit"
                             className="w-full flex justify-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                         >
-                            Sign In
+                            {formType === 'login' ? 'Sign In' : 'Create Account'}
                         </button>
                     </div>
                 </form>
 
                  <div className="mt-6 text-center">
                     <p className="text-sm text-gray-600">
-                        New customer?{' '}
-                        <a href="#" className="font-medium text-gray-600 hover:text-blue-500 underline">
-                           Create your account
-                        </a>
+                      {formType === 'login' ? (
+                          <>
+                              New customer?{' '}
+                              <button 
+                                  type="button" 
+                                  onClick={() => setFormType('register')} 
+                                  className="font-medium text-gray-600 hover:text-blue-500 underline bg-transparent border-none p-0 cursor-pointer"
+                              >
+                                 Create your account
+                              </button>
+                          </>
+                      ) : (
+                           <>
+                              Already have an account?{' '}
+                              <button 
+                                  type="button" 
+                                  onClick={() => setFormType('login')} 
+                                  className="font-medium text-gray-600 hover:text-blue-500 underline bg-transparent border-none p-0 cursor-pointer"
+                              >
+                                 Login
+                              </button>
+                          </>
+                      )}
                     </p>
                 </div>
             </div>
