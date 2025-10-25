@@ -77,18 +77,17 @@ const ShopPage: React.FC<ShopPageProps> = ({ onProductQuickView, onProductClick 
                     {/* Products Grid */}
                     <div className="lg:col-span-3">
                         {/* Top bar */}
-                        <div className="flex flex-col sm:flex-row justify-between items-center mb-6 border-b pb-4">
-                            <div className="flex items-center gap-4 w-full sm:w-auto">
+                        <div className="flex flex-wrap sm:flex-nowrap justify-between items-center mb-6 border-b pb-4 gap-y-4">
+                            <p className="text-sm text-gray-600 w-full sm:w-auto order-2 sm:order-1 text-center sm:text-left">
+                                Showing {Math.min((currentPage - 1) * productsPerPage + 1, allProducts.length)}–{Math.min(currentPage * productsPerPage, allProducts.length)} of {allProducts.length} results
+                            </p>
+
+                            <div className="flex items-center justify-between sm:justify-end gap-x-4 w-full sm:w-auto order-1 sm:order-2">
                                 <button onClick={() => setFilterOpen(true)} className="lg:hidden flex items-center gap-2 font-semibold text-sm border px-3 py-2 rounded-md hover:bg-gray-100">
                                     <FilterIcon className="w-5 h-5"/>
                                     Filters
                                 </button>
-                                <p className="text-sm text-gray-600 flex-grow text-center sm:text-left">
-                                    Showing {Math.min((currentPage - 1) * productsPerPage + 1, allProducts.length)}–{Math.min(currentPage * productsPerPage, allProducts.length)} of {allProducts.length} results
-                                </p>
-                            </div>
-
-                            <div className="flex items-center space-x-4 mt-4 sm:mt-0 w-full sm:w-auto justify-between">
+                                
                                 <div className="hidden md:flex items-center space-x-2">
                                     {gridOptions.map(option => (
                                         <button
