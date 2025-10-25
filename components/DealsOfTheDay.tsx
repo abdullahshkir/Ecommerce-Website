@@ -4,12 +4,14 @@ import { useCurrency } from '../contexts/CurrencyContext';
 import { useCart } from '../contexts/CartContext';
 import { Product } from '../types';
 
+const newImageUrl = 'https://darlingretail.com/cdn/shop/products/1_7b64958c-304b-43bd-b759-c5366bfa9914_600x.jpg?v=1661581431';
+
 const dealsData = [
     {
         id: 1,
         name: '4K Action Camera',
         description: 'Capture your adventures in stunning 4K. Waterproof, durable, and ready for anything.',
-        imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761408097/deal1_x6z8gq.jpg',
+        imageUrl: newImageUrl,
         price: 350.00,
         oldPrice: 450.00,
         dealEndDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days from now
@@ -18,28 +20,28 @@ const dealsData = [
     {
         id: 2,
         name: 'Smart Home Hub',
-        imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761408098/deal2_d5b9kc.jpg',
+        imageUrl: newImageUrl,
         price: 120.00,
         oldPrice: 150.00,
     },
     {
         id: 3,
         name: 'Fitness Tracker Band',
-        imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761408098/deal3_d9h5qr.jpg',
+        imageUrl: newImageUrl,
         price: 60.00,
         oldPrice: 80.00,
     },
     {
         id: 4,
         name: 'VR Headset',
-        imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761408099/deal4_f8jb1a.jpg',
+        imageUrl: newImageUrl,
         price: 299.00,
         oldPrice: 350.00,
     },
     {
         id: 5,
         name: 'Portable Power Bank',
-        imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761408099/deal5_z3gtnu.jpg',
+        imageUrl: newImageUrl,
         price: 45.00,
         oldPrice: 60.00,
     },

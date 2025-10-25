@@ -1,11 +1,13 @@
 import { Product } from '../types';
 
+const newImageUrl = 'https://darlingretail.com/cdn/shop/products/1_7b64958c-304b-43bd-b759-c5366bfa9914_600x.jpg?v=1661581431';
+
 export const products: Product[] = [
     {
         id: 1,
         collection: 'Accesories',
-        imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405072/p1_oklq8n.jpg',
-        imageUrl2: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405072/p1-2_xfl63h.jpg',
+        imageUrl: newImageUrl,
+        imageUrl2: newImageUrl,
         category: 'Watch',
         name: 'Classic Leather Watch',
         price: 250.00,
@@ -18,15 +20,15 @@ export const products: Product[] = [
         categories: ['Accesories', 'Watch'],
         tags: ['watch', 'leather', 'classic'],
         images: [
-            'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405072/p1_oklq8n.jpg',
-            'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405072/p1-2_xfl63h.jpg',
+            newImageUrl,
+            newImageUrl,
         ]
     },
     {
         id: 2,
         collection: 'Accesories',
-        imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405073/p2_y4qcca.jpg',
-        imageUrl2: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405073/p2-2_y2fgrc.jpg',
+        imageUrl: newImageUrl,
+        imageUrl2: newImageUrl,
         category: 'Headphones',
         name: 'Noise-Cancelling Headphones',
         price: 180.00,
@@ -38,15 +40,15 @@ export const products: Product[] = [
         categories: ['Accesories', 'Audio'],
         tags: ['headphones', 'audio', 'noise-cancelling'],
         images: [
-            'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405073/p2_y4qcca.jpg',
-            'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405073/p2-2_y2fgrc.jpg',
+            newImageUrl,
+            newImageUrl,
         ]
     },
     {
         id: 3,
         collection: 'Camera',
-        imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405073/p3_chb27s.jpg',
-        imageUrl2: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405074/p3-2_oeb94j.jpg',
+        imageUrl: newImageUrl,
+        imageUrl2: newImageUrl,
         category: 'Camera',
         name: 'Compact Digital Camera',
         price: 450.00,
@@ -59,15 +61,15 @@ export const products: Product[] = [
         categories: ['Camera', 'Digital'],
         tags: ['camera', 'digital', '4k'],
         images: [
-            'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405073/p3_chb27s.jpg',
-            'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405074/p3-2_oeb94j.jpg',
+            newImageUrl,
+            newImageUrl,
         ]
     },
     {
         id: 4,
         collection: 'Digital',
-        imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761464405/s2_zxf25n.jpg',
-        imageUrl2: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405075/p4_iz2fxi.jpg',
+        imageUrl: newImageUrl,
+        imageUrl2: newImageUrl,
         category: 'Digital',
         name: 'X-Star Premium Drone with 4K',
         price: 450.00,
@@ -90,17 +92,17 @@ export const products: Product[] = [
         categories: ['Digital'],
         tags: ['digital', 'drone', '4k'],
         images: [
-            'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761464405/s2_zxf25n.jpg',
-            'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405073/p3_chb27s.jpg',
-            'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405075/p4-2_p7xbnq.jpg',
-            'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405075/p4_iz2fxi.jpg',
+            newImageUrl,
+            newImageUrl,
+            newImageUrl,
+            newImageUrl,
         ],
     },
     {
         id: 5,
         collection: 'Smart TV',
-        imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405076/p5_rbfncl.jpg',
-        imageUrl2: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405077/p5-2_fr4vbl.jpg',
+        imageUrl: newImageUrl,
+        imageUrl2: newImageUrl,
         category: 'Speaker',
         name: 'Smart TV Soundbar',
         price: 285.00,
@@ -113,15 +115,15 @@ export const products: Product[] = [
         categories: ['Smart TV', 'Audio'],
         tags: ['soundbar', 'tv', 'audio'],
         images: [
-            'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405076/p5_rbfncl.jpg',
-            'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405077/p5-2_fr4vbl.jpg',
+            newImageUrl,
+            newImageUrl,
         ]
     },
     {
         id: 6,
         collection: 'Digital',
-        imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405077/p6_q8m3go.jpg',
-        imageUrl2: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405078/p6-2_y80q1u.jpg',
+        imageUrl: newImageUrl,
+        imageUrl2: newImageUrl,
         category: 'Laptop',
         name: 'Ultra-thin Laptop 13"',
         price: 1200.00,
@@ -133,15 +135,15 @@ export const products: Product[] = [
         categories: ['Digital', 'Computers'],
         tags: ['laptop', 'ultrabook', 'computer'],
         images: [
-            'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405077/p6_q8m3go.jpg',
-            'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405078/p6-2_y80q1u.jpg',
+            newImageUrl,
+            newImageUrl,
         ]
     },
     {
         id: 7,
         collection: 'Accesories',
-        imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405079/p7_nd7kfh.jpg',
-        imageUrl2: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405079/p7-2_u8f5g6.jpg',
+        imageUrl: newImageUrl,
+        imageUrl2: newImageUrl,
         category: 'Accessories',
         name: 'Wireless Mouse',
         price: 40.00,
@@ -153,15 +155,15 @@ export const products: Product[] = [
         categories: ['Accesories', 'Computers'],
         tags: ['mouse', 'wireless', 'accessory'],
         images: [
-            'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405079/p7_nd7kfh.jpg',
-            'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405079/p7-2_u8f5g6.jpg',
+            newImageUrl,
+            newImageUrl,
         ]
     },
     {
         id: 8,
         collection: 'Camera',
-        imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761408097/deal1_x6z8gq.jpg',
-        imageUrl2: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405073/p3_chb27s.jpg',
+        imageUrl: newImageUrl,
+        imageUrl2: newImageUrl,
         category: 'Camera',
         name: '4K Action Camera',
         price: 350.00,
@@ -175,8 +177,8 @@ export const products: Product[] = [
         categories: ['Camera', 'Digital'],
         tags: ['camera', 'action cam', '4k'],
         images: [
-            'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761408097/deal1_x6z8gq.jpg',
-            'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405073/p3_chb27s.jpg',
+            newImageUrl,
+            newImageUrl,
         ]
     }
 ];

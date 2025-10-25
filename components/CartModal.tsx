@@ -9,11 +9,13 @@ interface CartModalProps {
   onClose: () => void;
 }
 
+const newImageUrl = 'https://darlingretail.com/cdn/shop/products/1_7b64958c-304b-43bd-b759-c5366bfa9914_600x.jpg?v=1661581431';
+
 const recommendedProduct = {
     name: 'Video & Air Quality...',
     price: 239.00,
     oldPrice: 312.00,
-    imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761464405/s1_kvtkrx.jpg',
+    imageUrl: newImageUrl,
 };
 
 const CartModal: FC<CartModalProps> = ({ isOpen, onClose }) => {

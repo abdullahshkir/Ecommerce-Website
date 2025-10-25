@@ -6,6 +6,7 @@ interface SearchOverlayProps {
   isOpen: boolean;
   onClose: () => void;
 }
+const newImageUrl = 'https://darlingretail.com/cdn/shop/products/1_7b64958c-304b-43bd-b759-c5366bfa9914_600x.jpg?v=1661581431';
 
 const suggestedProducts = [
   {
@@ -13,21 +14,21 @@ const suggestedProducts = [
     name: 'Video & Air Quality Monitor',
     price: 239.00,
     oldPrice: 312.00,
-    imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761464405/s1_kvtkrx.jpg',
+    imageUrl: newImageUrl,
   },
   {
     id: 2,
     name: 'X-Star Premium Drone with 4K',
     price: 450.00,
     oldPrice: null,
-    imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761464405/s2_zxf25n.jpg',
+    imageUrl: newImageUrl,
   },
   {
     id: 3,
     name: 'Digital 20.1 4K Video',
     price: 400.00,
     oldPrice: 440.00,
-    imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761464405/s3_q9x9wl.jpg',
+    imageUrl: newImageUrl,
   },
 ];
 
