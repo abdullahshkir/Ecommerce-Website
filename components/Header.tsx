@@ -77,67 +77,71 @@ const Header: React.FC = () => {
             <header className="sticky top-0 bg-white shadow-sm z-40">
                 <div className="container mx-auto px-4">
                     <div className="flex justify-between items-center py-4">
-                        {/* Left & Center: Logo and Nav */}
-                        <div className="flex items-center flex-grow">
+                        {/* Left: Logo */}
+                        <div className="lg:flex-1">
                             <Link to="/" className="text-3xl font-extrabold tracking-tighter text-black">Mobixo</Link>
-                            <nav className="hidden lg:flex items-center space-x-6 ml-10">
-                                {navLinks.map((link) => (
-                                    <NavItem key={link.name} href={link.href} new={link.new} sale={link.sale}>
-                                        {link.name}
-                                    </NavItem>
-                                ))}
-                            </nav>
                         </div>
+                        
+                        {/* Center: Desktop Nav */}
+                        <nav className="hidden lg:flex items-center space-x-6">
+                            {navLinks.map((link) => (
+                                <NavItem key={link.name} href={link.href} new={link.new} sale={link.sale}>
+                                    {link.name}
+                                </NavItem>
+                            ))}
+                        </nav>
 
-                        {/* Right: Icons */}
-                        <div className="flex items-center space-x-4">
-                            <button onClick={() => setSearchOpen(true)} className="text-gray-700 hover:text-black"><SearchIcon /></button>
-                            <button onClick={() => setLoginOpen(true)} className="hidden sm:block text-gray-700 hover:text-black"><UserIcon /></button>
-                            <Link to="/wishlist" className="relative text-gray-700 hover:text-black">
-                                <HeartIcon />
-                                {wishlistItems.length > 0 && (
-                                    <span className="absolute -top-1 -right-2 bg-black text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">{wishlistItems.length}</span>
-                                )}
-                            </Link>
-                            <button onClick={() => setCartOpen(true)} className="relative text-gray-700 hover:text-black">
-                                <CartIcon />
-                                {cartItemCount > 0 && (
-                                    <span className="absolute -top-1 -right-2 bg-black text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
-                                        {cartItemCount}
-                                    </span>
-                                )}
-                            </button>
-                             <div className="hidden sm:block relative">
-                                <button 
-                                    onClick={() => setCurrencyDropdownOpen(!isCurrencyDropdownOpen)}
-                                    className="flex items-center space-x-1 cursor-pointer text-gray-700 hover:text-black"
-                                >
-                                    <span className="text-sm font-medium">{currency}</span>
-                                    <ChevronDownIcon />
+                        {/* Right: Icons & Mobile Menu Button */}
+                        <div className="lg:flex-1 lg:flex lg:justify-end">
+                             <div className="flex items-center space-x-4">
+                                <button onClick={() => setSearchOpen(true)} className="text-gray-700 hover:text-black"><SearchIcon /></button>
+                                <button onClick={() => setLoginOpen(true)} className="hidden sm:block text-gray-700 hover:text-black"><UserIcon /></button>
+                                <Link to="/wishlist" className="relative text-gray-700 hover:text-black">
+                                    <HeartIcon />
+                                    {wishlistItems.length > 0 && (
+                                        <span className="absolute -top-1 -right-2 bg-black text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">{wishlistItems.length}</span>
+                                    )}
+                                </Link>
+                                <button onClick={() => setCartOpen(true)} className="relative text-gray-700 hover:text-black">
+                                    <CartIcon />
+                                    {cartItemCount > 0 && (
+                                        <span className="absolute -top-1 -right-2 bg-black text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
+                                            {cartItemCount}
+                                        </span>
+                                    )}
                                 </button>
-                                {isCurrencyDropdownOpen && (
-                                    <div className="absolute right-0 mt-2 w-24 bg-white rounded-md shadow-lg py-1 z-20 border">
-                                        <a
-                                            href="#"
-                                            onClick={(e) => { e.preventDefault(); setCurrency('USD'); setCurrencyDropdownOpen(false); }}
-                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                        >
-                                            USD
-                                        </a>
-                                        <a
-                                            href="#"
-                                            onClick={(e) => { e.preventDefault(); setCurrency('PKR'); setCurrencyDropdownOpen(false); }}
-                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                        >
-                                            PKR
-                                        </a>
-                                    </div>
-                                )}
+                                <div className="hidden sm:block relative">
+                                    <button 
+                                        onClick={() => setCurrencyDropdownOpen(!isCurrencyDropdownOpen)}
+                                        className="flex items-center space-x-1 cursor-pointer text-gray-700 hover:text-black"
+                                    >
+                                        <span className="text-sm font-medium">{currency}</span>
+                                        <ChevronDownIcon />
+                                    </button>
+                                    {isCurrencyDropdownOpen && (
+                                        <div className="absolute right-0 mt-2 w-24 bg-white rounded-md shadow-lg py-1 z-20 border">
+                                            <a
+                                                href="#"
+                                                onClick={(e) => { e.preventDefault(); setCurrency('USD'); setCurrencyDropdownOpen(false); }}
+                                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                            >
+                                                USD
+                                            </a>
+                                            <a
+                                                href="#"
+                                                onClick={(e) => { e.preventDefault(); setCurrency('PKR'); setCurrencyDropdownOpen(false); }}
+                                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                            >
+                                                PKR
+                                            </a>
+                                        </div>
+                                    )}
+                                </div>
+                                {/* Mobile Menu Button */}
+                                <button className="lg:hidden text-gray-700 hover:text-black" onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}>
+                                    <MenuIcon />
+                                </button>
                             </div>
-                             {/* Mobile Menu Button */}
-                            <button className="lg:hidden text-gray-700 hover:text-black" onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}>
-                                <MenuIcon />
-                            </button>
                         </div>
                     </div>
                 </div>
