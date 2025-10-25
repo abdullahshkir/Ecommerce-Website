@@ -278,3 +278,49 @@ export const AmexIcon: React.FC<IconProps> = ({ className }) => (
         <path fill="#fff" d="M12.9 8.6H9.7c-.2 0-.3.1-.3.3l-1.3 6.8c0 .1.1.3.3.3h3.2c.2 0 .3-.1.3-.3l1.3-6.8c0-.1-.1-.3-.3-.3zm-2.2 5.5h-1l.1-.6h1.2l-.3 1.9zm1.7-2.2H11l.2-1h1.4l-.2 1zm.6-1.7h-1l.2-1h.6l.2 1zM20.2 16h-3.4c-.2 0-.3-.1-.3-.3l1.1-5.7c0-.1.2-.2.3-.2h3.4c.2 0 .3.1.3.3l-1.1 5.7c0 .1-.2.2-.3.2zm.2-4.4h-1.6l-.3 1.7h1.6l.3-1.7zM28.3 8.6h-4.6c-.2 0-.3.1-.3.3v.1l1.8 7.2c.1.2.2.3.4.3h1.3c.2 0 .3-.1.3-.3l1.4-5.6h.1l1.3 5.6c.1.2.2.3.4.3h1.3c.2 0 .3-.1.3-.3l1.8-7.2v-.1c0-.2-.1-.3-.3-.3h-4.6z"/>
     </PaymentIcon>
 );
+
+export const EmptyCartIcon: React.FC<IconProps> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="9" cy="21" r="1"></circle>
+        <circle cx="20" cy="21" r="1"></circle>
+        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        <line x1="12" y1="10" x2="16" y2="14"></line>
+        <line x1="16" y1="10" x2="12" y2="14"></line>
+    </svg>
+);
+
+export const PlusIcon: React.FC<IconProps> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+    </svg>
+);
+
+export const MinusIcon: React.FC<IconProps> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+    </svg>
+);
+
+export const ClipboardIcon: React.FC<IconProps> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+  </svg>
+);
+
+export const CalendarIcon: React.FC<IconProps> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+    <line x1="16" y1="2" x2="16" y2="6"></line>
+    <line x1="8" y1="2" x2="8" y2="6"></line>
+    <line x1="3" y1="10" x2="21" y2="10"></line>
+  </svg>
+);
+
+export const TagIcon: React.FC<IconProps> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+    <line x1="7" y1="7" x2="7.01" y2="7"></line>
+  </svg>
+);

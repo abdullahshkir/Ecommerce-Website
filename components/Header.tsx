@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { PhoneIcon, MailIcon, SearchIcon, UserIcon, HeartIcon, CartIcon, ChevronDownIcon, ArrowRightIcon, CloseIcon, MenuIcon } from './icons';
 import SearchOverlay from './SearchOverlay';
 import LoginModal from './LoginModal';
+import CartModal from './CartModal';
 
 const NavItem: React.FC<{ href: string; children: React.ReactNode; new?: boolean; sale?: boolean }> = ({ href, children, new: isNew, sale: isSale }) => (
     <a href={href} className="text-gray-700 hover:text-black transition-colors relative group py-2">
@@ -13,19 +14,13 @@ const NavItem: React.FC<{ href: string; children: React.ReactNode; new?: boolean
     </a>
 );
 
-const IconWithCounter: React.FC<{ icon: React.ReactNode; count: number }> = ({ icon, count }) => (
-    <a href="#" className="relative text-gray-700 hover:text-black">
-        {icon}
-        <span className="absolute -top-1 -right-2 bg-black text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">{count}</span>
-    </a>
-);
-
-
 const Header: React.FC = () => {
     const [isTopBarVisible, setTopBarVisible] = useState(true);
     const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [isSearchOpen, setSearchOpen] = useState(false);
     const [isLoginOpen, setLoginOpen] = useState(false);
+    const [isCartOpen, setCartOpen] = useState(false);
+    const [cartItemCount, setCartItemCount] = useState(1);
 
     const navLinks = [
         { name: 'Demo', href: '#' },
@@ -100,7 +95,14 @@ const Header: React.FC = () => {
                                 <HeartIcon />
                                 <span className="absolute -top-1 -right-2 bg-black text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">6</span>
                             </Link>
-                            <IconWithCounter icon={<CartIcon />} count={0} />
+                            <button onClick={() => setCartOpen(true)} className="relative text-gray-700 hover:text-black">
+                                <CartIcon />
+                                {cartItemCount > 0 && (
+                                    <span className="absolute -top-1 -right-2 bg-black text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
+                                        {cartItemCount}
+                                    </span>
+                                )}
+                            </button>
                             <div className="hidden sm:flex items-center space-x-1 cursor-pointer text-gray-700 hover:text-black">
                                 <span className="text-sm font-medium">PKR</span>
                                 <ChevronDownIcon />
@@ -130,6 +132,7 @@ const Header: React.FC = () => {
             </header>
             <SearchOverlay isOpen={isSearchOpen} onClose={() => setSearchOpen(false)} />
             <LoginModal isOpen={isLoginOpen} onClose={() => setLoginOpen(false)} />
+            <CartModal isOpen={isCartOpen} onClose={() => setCartOpen(false)} updateCartCount={setCartItemCount} />
         </>
     );
 };

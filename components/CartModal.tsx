@@ -1,0 +1,186 @@
+import React, { FC, useEffect, useState } from 'react';
+import { CloseIcon, EmptyCartIcon, TrashIcon, PlusIcon, MinusIcon, ClipboardIcon, CalendarIcon, TruckIcon, TagIcon, EyeIcon } from './icons';
+
+interface CartModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  updateCartCount: (count: number) => void;
+}
+
+type CartItem = {
+    id: number;
+    name: string;
+    price: number;
+    imageUrl: string;
+    quantity: number;
+};
+
+const initialCartItems: CartItem[] = [
+    {
+        id: 1,
+        name: 'X-Star Premium Dro...',
+        price: 450.00,
+        imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761464405/s2_zxf25n.jpg',
+        quantity: 1
+    }
+];
+
+const recommendedProduct = {
+    name: 'Video & Air Quality...',
+    price: 239.00,
+    oldPrice: 312.00,
+    imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761464405/s1_kvtkrx.jpg',
+};
+
+const CartModal: FC<CartModalProps> = ({ isOpen, onClose, updateCartCount }) => {
+    const [cartItems, setCartItems] = useState<CartItem[]>(initialCartItems);
+
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        return () => { document.body.style.overflow = 'unset'; };
+    }, [isOpen]);
+
+    useEffect(() => {
+        updateCartCount(cartItems.length);
+    }, [cartItems, updateCartCount]);
+
+    const handleQuantityChange = (id: number, delta: number) => {
+        setCartItems(items => items.map(item =>
+            item.id === id ? { ...item, quantity: Math.max(1, item.quantity + delta) } : item
+        ));
+    };
+    
+    const handleRemoveItem = (id: number) => {
+        setCartItems(items => items.filter(item => item.id !== id));
+    };
+    
+    const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
+    if (!isOpen) return null;
+
+    return (
+        <div 
+            className={`fixed inset-0 z-50 flex justify-end transition-opacity duration-300 ease-in-out ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+            aria-modal="true"
+            role="dialog"
+        >
+            <div 
+                className="absolute inset-0 bg-black bg-opacity-50" 
+                onClick={onClose}
+                aria-hidden="true"
+            ></div>
+            
+            <div 
+                className={`relative w-full max-w-sm bg-white h-full shadow-xl transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+            >
+                <div className="flex flex-col h-full">
+                    {/* Header */}
+                    <div className="flex justify-between items-center p-6 border-b border-gray-200">
+                        <h2 className="text-xl font-bold tracking-wider text-gray-800 uppercase">SHOPPING CART</h2>
+                        <button onClick={onClose} className="text-gray-500 hover:text-black">
+                            <CloseIcon className="w-6 h-6" />
+                        </button>
+                    </div>
+
+                    {cartItems.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center h-full text-center p-6">
+                            <EmptyCartIcon className="w-20 h-20 text-gray-300 mb-4" />
+                            <p className="text-lg text-gray-600 mb-6">Your cart is empty.</p>
+                            <button
+                                onClick={onClose}
+                                className="w-full max-w-xs flex justify-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none"
+                            >
+                                RETURN TO SHOP
+                            </button>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="flex-grow overflow-y-auto p-6">
+                                {/* Cart Items */}
+                                <div className="space-y-4">
+                                    {cartItems.map(item => (
+                                        <div key={item.id} className="flex items-center space-x-4">
+                                            <div className="w-20 h-20 flex-shrink-0">
+                                                <img src={item.imageUrl} alt={item.name} className="w-full h-full object-contain" />
+                                            </div>
+                                            <div className="flex-grow">
+                                                <p className="text-sm font-medium text-gray-800">{item.name}</p>
+                                                <p className="text-sm text-gray-600">${item.price.toFixed(2)}</p>
+                                                <div className="flex items-center mt-2">
+                                                    <div className="flex items-center border border-gray-300 rounded-full">
+                                                        <button onClick={() => handleQuantityChange(item.id, -1)} className="px-2 py-1 text-gray-600"><MinusIcon className="w-3 h-3"/></button>
+                                                        <input type="text" value={item.quantity} readOnly className="w-8 text-center border-0 p-0 text-sm focus:outline-none focus:ring-0 bg-transparent"/>
+                                                        <button onClick={() => handleQuantityChange(item.id, 1)} className="px-2 py-1 text-gray-600"><PlusIcon className="w-3 h-3"/></button>
+                                                    </div>
+                                                    <button onClick={() => handleRemoveItem(item.id)} className="ml-4 text-gray-400 hover:text-red-500">
+                                                        <TrashIcon className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                
+                                {/* Feature Icons */}
+                                <div className="flex justify-around my-6 py-4 border-y border-gray-200">
+                                    {[
+                                        { icon: <ClipboardIcon className="w-7 h-7"/> },
+                                        { icon: <CalendarIcon className="w-7 h-7"/> },
+                                        { icon: <TruckIcon className="w-7 h-7"/> },
+                                        { icon: <TagIcon className="w-7 h-7"/> }
+                                    ].map((item, index) => (
+                                        <div key={index} className="p-2 bg-gray-100 rounded-full text-gray-500 hover:bg-blue-100 hover:text-blue-600 cursor-pointer">
+                                            {item.icon}
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* You may also like */}
+                                <div>
+                                    <h4 className="font-semibold text-gray-800 mb-4">You may also like</h4>
+                                    <div className="bg-gray-50 rounded-lg p-4 flex items-center space-x-4">
+                                        <div className="w-16 h-16 flex-shrink-0">
+                                            <img src={recommendedProduct.imageUrl} alt={recommendedProduct.name} className="w-full h-full object-contain" />
+                                        </div>
+                                        <div className="flex-grow">
+                                            <p className="text-sm font-medium text-gray-800">{recommendedProduct.name}</p>
+                                            <div className="flex items-baseline space-x-2 mt-1">
+                                                <span className="text-sm font-bold text-red-600">${recommendedProduct.price.toFixed(2)}</span>
+                                                <span className="text-xs text-gray-400 line-through">${recommendedProduct.oldPrice.toFixed(2)}</span>
+                                            </div>
+                                        </div>
+                                        <button className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700">
+                                            <EyeIcon className="w-5 h-5" />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            {/* Footer */}
+                            <div className="p-6 border-t border-gray-200 mt-auto">
+                                <div className="flex justify-between items-center mb-4">
+                                    <span className="text-lg font-semibold">Subtotal:</span>
+                                    <span className="text-lg font-bold">${subtotal.toFixed(2)} USD</span>
+                                </div>
+                                <p className="text-xs text-gray-500 mb-4">Taxes and shipping calculated at checkout</p>
+                                <div className="flex items-center mb-4">
+                                    <input id="terms" type="checkbox" className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
+                                    <label htmlFor="terms" className="ml-2 block text-sm text-gray-700">I agree with the terms and conditions.</label>
+                                </div>
+                                <div className="space-y-3">
+                                    <button className="w-full bg-gray-100 text-gray-800 py-3 rounded-full font-bold hover:bg-gray-200">VIEW CART</button>
+                                    <button className="w-full bg-blue-600 text-white py-3 rounded-full font-bold hover:bg-blue-700">CHECK OUT</button>
+                                </div>
+                            </div>
+                        </>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default CartModal;
