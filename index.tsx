@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
+import { HashRouter } from 'react-router-dom';
 import App from './App';
 import { CurrencyProvider } from './contexts/CurrencyContext';
 import { WishlistProvider } from './contexts/WishlistContext';
@@ -14,7 +14,7 @@ if (!rootElement) {
 const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
+    <HashRouter>
       <CurrencyProvider>
         <WishlistProvider>
           <CartProvider>
@@ -22,6 +22,6 @@ root.render(
           </CartProvider>
         </WishlistProvider>
       </CurrencyProvider>
-    </BrowserRouter>
+    </HashRouter>
   </React.StrictMode>
 );
