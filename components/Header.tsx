@@ -75,7 +75,7 @@ const Header: React.FC = () => {
             </div>
 
             {/* Main Header (Sticky) */}
-            <header className="sticky top-0 bg-white shadow-sm z-10">
+            <header className="sticky top-0 bg-white shadow-sm z-40">
                 <div className="container mx-auto px-4">
                     <div className="flex justify-between items-center py-4">
                         {/* Left & Center: Logo and Nav */}
