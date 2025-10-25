@@ -27,15 +27,12 @@ const Header: React.FC = () => {
     const [isCurrencyDropdownOpen, setCurrencyDropdownOpen] = useState(false);
     const { wishlistItems } = useWishlist();
 
-    const navLinks = [
-        { name: 'Demo', href: '#' },
-        { name: 'Shop', href: '#', new: true },
-        { name: 'Product', href: '#' },
-        { name: 'Sale', href: '#', sale: true },
-        { name: 'Pages', href: '#' },
-        { name: 'Lookbooks', href: '#' },
-        { name: 'Blog', href: '#' },
-        { name: 'Buy Theme', href: '#' },
+    // FIX: Add explicit type to navLinks to include optional `new` and `sale` properties to fix TypeScript errors.
+    const navLinks: { name: string; href: string; new?: boolean; sale?: boolean }[] = [
+        { name: 'Home', href: '/' },
+        { name: 'Shop', href: '#', new: true, sale: true },
+        { name: 'About', href: '#' },
+        { name: 'Contact', href: '#' },
     ];
 
     return (
