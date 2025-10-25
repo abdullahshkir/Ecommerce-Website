@@ -64,3 +64,30 @@ export const MenuIcon: React.FC<IconProps> = ({ className }) => (
         <line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>
     </svg>
 );
+
+export const TruckIcon: React.FC<IconProps> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2" />
+      <path d="M15 18H9" />
+      <path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14" />
+      <circle cx="17" cy="18" r="2" />
+      <circle cx="7" cy="18" r="2" />
+    </svg>
+);
+
+export const SupportIcon: React.FC<IconProps> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+        <path d="M3 3v5h5" />
+    </svg>
+);
+
+export const ReturnIcon: React.FC<IconProps> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="20 12 20 22 4 22 4 12" />
+        <rect x="2" y="7" width="20" height="5" />
+        <line x1="12" y1="22" x2="12" y2="7" />
+        <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" />
+        <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" />
+    </svg>
+);
