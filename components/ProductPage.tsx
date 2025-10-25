@@ -147,7 +147,7 @@ const ProductPage: React.FC<{onProductClick: (id: number) => void}> = ({ onProdu
                         <button onClick={handleBuyNow} className="w-full bg-gray-900 text-white py-4 px-6 rounded-full font-semibold hover:bg-gray-800 mb-6">BUY IT NOW</button>
 
                         <div className="flex justify-center space-x-4 mb-6">
-                            <img src="https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761483838/mcafee_verisign_norton_trust_logos_g9yvyl.png" alt="Trust Seals" className="h-6" />
+                            <img src="https://d33v4339jhl8k0.cloudfront.net/docs/assets/6033aa1e6f44a32676aad8a8/images/606c51bef8c0ef2d98def68c/file-0kP4KUVJZw.png" alt="Trust Seals" className="h-auto w-full max-w-sm" />
                         </div>
                         
                         <div className="text-sm text-gray-600 space-y-2 border-t pt-6">
