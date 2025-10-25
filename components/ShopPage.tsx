@@ -19,6 +19,12 @@ const ShopPage: React.FC<ShopPageProps> = ({ onProductQuickView, onProductClick 
     const [sortOption, setSortOption] = useState('default');
     const [currentPage, setCurrentPage] = useState(1);
     const [isFilterOpen, setFilterOpen] = useState(false);
+    const [isLoaded, setIsLoaded] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => setIsLoaded(true), 100);
+        return () => clearTimeout(timer);
+    }, []);
 
     const productsPerPage = 12;
     const totalPages = Math.ceil(allProducts.length / productsPerPage);
@@ -69,7 +75,7 @@ const ShopPage: React.FC<ShopPageProps> = ({ onProductQuickView, onProductClick 
                 </div>
             </div>
 
-            <div className="container mx-auto px-4 py-12">
+            <div className={`container mx-auto px-4 py-12 transition-all duration-700 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
                 <div className="grid grid-cols-1 lg:grid-cols-4 lg:gap-8">
                     {/* Filters */}
                     <FilterSidebar isOpen={isFilterOpen} onClose={() => setFilterOpen(false)} />

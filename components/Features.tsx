@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { TruckIcon, SupportIcon, ReturnIcon } from './icons';
 
 const featuresData = [
@@ -31,8 +31,15 @@ const FeatureItem: React.FC<{ icon: React.ReactNode, title: string, description:
 );
 
 const Features: React.FC = () => {
+    const [isLoaded, setIsLoaded] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => setIsLoaded(true), 100);
+        return () => clearTimeout(timer);
+    }, []);
+
     return (
-        <section className="bg-white py-16 sm:py-20 border-t border-gray-100">
+        <section className={`bg-white py-16 sm:py-20 border-t border-gray-100 transition-opacity duration-1000 ease-out ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
             <div className="container mx-auto px-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-y-12 md:gap-x-8">
                     {featuresData.map((feature, index) => (

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Product } from '../types';
 import { products } from '../data/products';
 import ProductCard from './ProductCard';
@@ -6,11 +6,17 @@ import ProductCard from './ProductCard';
 const FeaturedCollection: React.FC<{ onProductQuickView: (product: Product) => void, onProductClick: (id: number) => void }> = ({ onProductQuickView, onProductClick }) => {
     const categories = ['Accesories', 'Smart TV', 'Camera', 'Digital'];
     const [activeCategory, setActiveCategory] = useState('Accesories');
+    const [isLoaded, setIsLoaded] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => setIsLoaded(true), 100);
+        return () => clearTimeout(timer);
+    }, []);
 
     const filteredProducts = products.filter(p => p.collection === activeCategory).slice(0, 4);
 
     return (
-        <section className="py-16 sm:py-24 bg-white">
+        <section className={`py-16 sm:py-24 bg-white transition-opacity duration-1000 ease-out ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
             <div className="container mx-auto px-4">
                 <div className="text-center mb-8">
                     <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Featured Collection</h2>

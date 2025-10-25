@@ -112,6 +112,12 @@ const DealsOfTheDay: React.FC<{ onProductClick: (id: number) => void }> = ({ onP
     const otherDeals = dealsData.slice(1);
     const { formatPrice } = useCurrency();
     const { addToCart, openCart } = useCart();
+    const [isLoaded, setIsLoaded] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => setIsLoaded(true), 100);
+        return () => clearTimeout(timer);
+    }, []);
 
     const handleAddToCart = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -131,7 +137,7 @@ const DealsOfTheDay: React.FC<{ onProductClick: (id: number) => void }> = ({ onP
     };
 
     return (
-        <section className="py-16 sm:py-24 bg-gray-100">
+        <section className={`py-16 sm:py-24 bg-gray-100 transition-opacity duration-1000 ease-out ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
             <div className="container mx-auto px-4">
                 <div className="text-center mb-12">
                     <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Deals Of The Day</h2>

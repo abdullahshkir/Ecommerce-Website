@@ -41,6 +41,7 @@ const ProductPage: React.FC<{onProductClick: (id: number) => void}> = ({ onProdu
     const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
     const { addToCart, openCart } = useCart();
     const navigate = useNavigate();
+    const [isLoaded, setIsLoaded] = useState(false);
 
     const toggleAccordion = (tabName: string) => {
         setOpenAccordion(prev => (prev === tabName ? null : tabName));
@@ -57,6 +58,13 @@ const ProductPage: React.FC<{onProductClick: (id: number) => void}> = ({ onProdu
         } else {
             setProduct(null);
         }
+    }, [id]);
+
+    useEffect(() => {
+        // Reset animation state on product change
+        setIsLoaded(false);
+        const timer = setTimeout(() => setIsLoaded(true), 100);
+        return () => clearTimeout(timer);
     }, [id]);
 
     if (!product) {
@@ -167,7 +175,7 @@ const ProductPage: React.FC<{onProductClick: (id: number) => void}> = ({ onProdu
                 type="product.item"
                 schemaLd={[productSchema, breadcrumbSchema]}
             />
-            <div className="bg-white">
+            <div className={`bg-white transition-all duration-700 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
                 {/* Breadcrumbs */}
                 <div className="bg-gray-100 py-3">
                     <div className="container mx-auto px-4 text-sm text-gray-500">

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, Link, Navigate } from 'react-router-dom';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { CheckCircleIcon } from './icons';
@@ -7,6 +7,12 @@ const ThankYouPage: React.FC = () => {
     const location = useLocation();
     const { formatPrice } = useCurrency();
     const orderDetails = location.state?.orderDetails;
+    const [isLoaded, setIsLoaded] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => setIsLoaded(true), 100);
+        return () => clearTimeout(timer);
+    }, []);
 
     if (!orderDetails) {
         return <Navigate to="/" replace />;
@@ -15,7 +21,7 @@ const ThankYouPage: React.FC = () => {
     const { orderNumber, deliveryDate, shippingAddress, items, total } = orderDetails;
 
     return (
-        <div className="bg-gray-50 min-h-screen">
+        <div className={`bg-gray-50 min-h-screen transition-opacity duration-700 ease-out ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
              <div className="lg:grid lg:grid-cols-12">
                 {/* Left side - Confirmation */}
                 <div className="lg:col-span-7 py-16 px-4 sm:px-6 lg:px-12 xl:px-20 flex items-center">

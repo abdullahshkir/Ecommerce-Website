@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../contexts/CartContext';
 import { useCurrency } from '../contexts/CurrencyContext';
@@ -36,7 +36,13 @@ const CheckoutPage: React.FC = () => {
     const { cartItems: contextCartItems, subtotal: contextSubtotal, clearCart, updateQuantity, removeFromCart } = useCart();
     const { formatPrice } = useCurrency();
     const [isSummaryOpen, setIsSummaryOpen] = useState(false);
+    const [isLoaded, setIsLoaded] = useState(false);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const timer = setTimeout(() => setIsLoaded(true), 100);
+        return () => clearTimeout(timer);
+    }, []);
 
     const initialBuyNowItem = location.state?.buyNowItem as CartItem | undefined;
     const [buyNowItem, setBuyNowItem] = useState<CartItem | undefined>(initialBuyNowItem);
@@ -96,7 +102,7 @@ const CheckoutPage: React.FC = () => {
     };
 
     return (
-        <div className="bg-white">
+        <div className={`bg-white transition-opacity duration-700 ease-out ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
             <div className="min-h-screen lg:grid lg:grid-cols-12">
                 {/* Right side - Order Summary */}
                 <div className="lg:col-span-5 lg:col-start-8 bg-gray-50 lg:border-l border-b lg:border-b-0 border-gray-200">

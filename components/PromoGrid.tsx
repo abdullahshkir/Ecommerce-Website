@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 const promoData = [
     {
@@ -39,8 +39,15 @@ const PromoCard: React.FC<{ title: string, subtitle: string, imageUrl: string }>
 );
 
 const PromoGrid: React.FC = () => {
+    const [isLoaded, setIsLoaded] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => setIsLoaded(true), 100);
+        return () => clearTimeout(timer);
+    }, []);
+
     return (
-        <section className="py-12 sm:py-16 bg-white">
+        <section className={`py-12 sm:py-16 bg-white transition-opacity duration-1000 ease-out ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
             <div className="container mx-auto px-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
                     {promoData.map((promo, index) => (

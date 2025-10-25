@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../contexts/CartContext';
 import { useCurrency } from '../contexts/CurrencyContext';
@@ -11,8 +11,14 @@ const CartPage: React.FC = () => {
     const [giftWrap, setGiftWrap] = useState(false);
     const [orderNote, setOrderNote] = useState('');
     const [agreeTerms, setAgreeTerms] = useState(false);
+    const [isLoaded, setIsLoaded] = useState(false);
     const navigate = useNavigate();
     
+    useEffect(() => {
+        const timer = setTimeout(() => setIsLoaded(true), 100);
+        return () => clearTimeout(timer);
+    }, []);
+
     const giftWrapCost = 5.00;
     const finalSubtotal = giftWrap ? subtotal + giftWrapCost : subtotal;
 
@@ -59,7 +65,7 @@ const CartPage: React.FC = () => {
                 </div>
             </div>
 
-            <div className="container mx-auto px-4 py-12 md:py-20">
+            <div className={`container mx-auto px-4 py-12 md:py-20 transition-all duration-700 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
                 {cartItems.length === 0 ? (
                     <div className="text-center py-20">
                         <h2 className="text-2xl font-semibold text-gray-800">Your cart is currently empty.</h2>

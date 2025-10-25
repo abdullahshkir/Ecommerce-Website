@@ -55,7 +55,13 @@ const WishlistPage: React.FC = () => {
     const { wishlistItems, removeFromWishlist } = useWishlist();
     const [gridCols, setGridCols] = useState(4);
     const [showScrollTop, setShowScrollTop] = useState(false);
+    const [isLoaded, setIsLoaded] = useState(false);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const timer = setTimeout(() => setIsLoaded(true), 100);
+        return () => clearTimeout(timer);
+    }, []);
 
     const handleRemoveItem = (id: number) => {
         removeFromWishlist(id);
@@ -103,7 +109,7 @@ const WishlistPage: React.FC = () => {
                 </div>
             </div>
 
-            <div className="container mx-auto px-4 py-8">
+            <div className={`container mx-auto px-4 py-8 transition-all duration-700 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
                 <div className="flex justify-end items-center mb-6 border-b pb-4">
                     <div className="flex items-center space-x-2">
                         {gridOptions.map(option => (
