@@ -1,8 +1,9 @@
 import React from 'react';
 import { HeartIcon, EyeIcon, CartIcon, StarIcon } from './icons';
 import { useCurrency } from '../contexts/CurrencyContext';
+import { Product } from '../types';
 
-const productData = [
+const productData: Product[] = [
     {
         id: 1,
         imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405072/p1_oklq8n.jpg',
@@ -24,13 +25,23 @@ const productData = [
     },
     {
         id: 3,
-        imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405073/p3_chb27s.jpg',
+        imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761464405/s2_zxf25n.jpg',
         imageUrl2: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405074/p3-2_oeb94j.jpg',
-        category: 'Camera',
-        name: 'Compact Digital Camera',
+        category: 'Digital',
+        name: 'X-Star Premium Drone with 4K',
         price: 450.00,
-        oldPrice: 500.00,
-        isSale: true,
+        oldPrice: null,
+        isSale: false,
+        rating: 5,
+        reviewCount: 1,
+        description: 'Go kalles this summer with this vintage navy and white striped v-neck t-shirt from the Nike. Perfect for pairing with denim and white kicks for a stylish kalles vibe.',
+        availability: 'In Stock',
+        categories: ['Digital'],
+        tags: ['digital'],
+        images: [
+            'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761464405/s2_zxf25n.jpg',
+            'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405073/p3_chb27s.jpg',
+        ],
     },
     {
         id: 4,
@@ -83,7 +94,8 @@ const productData = [
     },
 ];
 
-const ProductCard: React.FC<typeof productData[0]> = ({ imageUrl, imageUrl2, category, name, price, oldPrice, isSale, isNew }) => {
+const ProductCard: React.FC<{ product: Product, onQuickView: (product: Product) => void }> = ({ product, onQuickView }) => {
+    const { imageUrl, imageUrl2, category, name, price, oldPrice, isSale, isNew } = product;
     const { formatPrice } = useCurrency();
     return (
         <div className="group relative text-center">
@@ -96,9 +108,9 @@ const ProductCard: React.FC<typeof productData[0]> = ({ imageUrl, imageUrl2, cat
 
                 {/* Action Buttons */}
                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full flex justify-center items-center space-x-2 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <a href="#" className="bg-white p-2.5 rounded-full shadow-md hover:bg-black hover:text-white transition-colors"><HeartIcon className="w-5 h-5" /></a>
-                    <a href="#" className="bg-white p-2.5 rounded-full shadow-md hover:bg-black hover:text-white transition-colors"><EyeIcon className="w-5 h-5" /></a>
-                    <a href="#" className="bg-white p-2.5 rounded-full shadow-md hover:bg-black hover:text-white transition-colors"><CartIcon className="w-5 h-5" /></a>
+                    <button className="bg-white p-2.5 rounded-full shadow-md hover:bg-black hover:text-white transition-colors"><HeartIcon className="w-5 h-5" /></button>
+                    <button onClick={() => onQuickView(product)} className="bg-white p-2.5 rounded-full shadow-md hover:bg-black hover:text-white transition-colors"><EyeIcon className="w-5 h-5" /></button>
+                    <button className="bg-white p-2.5 rounded-full shadow-md hover:bg-black hover:text-white transition-colors"><CartIcon className="w-5 h-5" /></button>
                 </div>
 
                 {/* Labels */}
@@ -129,7 +141,7 @@ const ProductCard: React.FC<typeof productData[0]> = ({ imageUrl, imageUrl2, cat
 }
 
 
-const BestSellers: React.FC = () => {
+const BestSellers: React.FC<{ onProductQuickView: (product: Product) => void }> = ({ onProductQuickView }) => {
     return (
         <section className="py-16 sm:py-24 bg-white">
             <div className="container mx-auto px-4">
@@ -139,7 +151,7 @@ const BestSellers: React.FC = () => {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
                     {productData.map((product) => (
-                        <ProductCard key={product.id} {...product} />
+                        <ProductCard key={product.id} product={product} onQuickView={onProductQuickView} />
                     ))}
                 </div>
             </div>

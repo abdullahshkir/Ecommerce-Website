@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { HeartIcon, EyeIcon, CartIcon, StarIcon } from './icons';
 import { useCurrency } from '../contexts/CurrencyContext';
+import { Product } from '../types';
 
-const collectionProducts = [
+const collectionProducts: Product[] = [
     {
         id: 1,
         collection: 'Accesories',
@@ -38,13 +39,23 @@ const collectionProducts = [
     {
         id: 4,
         collection: 'Digital',
-        imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405075/p4_iz2fxi.jpg',
+        imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761464405/s2_zxf25n.jpg',
         imageUrl2: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405075/p4-2_p7xbnq.jpg',
         category: 'Smartphone',
-        name: 'Latest Model Smartphone',
-        price: 999.00,
+        name: 'X-Star Premium Drone with 4K',
+        price: 450.00,
         oldPrice: null,
         isNew: true,
+        rating: 5,
+        reviewCount: 1,
+        description: 'Go kalles this summer with this vintage navy and white striped v-neck t-shirt from the Nike. Perfect for pairing with denim and white kicks for a stylish kalles vibe.',
+        availability: 'In Stock',
+        categories: ['Digital'],
+        tags: ['digital'],
+        images: [
+            'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761464405/s2_zxf25n.jpg',
+            'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405075/p4-2_p7xbnq.jpg',
+        ],
     },
     {
         id: 5,
@@ -92,7 +103,8 @@ const collectionProducts = [
 ];
 
 
-const ProductCard: React.FC<typeof collectionProducts[0]> = ({ imageUrl, imageUrl2, category, name, price, oldPrice, isSale, isNew }) => {
+const ProductCard: React.FC<{ product: Product, onQuickView: (product: Product) => void }> = ({ product, onQuickView }) => {
+    const { imageUrl, imageUrl2, category, name, price, oldPrice, isSale, isNew } = product;
     const { formatPrice } = useCurrency();
     return (
         <div className="group relative text-center">
@@ -105,9 +117,9 @@ const ProductCard: React.FC<typeof collectionProducts[0]> = ({ imageUrl, imageUr
 
                 {/* Action Buttons */}
                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full flex justify-center items-center space-x-2 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <a href="#" className="bg-white p-2.5 rounded-full shadow-md hover:bg-black hover:text-white transition-colors"><HeartIcon className="w-5 h-5" /></a>
-                    <a href="#" className="bg-white p-2.5 rounded-full shadow-md hover:bg-black hover:text-white transition-colors"><EyeIcon className="w-5 h-5" /></a>
-                    <a href="#" className="bg-white p-2.5 rounded-full shadow-md hover:bg-black hover:text-white transition-colors"><CartIcon className="w-5 h-5" /></a>
+                    <button className="bg-white p-2.5 rounded-full shadow-md hover:bg-black hover:text-white transition-colors"><HeartIcon className="w-5 h-5" /></button>
+                    <button onClick={() => onQuickView(product)} className="bg-white p-2.5 rounded-full shadow-md hover:bg-black hover:text-white transition-colors"><EyeIcon className="w-5 h-5" /></button>
+                    <button className="bg-white p-2.5 rounded-full shadow-md hover:bg-black hover:text-white transition-colors"><CartIcon className="w-5 h-5" /></button>
                 </div>
 
                 {/* Labels */}
@@ -138,7 +150,7 @@ const ProductCard: React.FC<typeof collectionProducts[0]> = ({ imageUrl, imageUr
 };
 
 
-const FeaturedCollection: React.FC = () => {
+const FeaturedCollection: React.FC<{ onProductQuickView: (product: Product) => void }> = ({ onProductQuickView }) => {
     const categories = ['Accesories', 'Smart TV', 'Camera', 'Digital'];
     const [activeCategory, setActiveCategory] = useState('Accesories');
 
@@ -167,7 +179,7 @@ const FeaturedCollection: React.FC = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
                      {filteredProducts.map((product) => (
-                        <ProductCard key={product.id} {...product} />
+                        <ProductCard key={product.id} product={product} onQuickView={onProductQuickView} />
                     ))}
                 </div>
             </div>
