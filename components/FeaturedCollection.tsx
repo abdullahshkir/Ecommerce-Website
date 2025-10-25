@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { HeartIcon, EyeIcon, CartIcon, StarIcon } from './icons';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { Product } from '../types';
+import { useWishlist } from '../contexts/WishlistContext';
 
 const collectionProducts: Product[] = [
     {
@@ -106,6 +107,18 @@ const collectionProducts: Product[] = [
 const ProductCard: React.FC<{ product: Product, onQuickView: (product: Product) => void }> = ({ product, onQuickView }) => {
     const { imageUrl, imageUrl2, category, name, price, oldPrice, isSale, isNew } = product;
     const { formatPrice } = useCurrency();
+    const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+    const isWishlisted = isInWishlist(product.id);
+
+    const handleWishlistClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (isWishlisted) {
+            removeFromWishlist(product.id);
+        } else {
+            addToWishlist(product);
+        }
+    };
+    
     return (
         <div className="group relative text-center">
             <div className="relative overflow-hidden">
@@ -117,7 +130,9 @@ const ProductCard: React.FC<{ product: Product, onQuickView: (product: Product) 
 
                 {/* Action Buttons */}
                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full flex justify-center items-center space-x-2 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <button className="bg-white p-2.5 rounded-full shadow-md hover:bg-black hover:text-white transition-colors"><HeartIcon className="w-5 h-5" /></button>
+                    <button onClick={handleWishlistClick} className={`p-2.5 rounded-full shadow-md transition-colors ${isWishlisted ? 'bg-red-500 text-white' : 'bg-white hover:bg-black hover:text-white'}`}>
+                        <HeartIcon filled={isWishlisted} className="w-5 h-5" />
+                    </button>
                     <button onClick={() => onQuickView(product)} className="bg-white p-2.5 rounded-full shadow-md hover:bg-black hover:text-white transition-colors"><EyeIcon className="w-5 h-5" /></button>
                     <button className="bg-white p-2.5 rounded-full shadow-md hover:bg-black hover:text-white transition-colors"><CartIcon className="w-5 h-5" /></button>
                 </div>

@@ -1,62 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { TrashIcon, GridListIcon, Grid2Icon, Grid3Icon, Grid4Icon, ChevronUpIcon, HeartIcon } from './icons';
 import { useCurrency } from '../contexts/CurrencyContext';
-
-type Product = {
-    id: number;
-    name: string;
-    price: number;
-    oldPrice: number | null;
-    imageUrl: string;
-};
-
-const initialWishlistData: Product[] = [
-    {
-        id: 1,
-        name: 'Digital 20.1 4K Video',
-        price: 400.00,
-        oldPrice: 440.00,
-        imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761464405/s3_q9x9wl.jpg',
-    },
-    {
-        id: 2,
-        name: 'X-Star Premium Drone with 4K',
-        price: 450.00,
-        oldPrice: null,
-        imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761464405/s2_zxf25n.jpg',
-    },
-    {
-        id: 3,
-        name: 'Video & Air Quality Monitor',
-        price: 239.00,
-        oldPrice: 312.00,
-        imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761464405/s1_kvtkrx.jpg',
-    },
-    {
-        id: 4,
-        name: 'On-ear Wireless NXTG',
-        price: 225.00,
-        oldPrice: 312.00,
-        imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761483864/p_5_b0exf3.jpg',
-    },
-     {
-        id: 5,
-        name: 'Classic Leather Watch',
-        price: 250.00,
-        oldPrice: 300.00,
-        imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405072/p1_oklq8n.jpg',
-    },
-    {
-        id: 6,
-        name: 'Noise-Cancelling Headphones',
-        price: 180.00,
-        oldPrice: 200.00,
-        imageUrl: 'https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761405073/p2_y4qcca.jpg',
-    },
-];
+import { useWishlist } from '../contexts/WishlistContext';
+import { Product } from '../types';
 
 const WishlistProductCard: React.FC<{ product: Product; onRemove: (id: number) => void; }> = ({ product, onRemove }) => {
-    const salePercentage = product.oldPrice ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100) : 0;
+    const salePercentage = product.oldPrice && product.price < product.oldPrice ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100) : 0;
     const { formatPrice } = useCurrency();
 
     return (
@@ -94,12 +43,12 @@ const WishlistProductCard: React.FC<{ product: Product; onRemove: (id: number) =
 };
 
 const WishlistPage: React.FC = () => {
-    const [wishlistItems, setWishlistItems] = useState(initialWishlistData);
+    const { wishlistItems, removeFromWishlist } = useWishlist();
     const [gridCols, setGridCols] = useState(4);
     const [showScrollTop, setShowScrollTop] = useState(false);
 
     const handleRemoveItem = (id: number) => {
-        setWishlistItems(currentItems => currentItems.filter(item => item.id !== id));
+        removeFromWishlist(id);
     };
     
     useEffect(() => {

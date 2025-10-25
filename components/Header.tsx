@@ -5,6 +5,7 @@ import SearchOverlay from './SearchOverlay';
 import LoginModal from './LoginModal';
 import CartModal from './CartModal';
 import { useCurrency } from '../contexts/CurrencyContext';
+import { useWishlist } from '../contexts/WishlistContext';
 
 const NavItem: React.FC<{ href: string; children: React.ReactNode; new?: boolean; sale?: boolean }> = ({ href, children, new: isNew, sale: isSale }) => (
     <a href={href} className="text-gray-700 hover:text-black transition-colors relative group py-2">
@@ -24,6 +25,7 @@ const Header: React.FC = () => {
     const [cartItemCount, setCartItemCount] = useState(1);
     const { currency, setCurrency } = useCurrency();
     const [isCurrencyDropdownOpen, setCurrencyDropdownOpen] = useState(false);
+    const { wishlistItems } = useWishlist();
 
     const navLinks = [
         { name: 'Demo', href: '#' },
@@ -96,7 +98,9 @@ const Header: React.FC = () => {
                             <button onClick={() => setLoginOpen(true)} className="hidden sm:block text-gray-700 hover:text-black"><UserIcon /></button>
                             <Link to="/wishlist" className="relative text-gray-700 hover:text-black">
                                 <HeartIcon />
-                                <span className="absolute -top-1 -right-2 bg-black text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">6</span>
+                                {wishlistItems.length > 0 && (
+                                    <span className="absolute -top-1 -right-2 bg-black text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">{wishlistItems.length}</span>
+                                )}
                             </Link>
                             <button onClick={() => setCartOpen(true)} className="relative text-gray-700 hover:text-black">
                                 <CartIcon />
