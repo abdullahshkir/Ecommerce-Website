@@ -68,7 +68,7 @@ const ContactPage: React.FC = () => {
                             </div>
                             <div className="space-y-6">
                                 <ContactInfoItem icon={<LocationIcon className="w-6 h-6"/>} title="Our Location">
-                                    <p>123 Street, New York, USA</p>
+                                    <p>D Ground, Faisalabad, Punjab, Pakistan</p>
                                 </ContactInfoItem>
                                 <ContactInfoItem icon={<PhoneIcon className="w-6 h-6"/>} title="Phone Number">
                                     <p>+01 234 567 89</p>
@@ -125,7 +125,16 @@ const ContactPage: React.FC = () => {
 
                 {/* Map Section */}
                 <div className="h-96 bg-gray-300">
-                    <img src="https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761569940/map-placeholder_wzdxuj.jpg" alt="Map of our location" className="w-full h-full object-cover" />
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d217897.6202162637!2d72.9752044434237!3d31.418714999999996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x392242a895a55ca9%3A0xdec58f88932671c6!2sFaisalabad%2C%20Punjab%2C%20Pakistan!5e0!3m2!1sen!2s!4v1722288888888"
+                        width="100%"
+                        height="100%"
+                        style={{ border: 0 }}
+                        allowFullScreen={true}
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                        title="Map of our location in Faisalabad"
+                    ></iframe>
                 </div>
             </div>
         </>
