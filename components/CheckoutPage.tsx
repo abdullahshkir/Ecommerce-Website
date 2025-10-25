@@ -1,8 +1,9 @@
+
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../contexts/CartContext';
 import { useCurrency } from '../contexts/CurrencyContext';
-import { CartIcon, ChevronDownIcon, ChevronUpIcon } from './icons';
+import { CartIcon, ChevronDownIcon, ChevronUpIcon, PlusIcon, MinusIcon, TrashIcon } from './icons';
 import { CartItem } from '../types';
 
 const FormInput: React.FC<{ id: string; label: string; type?: string; autoComplete?: string; required?: boolean; value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; }> = ({ id, label, type = 'text', autoComplete, required = true, value, onChange }) => (
@@ -32,16 +33,23 @@ const FormInput: React.FC<{ id: string; label: string; type?: string; autoComple
 
 const CheckoutPage: React.FC = () => {
     const location = useLocation();
-    const { cartItems: contextCartItems, subtotal: contextSubtotal, clearCart } = useCart();
+    const { cartItems: contextCartItems, subtotal: contextSubtotal, clearCart, updateQuantity, removeFromCart } = useCart();
     const { formatPrice } = useCurrency();
     const [isSummaryOpen, setIsSummaryOpen] = useState(false);
     const navigate = useNavigate();
 
-    const buyNowItem = location.state?.buyNowItem as CartItem | undefined;
+    const initialBuyNowItem = location.state?.buyNowItem as CartItem | undefined;
+    const [buyNowItem, setBuyNowItem] = useState<CartItem | undefined>(initialBuyNowItem);
 
     const itemsToDisplay = buyNowItem ? [buyNowItem] : contextCartItems;
     const subtotalToDisplay = buyNowItem ? buyNowItem.price * buyNowItem.quantity : contextSubtotal;
 
+    const handleBuyNowQuantityChange = (newQuantity: number) => {
+        if (buyNowItem && newQuantity > 0) {
+            setBuyNowItem({ ...buyNowItem, quantity: newQuantity });
+        }
+    };
+    
     const [formData, setFormData] = useState({
         email: '',
         country: 'Pakistan',
@@ -106,19 +114,45 @@ const CheckoutPage: React.FC = () => {
                         </div>
                         
                         <div className={`mt-6 lg:mt-0 ${isSummaryOpen ? 'block' : 'hidden'} lg:block`}>
-                            <div className="space-y-5 max-h-80 overflow-y-auto pr-2">
+                             <div className="space-y-4 max-h-[20rem] lg:max-h-80 overflow-y-auto pr-2 -mr-2">
                                 {itemsToDisplay.map(item => (
-                                    <div key={item.id} className="flex items-start justify-between">
-                                        <div className="flex items-start space-x-4">
-                                            <div className="relative w-20 h-20 bg-white border rounded-md">
-                                                <img src={item.imageUrl} alt={item.name} className="w-full h-full object-contain p-1" />
-                                                <span className="absolute -top-2 -right-2 bg-gray-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-semibold">{item.quantity}</span>
+                                    <div key={item.id} className="flex items-start justify-between bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+                                        <div className="flex items-start space-x-3 flex-grow min-w-0">
+                                            <div className="relative w-16 h-16 flex-shrink-0">
+                                                <img src={item.imageUrl} alt={item.name} className="w-full h-full object-contain rounded" />
+                                                <span className="absolute -top-2 -right-2 bg-gray-800 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-semibold">{item.quantity}</span>
                                             </div>
-                                            <div>
-                                                <p className="font-semibold text-gray-800 leading-tight">{item.name}</p>
+                                            <div className="min-w-0">
+                                                <p className="font-semibold text-gray-800 text-sm leading-tight truncate">{item.name}</p>
                                             </div>
                                         </div>
-                                        <p className="font-medium text-gray-800">{formatPrice(item.price * item.quantity)}</p>
+
+                                        <div className="flex flex-col items-end space-y-2 ml-2">
+                                            <p className="font-semibold text-gray-800 text-sm">{formatPrice(item.price * item.quantity)}</p>
+                                            <div className="flex items-center border rounded-full">
+                                                <button
+                                                    onClick={() => buyNowItem ? handleBuyNowQuantityChange(item.quantity - 1) : updateQuantity(item.id, item.quantity - 1)}
+                                                    className="px-2 py-1 text-gray-600 hover:bg-gray-100 rounded-l-full disabled:opacity-50 disabled:cursor-not-allowed"
+                                                    disabled={buyNowItem && item.quantity <= 1}
+                                                    aria-label={`Decrease quantity of ${item.name}`}
+                                                >
+                                                    <MinusIcon className="w-4 h-4" />
+                                                </button>
+                                                <span className="px-1 text-sm font-medium w-6 text-center" aria-live="polite">{item.quantity}</span>
+                                                <button
+                                                    onClick={() => buyNowItem ? handleBuyNowQuantityChange(item.quantity + 1) : updateQuantity(item.id, item.quantity + 1)}
+                                                    className="px-2 py-1 text-gray-600 hover:bg-gray-100 rounded-r-full"
+                                                     aria-label={`Increase quantity of ${item.name}`}
+                                                >
+                                                    <PlusIcon className="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                            {itemsToDisplay.length > 1 && !buyNowItem && (
+                                                <button onClick={() => removeFromCart(item.id)} className="text-gray-500 hover:text-red-500 text-xs flex items-center gap-1">
+                                                    <TrashIcon className="w-3 h-3" /> Remove
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 ))}
                             </div>
