@@ -1,4 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { CloseIcon, StarIcon, PlusIcon, MinusIcon, HeartIcon } from './icons';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { Product } from '../types';
@@ -16,6 +17,7 @@ const QuickViewModal: FC<QuickViewModalProps> = ({ product, onClose }) => {
   const { formatPrice } = useCurrency();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const { addToCart, openCart } = useCart();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (product) {
@@ -58,6 +60,14 @@ const QuickViewModal: FC<QuickViewModalProps> = ({ product, onClose }) => {
     onClose();
   };
 
+  const handleBuyNow = () => {
+    if (product) {
+        const buyNowItem = { ...product, quantity };
+        onClose();
+        navigate('/checkout', { state: { buyNowItem } });
+    }
+  };
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60"
@@ -82,10 +92,10 @@ const QuickViewModal: FC<QuickViewModalProps> = ({ product, onClose }) => {
           <div className="relative aspect-square w-full max-w-md">
             <img src={images[currentImageIndex]} alt={product.name} className="w-full h-full object-contain" />
             <button onClick={handlePrevImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/50 hover:bg-white/80 p-2 rounded-full shadow-md transition-colors">
-              <svg xmlns="http://www.w.org/2000/svg" className="h-6 w-6 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
             </button>
             <button onClick={handleNextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/50 hover:bg-white/80 p-2 rounded-full shadow-md transition-colors">
-              <svg xmlns="http://www.w.org/2000/svg" className="h-6 w-6 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
             </button>
           </div>
         </div>
@@ -119,7 +129,7 @@ const QuickViewModal: FC<QuickViewModalProps> = ({ product, onClose }) => {
             </button>
           </div>
           
-          <button className="w-full bg-gray-900 text-white py-3 px-6 rounded-md font-semibold hover:bg-gray-800 mb-6 transition-colors">BUY IT NOW</button>
+          <button onClick={handleBuyNow} className="w-full bg-gray-900 text-white py-3 px-6 rounded-md font-semibold hover:bg-gray-800 mb-6 transition-colors">BUY IT NOW</button>
           
           <div className="text-sm text-gray-600 space-y-1">
             <p><a href="#" className="text-blue-600 underline hover:text-blue-800">Ask a Question</a></p>

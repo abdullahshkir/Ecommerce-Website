@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../contexts/CartContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { CartIcon, ChevronDownIcon, ChevronUpIcon } from './icons';
+import { CartItem } from '../types';
 
 const FormInput: React.FC<{ id: string; label: string; type?: string; autoComplete?: string; required?: boolean; value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; }> = ({ id, label, type = 'text', autoComplete, required = true, value, onChange }) => (
     <div className="relative">
@@ -30,10 +31,16 @@ const FormInput: React.FC<{ id: string; label: string; type?: string; autoComple
 
 
 const CheckoutPage: React.FC = () => {
-    const { cartItems, subtotal, clearCart } = useCart();
+    const location = useLocation();
+    const { cartItems: contextCartItems, subtotal: contextSubtotal, clearCart } = useCart();
     const { formatPrice } = useCurrency();
     const [isSummaryOpen, setIsSummaryOpen] = useState(false);
     const navigate = useNavigate();
+
+    const buyNowItem = location.state?.buyNowItem as CartItem | undefined;
+
+    const itemsToDisplay = buyNowItem ? [buyNowItem] : contextCartItems;
+    const subtotalToDisplay = buyNowItem ? buyNowItem.price * buyNowItem.quantity : contextSubtotal;
 
     const [formData, setFormData] = useState({
         email: '',
@@ -51,6 +58,10 @@ const CheckoutPage: React.FC = () => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
+    
+    const shippingCost = 0; // Placeholder
+    const totalToDisplay = subtotalToDisplay + shippingCost;
+
 
     const handlePlaceOrder = (e: React.FormEvent) => {
         e.preventDefault();
@@ -65,16 +76,16 @@ const CheckoutPage: React.FC = () => {
             orderNumber,
             deliveryDate,
             shippingAddress: formData,
-            items: cartItems,
-            total: subtotal
+            items: itemsToDisplay,
+            total: totalToDisplay
         };
 
         navigate('/thank-you', { state: { orderDetails } });
-        clearCart();
+        
+        if (!buyNowItem) {
+            clearCart();
+        }
     };
-
-    const shippingCost = 0; // Placeholder
-    const total = subtotal + shippingCost;
 
     return (
         <div className="bg-white">
@@ -88,7 +99,6 @@ const CheckoutPage: React.FC = () => {
                              <div className="space-y-8">
                                 <div>
                                     <h2 className="text-xl font-semibold mb-4">Contact information</h2>
-                                    {/* FIX: Removed invalid 'name' prop from FormInput component call. The 'name' is derived from the 'id' prop within the component. */}
                                     <FormInput id="email" label="Email address" type="email" autoComplete="email" value={formData.email} onChange={handleInputChange} />
                                 </div>
 
@@ -100,21 +110,14 @@ const CheckoutPage: React.FC = () => {
                                             <option>United States</option>
                                         </select>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                            {/* FIX: Removed invalid 'name' prop from FormInput component call. The 'name' is derived from the 'id' prop within the component. */}
                                             <FormInput id="firstName" label="First name" autoComplete="given-name" value={formData.firstName} onChange={handleInputChange}/>
-                                            {/* FIX: Removed invalid 'name' prop from FormInput component call. The 'name' is derived from the 'id' prop within the component. */}
                                             <FormInput id="lastName" label="Last name" autoComplete="family-name" value={formData.lastName} onChange={handleInputChange}/>
                                         </div>
-                                        {/* FIX: Removed invalid 'name' prop from FormInput component call. The 'name' is derived from the 'id' prop within the component. */}
                                         <FormInput id="address" label="Address" autoComplete="street-address" value={formData.address} onChange={handleInputChange}/>
-                                        {/* FIX: Removed invalid 'name' prop from FormInput component call. The 'name' is derived from the 'id' prop within the component. */}
                                         <FormInput id="apartment" label="Apartment, suite, etc." required={false} value={formData.apartment} onChange={handleInputChange}/>
                                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                                            {/* FIX: Removed invalid 'name' prop from FormInput component call. The 'name' is derived from the 'id' prop within the component. */}
                                             <FormInput id="city" label="City" autoComplete="address-level2" value={formData.city} onChange={handleInputChange}/>
-                                            {/* FIX: Removed invalid 'name' prop from FormInput component call. The 'name' is derived from the 'id' prop within the component. */}
                                             <FormInput id="state" label="State" autoComplete="address-level1" value={formData.state} onChange={handleInputChange}/>
-                                            {/* FIX: Removed invalid 'name' prop from FormInput component call. The 'name' is derived from the 'id' prop within the component. */}
                                             <FormInput id="zip" label="ZIP code" autoComplete="postal-code" value={formData.zip} onChange={handleInputChange}/>
                                         </div>
                                     </div>
@@ -150,13 +153,13 @@ const CheckoutPage: React.FC = () => {
                                     <span>{isSummaryOpen ? 'Hide' : 'Show'} order summary</span>
                                     {isSummaryOpen ? <ChevronUpIcon className="w-4 h-4 ml-1" /> : <ChevronDownIcon className="w-4 h-4 ml-1" />}
                                 </div>
-                                <span className="font-bold">{formatPrice(total)}</span>
+                                <span className="font-bold">{formatPrice(totalToDisplay)}</span>
                             </button>
                         </div>
                         
                         <div className={`mt-6 lg:mt-0 ${isSummaryOpen ? 'block' : 'hidden'} lg:block`}>
                             <div className="space-y-5 max-h-80 overflow-y-auto pr-2">
-                                {cartItems.map(item => (
+                                {itemsToDisplay.map(item => (
                                     <div key={item.id} className="flex items-start justify-between">
                                         <div className="flex items-start space-x-4">
                                             <div className="relative w-20 h-20 bg-white border rounded-md">
@@ -182,7 +185,7 @@ const CheckoutPage: React.FC = () => {
                             <div className="space-y-3 text-gray-700">
                                 <div className="flex justify-between">
                                     <span>Subtotal</span>
-                                    <span className="font-medium">{formatPrice(subtotal)}</span>
+                                    <span className="font-medium">{formatPrice(subtotalToDisplay)}</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span>Shipping</span>
@@ -192,7 +195,7 @@ const CheckoutPage: React.FC = () => {
 
                             <div className="border-t mt-6 pt-6 flex justify-between items-center">
                                 <span className="text-xl font-semibold">Total</span>
-                                <span className="text-2xl font-bold">{formatPrice(total)}</span>
+                                <span className="text-2xl font-bold">{formatPrice(totalToDisplay)}</span>
                             </div>
                         </div>
                     </div>

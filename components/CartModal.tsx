@@ -37,6 +37,11 @@ const CartModal: FC<CartModalProps> = ({ isOpen, onClose }) => {
         navigate('/cart');
     };
 
+    const handleCheckout = () => {
+        onClose();
+        navigate('/checkout');
+    };
+
     return (
         <div 
             className={`fixed inset-0 z-50 flex justify-end transition-opacity duration-300 ease-in-out ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
@@ -147,7 +152,7 @@ const CartModal: FC<CartModalProps> = ({ isOpen, onClose }) => {
                                 </div>
                                 <div className="space-y-3">
                                     <button onClick={handleViewCart} className="w-full bg-gray-100 text-gray-800 py-3 rounded-full font-bold hover:bg-gray-200">VIEW CART</button>
-                                    <button className="w-full bg-blue-600 text-white py-3 rounded-full font-bold hover:bg-blue-700">CHECK OUT</button>
+                                    <button onClick={handleCheckout} className="w-full bg-blue-600 text-white py-3 rounded-full font-bold hover:bg-blue-700">CHECK OUT</button>
                                 </div>
                             </div>
                         </>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { products } from '../data/products';
 import { Product } from '../types';
 import { StarIcon, PlusIcon, MinusIcon, HeartIcon, ExpandIcon, FacebookIcon, TwitterIcon, InstagramIcon, PinterestIcon } from './icons';
@@ -38,6 +38,7 @@ const ProductPage: React.FC<{onProductClick: (id: number) => void}> = ({ onProdu
     const { formatPrice } = useCurrency();
     const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
     const { addToCart, openCart } = useCart();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const productId = parseInt(id || '', 10);
@@ -69,6 +70,13 @@ const ProductPage: React.FC<{onProductClick: (id: number) => void}> = ({ onProdu
         if (product) {
           addToCart(product, quantity);
           openCart();
+        }
+    };
+
+    const handleBuyNow = () => {
+        if (product) {
+            const buyNowItem = { ...product, quantity };
+            navigate('/checkout', { state: { buyNowItem } });
         }
     };
 
@@ -136,7 +144,7 @@ const ProductPage: React.FC<{onProductClick: (id: number) => void}> = ({ onProdu
                             </button>
                         </div>
                         
-                        <button className="w-full bg-gray-900 text-white py-4 px-6 rounded-full font-semibold hover:bg-gray-800 mb-6">BUY IT NOW</button>
+                        <button onClick={handleBuyNow} className="w-full bg-gray-900 text-white py-4 px-6 rounded-full font-semibold hover:bg-gray-800 mb-6">BUY IT NOW</button>
 
                         <div className="flex justify-center space-x-4 mb-6">
                             <img src="https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761483838/mcafee_verisign_norton_trust_logos_g9yvyl.png" alt="Trust Seals" className="h-6" />
