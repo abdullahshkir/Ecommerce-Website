@@ -17,7 +17,7 @@ const Hero: React.FC = () => {
         return (
             <div className="relative z-10 container mx-auto px-4 h-full flex flex-col justify-start md:justify-center items-center md:items-start text-center md:text-left">
                 <div className={`pt-24 md:pt-0 md:w-1/2 lg:w-2/5 transition-all duration-1000 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-                    <p className="text-sm font-semibold text-gray-600 tracking-wider uppercase mb-2 md:mb-4">SUMMER 2022</p>
+                    <p className="text-sm font-semibold text-gray-600 tracking-wider uppercase mb-2 md:mb-4">SUMMER 2025</p>
                     <h1 className="text-4xl md:text-5xl font-bold text-black leading-tight mb-3 md:mb-4">
                         Meet Galaxy S20, S20+
                     </h1>
