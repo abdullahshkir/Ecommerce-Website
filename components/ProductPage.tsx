@@ -217,9 +217,9 @@ const ProductPage: React.FC<{onProductClick: (id: number) => void}> = ({ onProdu
 
                             <div className="flex items-center space-x-4 mb-6">
                                 <div className="flex items-center border border-gray-300 rounded-full">
-                                    <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="px-4 py-2 text-gray-600"><MinusIcon /></button>
+                                    <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="px-4 py-3 text-gray-600"><MinusIcon className="w-6 h-6"/></button>
                                     <input type="text" value={quantity} readOnly className="w-12 text-center border-0 p-0 text-lg focus:ring-0 bg-transparent" />
-                                    <button onClick={() => setQuantity(quantity + 1)} className="px-4 py-2 text-gray-600"><PlusIcon /></button>
+                                    <button onClick={() => setQuantity(quantity + 1)} className="px-4 py-3 text-gray-600"><PlusIcon className="w-6 h-6"/></button>
                                 </div>
                                 <button onClick={handleAddToCart} className="flex-grow bg-blue-600 text-white py-3 px-6 rounded-full font-semibold hover:bg-blue-700">ADD TO CART</button>
                                 <button onClick={handleWishlistClick} className={`p-3 border rounded-full transition-colors ${isWishlisted ? 'bg-red-50 text-red-500 border-red-200' : 'border-gray-300 hover:bg-gray-100'}`}>
