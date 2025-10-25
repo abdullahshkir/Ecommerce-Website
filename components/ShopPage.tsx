@@ -75,7 +75,7 @@ const ShopPage: React.FC<ShopPageProps> = ({ onProductQuickView, onProductClick 
                 </div>
             </div>
 
-            <div className={`container mx-auto px-4 py-12 transition-all duration-700 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
+            <div className={`container mx-auto px-4 py-12 transition-opacity duration-700 ease-out ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
                 <div className="grid grid-cols-1 lg:grid-cols-4 lg:gap-8">
                     {/* Filters */}
                     <FilterSidebar isOpen={isFilterOpen} onClose={() => setFilterOpen(false)} />
