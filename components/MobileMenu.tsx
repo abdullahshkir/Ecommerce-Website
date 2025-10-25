@@ -86,11 +86,12 @@ const MobileMenu: FC<MobileMenuProps> = ({ isOpen, onClose, onSearchClick, onLog
         { name: 'Home', href: '/' },
         { 
             name: 'Shop', 
+            href: '/shop',
             subItems: [
-                { name: 'Accesories', href: '#' },
-                { name: 'Smart TV', href: '#' },
-                { name: 'Camera', href: '#' },
-                { name: 'Digital', href: '#' },
+                { name: 'Accesories', href: '/shop?category=Accesories' },
+                { name: 'Smart TV', href: '/shop?category=Smart+TV' },
+                { name: 'Camera', href: '/shop?category=Camera' },
+                { name: 'Digital', href: '/shop?category=Digital' },
             ]
         },
         { name: 'About', href: '#' },
@@ -141,7 +142,7 @@ const MobileMenu: FC<MobileMenuProps> = ({ isOpen, onClose, onSearchClick, onLog
                            <ul className="flex flex-col">
                                 {categories.map(cat => (
                                     <li key={cat} className="border-b border-gray-200">
-                                        <Link to="#" onClick={onClose} className="w-full flex justify-between items-center py-4 px-6 text-left text-gray-800 hover:bg-gray-50">
+                                        <Link to={`/shop?category=${encodeURIComponent(cat)}`} onClick={onClose} className="w-full flex justify-between items-center py-4 px-6 text-left text-gray-800 hover:bg-gray-50">
                                             {cat}
                                             <PlusIcon className="w-4 h-4 text-gray-500" />
                                         </Link>

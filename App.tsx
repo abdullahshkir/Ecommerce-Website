@@ -21,6 +21,7 @@ import SearchOverlay from './components/SearchOverlay';
 import LoginModal from './components/LoginModal';
 import MobileBottomNav from './components/MobileBottomNav';
 import { SEO } from './components/SEO';
+import ShopPage from './components/ShopPage';
 
 const HomePage = ({ onProductQuickView, onProductClick }: { onProductQuickView: (product: Product) => void, onProductClick: (id: number) => void }) => (
   <>
@@ -67,6 +68,18 @@ const App: React.FC = () => {
                   imageUrl="https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761378383/Hero_image_tyy9x9.jpg"
                 />
                 <HomePage onProductQuickView={handleOpenQuickView} onProductClick={handleProductClick} />
+              </>
+            }
+          />
+          <Route
+            path="/shop"
+            element={
+              <>
+                <SEO
+                  title="Shop All Products | Mobixo"
+                  description="Explore our wide collection of electronics, gadgets, and accessories. Find the best deals and the latest tech at Mobixo."
+                />
+                <ShopPage onProductQuickView={handleOpenQuickView} onProductClick={handleProductClick} />
               </>
             }
           />

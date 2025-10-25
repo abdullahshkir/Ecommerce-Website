@@ -17,6 +17,9 @@ export interface Product {
   images?: string[];
   reviewCount?: number;
   rating?: number;
+  color?: string[];
+  size?: string[];
+  brand?: string;
 }
 
 export type CartItem = Product & { quantity: number; };

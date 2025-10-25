@@ -22,7 +22,10 @@ export const products: Product[] = [
         images: [
             newImageUrl,
             newImageUrl,
-        ]
+        ],
+        color: ['Black', 'Brown'],
+        size: ['One Size'],
+        brand: 'Timex'
     },
     {
         id: 2,
@@ -42,7 +45,10 @@ export const products: Product[] = [
         images: [
             newImageUrl,
             newImageUrl,
-        ]
+        ],
+        color: ['Black', 'White', 'Blue'],
+        size: ['M'],
+        brand: 'Sony'
     },
     {
         id: 3,
@@ -63,7 +69,10 @@ export const products: Product[] = [
         images: [
             newImageUrl,
             newImageUrl,
-        ]
+        ],
+        color: ['Black', 'Silver'],
+        size: ['S'],
+        brand: 'Canon'
     },
     {
         id: 4,
@@ -97,6 +106,9 @@ export const products: Product[] = [
             newImageUrl,
             newImageUrl,
         ],
+        color: ['White'],
+        size: ['L'],
+        brand: 'DJI'
     },
     {
         id: 5,
@@ -117,7 +129,10 @@ export const products: Product[] = [
         images: [
             newImageUrl,
             newImageUrl,
-        ]
+        ],
+        color: ['Black'],
+        size: ['XL'],
+        brand: 'Samsung'
     },
     {
         id: 6,
@@ -137,7 +152,10 @@ export const products: Product[] = [
         images: [
             newImageUrl,
             newImageUrl,
-        ]
+        ],
+        color: ['Silver', 'Space Gray'],
+        size: ['M'],
+        brand: 'Apple'
     },
     {
         id: 7,
@@ -157,7 +175,10 @@ export const products: Product[] = [
         images: [
             newImageUrl,
             newImageUrl,
-        ]
+        ],
+        color: ['Black', 'White'],
+        size: ['S'],
+        brand: 'Logitech'
     },
     {
         id: 8,
@@ -179,6 +200,9 @@ export const products: Product[] = [
         images: [
             newImageUrl,
             newImageUrl,
-        ]
+        ],
+        color: ['Black'],
+        size: ['S'],
+        brand: 'GoPro'
     }
 ];

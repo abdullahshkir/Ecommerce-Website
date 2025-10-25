@@ -6,13 +6,13 @@ import { useWishlist } from '../contexts/WishlistContext';
 import { useCart } from '../contexts/CartContext';
 import MobileMenu from './MobileMenu';
 
-const NavItem: React.FC<{ href: string; children: React.ReactNode; new?: boolean; sale?: boolean }> = ({ href, children, new: isNew, sale: isSale }) => (
-    <a href={href} className="text-gray-700 hover:text-black transition-colors relative group py-2">
+const NavItem: React.FC<{ to: string; children: React.ReactNode; new?: boolean; sale?: boolean }> = ({ to, children, new: isNew, sale: isSale }) => (
+    <Link to={to} className="text-gray-700 hover:text-black transition-colors relative group py-2">
         <span>{children}</span>
         <span className="absolute bottom-0 left-0 w-full h-0.5 bg-black scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
         {isNew && <span className="absolute -top-2 -right-3 bg-cyan-400 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full">New</span>}
         {isSale && <span className="absolute -top-2 -right-3 bg-orange-400 text-white text-[10px] font-semibold px-2 py-0.5 rounded-md">Sale</span>}
-    </a>
+    </Link>
 );
 
 interface HeaderProps {
@@ -28,11 +28,11 @@ const Header: React.FC<HeaderProps> = ({ onSearchClick, onLoginClick }) => {
     const { wishlistItems } = useWishlist();
     const { openCart, cartCount } = useCart();
 
-    const navLinks: { name: string; href: string; new?: boolean; sale?: boolean }[] = [
-        { name: 'Home', href: '/' },
-        { name: 'Shop', href: '#', new: true, sale: true },
-        { name: 'About', href: '#' },
-        { name: 'Contact', href: '#' },
+    const navLinks: { name: string; to: string; new?: boolean; sale?: boolean }[] = [
+        { name: 'Home', to: '/' },
+        { name: 'Shop', to: '/shop', new: true, sale: true },
+        { name: 'About', to: '#' },
+        { name: 'Contact', to: '#' },
     ];
     
     const handleMobileMenuClose = () => setMobileMenuOpen(false);
@@ -94,7 +94,7 @@ const Header: React.FC<HeaderProps> = ({ onSearchClick, onLoginClick }) => {
                         {/* Center: Desktop Nav */}
                         <nav className="hidden lg:flex justify-center flex-1 space-x-6">
                             {navLinks.map((link) => (
-                                <NavItem key={link.name} href={link.href} new={link.new} sale={link.sale}>
+                                <NavItem key={link.name} to={link.to} new={link.new} sale={link.sale}>
                                     {link.name}
                                 </NavItem>
                             ))}
