@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../contexts/CartContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { TrashIcon, PlusIcon, MinusIcon, GiftIcon } from './icons';
@@ -11,6 +11,7 @@ const CartPage: React.FC = () => {
     const [giftWrap, setGiftWrap] = useState(false);
     const [orderNote, setOrderNote] = useState('');
     const [agreeTerms, setAgreeTerms] = useState(false);
+    const navigate = useNavigate();
     
     const giftWrapCost = 5.00;
     const finalSubtotal = giftWrap ? subtotal + giftWrapCost : subtotal;
@@ -18,6 +19,12 @@ const CartPage: React.FC = () => {
     const handleUpdateQuantity = (id: number, newQuantity: number) => {
         if (newQuantity > 0) {
             updateQuantity(id, newQuantity);
+        }
+    };
+
+    const handleCheckout = () => {
+        if (agreeTerms) {
+            navigate('/checkout');
         }
     };
 
@@ -127,6 +134,7 @@ const CartPage: React.FC = () => {
                                         <label htmlFor="terms" className="ml-3 block text-sm text-gray-700">I agree with the terms and conditions.</label>
                                     </div>
                                     <button 
+                                        onClick={handleCheckout}
                                         disabled={!agreeTerms}
                                         className="w-full bg-blue-600 text-white py-3.5 rounded-full font-bold text-sm hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                                     >
