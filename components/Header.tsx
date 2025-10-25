@@ -6,6 +6,7 @@ import LoginModal from './LoginModal';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { useWishlist } from '../contexts/WishlistContext';
 import { useCart } from '../contexts/CartContext';
+import MobileMenu from './MobileMenu';
 
 const NavItem: React.FC<{ href: string; children: React.ReactNode; new?: boolean; sale?: boolean }> = ({ href, children, new: isNew, sale: isSale }) => (
     <a href={href} className="text-gray-700 hover:text-black transition-colors relative group py-2">
@@ -32,6 +33,8 @@ const Header: React.FC = () => {
         { name: 'About', href: '#' },
         { name: 'Contact', href: '#' },
     ];
+    
+    const handleMobileMenuClose = () => setMobileMenuOpen(false);
 
     return (
         <>
@@ -136,30 +139,27 @@ const Header: React.FC = () => {
                                     )}
                                 </div>
                                 {/* Mobile Menu Button */}
-                                <button className="lg:hidden text-gray-700 hover:text-black" onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}>
+                                <button className="lg:hidden text-gray-700 hover:text-black" onClick={() => setMobileMenuOpen(true)}>
                                     <MenuIcon />
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                {/* Mobile Menu */}
-                {isMobileMenuOpen && (
-                     <div className="lg:hidden bg-white border-t border-gray-200">
-                        <nav className="flex flex-col px-4 py-2">
-                             {navLinks.map((link) => (
-                                 <a key={link.name} href={link.href} className="py-2 text-gray-700 hover:text-black transition-colors flex justify-between items-center">
-                                    <span>{link.name}</span>
-                                    {link.new && <span className="bg-cyan-400 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full">New</span>}
-                                    {link.sale && <span className="bg-orange-400 text-white text-[10px] font-semibold px-2 py-0.5 rounded-md">Sale</span>}
-                                </a>
-                             ))}
-                        </nav>
-                     </div>
-                )}
             </header>
             
+            <MobileMenu 
+                isOpen={isMobileMenuOpen} 
+                onClose={handleMobileMenuClose}
+                onSearchClick={() => {
+                    handleMobileMenuClose();
+                    setSearchOpen(true);
+                }}
+                onLoginClick={() => {
+                    handleMobileMenuClose();
+                    setLoginOpen(true);
+                }}
+            />
             <SearchOverlay isOpen={isSearchOpen} onClose={() => setSearchOpen(false)} />
             <LoginModal isOpen={isLoginOpen} onClose={() => setLoginOpen(false)} />
         </>

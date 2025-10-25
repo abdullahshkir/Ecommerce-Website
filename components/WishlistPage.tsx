@@ -1,19 +1,28 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { TrashIcon, GridListIcon, Grid2Icon, Grid3Icon, Grid4Icon, ChevronUpIcon, HeartIcon } from './icons';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { useWishlist } from '../contexts/WishlistContext';
 import { Product } from '../types';
 
-const WishlistProductCard: React.FC<{ product: Product; onRemove: (id: number) => void; }> = ({ product, onRemove }) => {
+const WishlistProductCard: React.FC<{ product: Product; onRemove: (id: number) => void; onProductClick: (id: number) => void; }> = ({ product, onRemove, onProductClick }) => {
     const salePercentage = product.oldPrice && product.price < product.oldPrice ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100) : 0;
     const { formatPrice } = useCurrency();
 
+    const handleRemoveClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        onRemove(product.id);
+    };
+
     return (
-        <div className="group relative border border-gray-200 rounded-md overflow-hidden transition-shadow hover:shadow-xl">
+        <div 
+            className="group relative border border-gray-200 rounded-md overflow-hidden transition-shadow hover:shadow-xl cursor-pointer"
+            onClick={() => onProductClick(product.id)}
+        >
             <div className="relative">
                 <img src={product.imageUrl} alt={product.name} className="w-full h-auto aspect-square object-cover" />
                 <button
-                    onClick={() => onRemove(product.id)}
+                    onClick={handleRemoveClick}
                     className="absolute top-3 left-3 bg-gray-800 text-white w-8 h-8 rounded-full flex items-center justify-center opacity-80 hover:opacity-100 transition-opacity"
                     aria-label={`Remove ${product.name} from wishlist`}
                 >
@@ -27,7 +36,7 @@ const WishlistProductCard: React.FC<{ product: Product; onRemove: (id: number) =
             </div>
             <div className="p-4 text-center">
                 <h3 className="text-base font-medium text-gray-800 mb-1">
-                    <a href="#" className="hover:text-black">{product.name}</a>
+                    <span className="hover:text-black">{product.name}</span>
                 </h3>
                 <div className="flex justify-center items-baseline space-x-2">
                      <span className={`text-lg font-bold ${product.oldPrice ? 'text-red-600' : 'text-black'}`}>
@@ -46,9 +55,14 @@ const WishlistPage: React.FC = () => {
     const { wishlistItems, removeFromWishlist } = useWishlist();
     const [gridCols, setGridCols] = useState(4);
     const [showScrollTop, setShowScrollTop] = useState(false);
+    const navigate = useNavigate();
 
     const handleRemoveItem = (id: number) => {
         removeFromWishlist(id);
+    };
+
+    const handleProductClick = (id: number) => {
+        navigate(`/product/${id}`);
     };
     
     useEffect(() => {
@@ -108,7 +122,7 @@ const WishlistPage: React.FC = () => {
                 {wishlistItems.length > 0 ? (
                     <div className={`grid ${gridClasses[gridCols]} gap-6`}>
                         {wishlistItems.map(product => (
-                            <WishlistProductCard key={product.id} product={product} onRemove={handleRemoveItem} />
+                            <WishlistProductCard key={product.id} product={product} onRemove={handleRemoveItem} onProductClick={handleProductClick} />
                         ))}
                     </div>
                 ) : (
