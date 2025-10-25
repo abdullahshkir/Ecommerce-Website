@@ -109,7 +109,6 @@ const Header: React.FC = () => {
                              <div className="hidden sm:block relative">
                                 <button 
                                     onClick={() => setCurrencyDropdownOpen(!isCurrencyDropdownOpen)}
-                                    onBlur={() => setTimeout(() => setCurrencyDropdownOpen(false), 150)}
                                     className="flex items-center space-x-1 cursor-pointer text-gray-700 hover:text-black"
                                 >
                                     <span className="text-sm font-medium">{currency}</span>
