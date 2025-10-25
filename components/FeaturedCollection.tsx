@@ -147,7 +147,7 @@ const FeaturedCollection: React.FC = () => {
                     <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Featured Collection</h2>
                 </div>
 
-                <div className="flex items-center space-x-4 sm:space-x-8 mb-12 overflow-x-auto pb-4 sm:pb-0 sm:justify-center flex-nowrap">
+                <div className="flex items-center space-x-4 sm:space-x-8 mb-12 overflow-x-auto pb-4 pt-2 sm:pb-0 sm:justify-center flex-nowrap no-scrollbar">
                     {categories.map(category => (
                         <button
                             key={category}
