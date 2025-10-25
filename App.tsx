@@ -1,8 +1,11 @@
-
 import React from 'react';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import Features from './components/Features';
+import PromoGrid from './components/PromoGrid';
+import BestSellers from './components/BestSellers';
+import DealsOfTheDay from './components/DealsOfTheDay';
+import FeaturedCollection from './components/FeaturedCollection';
 
 const App: React.FC = () => {
   return (
@@ -11,6 +14,10 @@ const App: React.FC = () => {
       <main>
         <Hero />
         <Features />
+        <PromoGrid />
+        <BestSellers />
+        <DealsOfTheDay />
+        <FeaturedCollection />
       </main>
     </div>
   );
