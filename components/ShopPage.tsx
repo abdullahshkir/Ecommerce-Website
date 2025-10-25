@@ -78,7 +78,7 @@ const ShopPage: React.FC<ShopPageProps> = ({ onProductQuickView, onProductClick 
                     <div className="lg:col-span-3">
                         {/* Top bar */}
                         <div className="flex flex-wrap sm:flex-nowrap justify-between items-center mb-6 border-b pb-4 gap-y-4">
-                            <p className="text-sm text-gray-600 w-full sm:w-auto order-2 sm:order-1 text-center sm:text-left">
+                            <p className="text-sm text-gray-600 w-full sm:w-auto order-2 sm:order-1 text-left">
                                 Showing {Math.min((currentPage - 1) * productsPerPage + 1, allProducts.length)}–{Math.min(currentPage * productsPerPage, allProducts.length)} of {allProducts.length} results
                             </p>
 
