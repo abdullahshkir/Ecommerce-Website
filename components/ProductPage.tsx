@@ -35,10 +35,15 @@ const ProductPage: React.FC<{onProductClick: (id: number) => void}> = ({ onProdu
     const [quantity, setQuantity] = useState(1);
     const [activeImageIndex, setActiveImageIndex] = useState(0);
     const [activeTab, setActiveTab] = useState('description');
+    const [openAccordion, setOpenAccordion] = useState<string | null>('description');
     const { formatPrice } = useCurrency();
     const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
     const { addToCart, openCart } = useCart();
     const navigate = useNavigate();
+
+    const toggleAccordion = (tabName: string) => {
+        setOpenAccordion(prev => (prev === tabName ? null : tabName));
+    };
 
     useEffect(() => {
         const productId = parseInt(id || '', 10);
@@ -56,6 +61,12 @@ const ProductPage: React.FC<{onProductClick: (id: number) => void}> = ({ onProdu
     if (!product) {
         return <div className="container mx-auto px-4 py-20 text-center">Product not found.</div>;
     }
+    
+    const TABS = [
+        { id: 'description', title: 'Description', content: product.longDescription || '<p>No description available.</p>' },
+        { id: 'custom', title: 'Custom tab', content: '<p>Content for custom tab goes here.</p>' },
+        { id: 'reviews', title: 'Reviews', content: '<p>Reviews will be displayed here.</p>' }
+    ];
 
     const isWishlisted = isInWishlist(product.id);
     const handleWishlistClick = () => {
@@ -167,24 +178,49 @@ const ProductPage: React.FC<{onProductClick: (id: number) => void}> = ({ onProdu
                 </div>
             </div>
 
-            {/* Description Tabs */}
+            {/* Description Tabs & Accordion */}
             <div className="bg-gray-50 border-t">
                 <div className="container mx-auto px-4 py-12">
-                    <div className="border-b mb-8 flex justify-center">
-                        <button onClick={() => setActiveTab('description')} className={`px-8 py-3 font-semibold ${activeTab === 'description' ? 'border-b-2 border-black text-black' : 'text-gray-500'}`}>Description</button>
-                        <button onClick={() => setActiveTab('custom')} className={`px-8 py-3 font-semibold ${activeTab === 'custom' ? 'border-b-2 border-black text-black' : 'text-gray-500'}`}>Custom tab</button>
-                        <button onClick={() => setActiveTab('reviews')} className={`px-8 py-3 font-semibold ${activeTab === 'reviews' ? 'border-b-2 border-black text-black' : 'text-gray-500'}`}>Reviews</button>
+                    {/* Desktop Tabs */}
+                    <div className="hidden md:block">
+                        <div className="border-b mb-8 flex justify-center">
+                            {TABS.map(tab => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className={`px-8 py-3 font-semibold ${activeTab === tab.id ? 'border-b-2 border-black text-black' : 'text-gray-500'}`}
+                                >
+                                    {tab.title}
+                                </button>
+                            ))}
+                        </div>
+                        <div className="max-w-4xl mx-auto text-gray-700 leading-relaxed">
+                            {TABS.map(tab => activeTab === tab.id && (
+                                <div key={tab.id} dangerouslySetInnerHTML={{ __html: tab.content }} />
+                            ))}
+                        </div>
                     </div>
-                    <div className="max-w-4xl mx-auto text-gray-700 leading-relaxed">
-                        {activeTab === 'description' && (
-                            <div dangerouslySetInnerHTML={{ __html: product.longDescription || '' }} />
-                        )}
-                        {activeTab === 'custom' && (
-                            <p>Content for custom tab goes here.</p>
-                        )}
-                        {activeTab === 'reviews' && (
-                            <p>Reviews will be displayed here.</p>
-                        )}
+
+                    {/* Mobile Accordion */}
+                    <div className="md:hidden max-w-4xl mx-auto">
+                        {TABS.map((tab) => (
+                            <div key={tab.id} className="border-b border-gray-200 last:border-b-0">
+                                <button
+                                    onClick={() => toggleAccordion(tab.id)}
+                                    className="w-full flex justify-between items-center p-4 text-left bg-gray-100 hover:bg-gray-200 transition-colors"
+                                >
+                                    <span className="font-medium text-gray-900">{tab.title}</span>
+                                    <span className="bg-gray-800 text-white w-8 h-8 flex items-center justify-center shrink-0">
+                                        {openAccordion === tab.id ? <MinusIcon className="w-5 h-5" /> : <PlusIcon className="w-5 h-5" />}
+                                    </span>
+                                </button>
+                                {openAccordion === tab.id && (
+                                    <div className="bg-white p-4">
+                                        <div className="text-gray-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: tab.content }} />
+                                    </div>
+                                )}
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>
