@@ -25,6 +25,7 @@ import ShopPage from './components/ShopPage';
 import ContactPage from './components/ContactPage';
 import AboutPage from './components/AboutPage';
 import TermsPage from './components/TermsPage';
+import ReturnsPage from './components/ReturnsPage';
 
 const HomePage = ({ onProductQuickView, onProductClick }: { onProductQuickView: (product: Product) => void, onProductClick: (id: number) => void }) => (
   <>
@@ -168,6 +169,18 @@ const App: React.FC = () => {
                   description="Read the terms and conditions for using the Mobixo website and services. Understand your rights and obligations."
                 />
                 <TermsPage />
+              </>
+            }
+          />
+           <Route
+            path="/returns"
+            element={
+              <>
+                <SEO
+                  title="Returns & Exchanges | Mobixo"
+                  description="View our returns and exchanges policy. Find out how to initiate a return and get information on refunds."
+                />
+                <ReturnsPage />
               </>
             }
           />
