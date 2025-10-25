@@ -19,32 +19,53 @@ const QuickViewModal: FC<QuickViewModalProps> = ({ product, onClose }) => {
   const { addToCart, openCart } = useCart();
   const navigate = useNavigate();
 
+  const [isMounted, setIsMounted] = useState(!!product);
+  const [isActive, setIsActive] = useState(!!product);
+
   useEffect(() => {
-    if (product) {
-      document.body.style.overflow = 'hidden';
-      setQuantity(1);
-      setCurrentImageIndex(0);
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
+      let mountTimeout: number;
+      let activeTimeout: number;
+
+      if (product) {
+          document.body.style.overflow = 'hidden';
+          setQuantity(1);
+          setCurrentImageIndex(0);
+          setIsMounted(true);
+          mountTimeout = window.setTimeout(() => {
+              setIsActive(true);
+          }, 10);
+      } else {
+          setIsActive(false);
+          activeTimeout = window.setTimeout(() => {
+              setIsMounted(false);
+              document.body.style.overflow = 'unset';
+          }, 300); // Animation duration
+      }
+      
+      return () => {
+          window.clearTimeout(mountTimeout);
+          window.clearTimeout(activeTimeout);
+          if (document.body.style.overflow === 'hidden') {
+              document.body.style.overflow = 'unset';
+          }
+      };
   }, [product]);
 
-  if (!product) return null;
+  if (!isMounted) return null;
 
-  const isWishlisted = isInWishlist(product.id);
+  const isWishlisted = product ? isInWishlist(product.id) : false;
 
   const handleWishlistClick = () => {
-    if (isWishlisted) {
-      removeFromWishlist(product.id);
-    } else {
-      addToWishlist(product);
+    if (product) {
+      if (isWishlisted) {
+        removeFromWishlist(product.id);
+      } else {
+        addToWishlist(product);
+      }
     }
   };
 
-  const images = product.images?.length ? product.images : [product.imageUrl, product.imageUrl2];
+  const images = product?.images?.length ? product.images : [product?.imageUrl, product?.imageUrl2];
 
   const handleNextImage = () => {
     setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
@@ -55,9 +76,11 @@ const QuickViewModal: FC<QuickViewModalProps> = ({ product, onClose }) => {
   };
 
   const handleAddToCart = () => {
-    addToCart(product, quantity);
-    openCart();
-    onClose();
+    if (product) {
+      addToCart(product, quantity);
+      openCart();
+      onClose();
+    }
   };
 
   const handleBuyNow = () => {
@@ -70,13 +93,13 @@ const QuickViewModal: FC<QuickViewModalProps> = ({ product, onClose }) => {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60"
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-black transition-opacity duration-300 ease-in-out ${isActive ? 'bg-opacity-60' : 'bg-opacity-0'}`}
       onClick={onClose}
       aria-modal="true"
       role="dialog"
     >
       <div
-        className="relative bg-white w-full max-w-4xl m-4 rounded-lg shadow-xl flex flex-col md:flex-row max-h-[90vh]"
+        className={`relative bg-white w-full max-w-4xl m-4 rounded-lg shadow-xl flex flex-col md:flex-row max-h-[90vh] transition-all duration-300 ease-in-out transform ${isActive ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -90,7 +113,7 @@ const QuickViewModal: FC<QuickViewModalProps> = ({ product, onClose }) => {
         {/* Left: Image Gallery */}
         <div className="w-full md:w-1/2 p-4 relative flex items-center justify-center">
           <div className="relative aspect-square w-full max-w-md">
-            <img src={images[currentImageIndex]} alt={product.name} className="w-full h-full object-contain" />
+            <img src={images[currentImageIndex]} alt={product?.name} className="w-full h-full object-contain" />
             <button onClick={handlePrevImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/50 hover:bg-white/80 p-2 rounded-full shadow-md transition-colors">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
             </button>
@@ -102,20 +125,20 @@ const QuickViewModal: FC<QuickViewModalProps> = ({ product, onClose }) => {
 
         {/* Right: Product Details */}
         <div className="w-full md:w-1/2 p-6 overflow-y-auto no-scrollbar">
-          <h2 className="text-2xl font-bold text-gray-900">{product.name}</h2>
+          <h2 className="text-2xl font-bold text-gray-900">{product?.name}</h2>
           
           <div className="flex items-center my-3">
             <div className="flex items-center">
               {[...Array(5)].map((_, i) => (
-                <StarIcon key={i} filled={i < (product.rating || 0)} className="w-5 h-5 text-yellow-400" />
+                <StarIcon key={i} filled={i < (product?.rating || 0)} className="w-5 h-5 text-yellow-400" />
               ))}
             </div>
-            <span className="ml-2 text-sm text-gray-500">({product.reviewCount || 1} review)</span>
+            <span className="ml-2 text-sm text-gray-500">({product?.reviewCount || 1} review)</span>
           </div>
           
-          <p className="text-3xl font-bold text-gray-900 mb-4">{formatPrice(product.price)}</p>
+          <p className="text-3xl font-bold text-gray-900 mb-4">{formatPrice(product?.price || 0)}</p>
           
-          <p className="text-gray-600 mb-6 leading-relaxed">{product.description || 'No description available.'}</p>
+          <p className="text-gray-600 mb-6 leading-relaxed">{product?.description || 'No description available.'}</p>
           
           <div className="flex items-center space-x-4 mb-6">
             <div className="flex items-center border border-gray-300 rounded-md">
@@ -133,9 +156,9 @@ const QuickViewModal: FC<QuickViewModalProps> = ({ product, onClose }) => {
           
           <div className="text-sm text-gray-600 space-y-1">
             <p><a href="#" className="text-blue-600 underline hover:text-blue-800">Ask a Question</a></p>
-            <p><strong>Availability:</strong> <span className="text-green-600 font-semibold">{product.availability || 'In Stock'}</span></p>
-            <p><strong>Categories:</strong> {product.categories?.join(', ') || product.category}</p>
-            <p><strong>Tags:</strong> {product.tags?.join(', ') || 'N/A'}</p>
+            <p><strong>Availability:</strong> <span className="text-green-600 font-semibold">{product?.availability || 'In Stock'}</span></p>
+            <p><strong>Categories:</strong> {product?.categories?.join(', ') || product?.category}</p>
+            <p><strong>Tags:</strong> {product?.tags?.join(', ') || 'N/A'}</p>
           </div>
         </div>
       </div>

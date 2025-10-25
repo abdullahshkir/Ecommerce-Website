@@ -1,4 +1,4 @@
-import React, { useEffect, FC } from 'react';
+import React, { useEffect, FC, useState } from 'react';
 import { CloseIcon, SearchIcon, ChevronDownIcon, ArrowRightIcon } from './icons';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { products } from '../data/products';
@@ -12,23 +12,41 @@ const suggestedProducts = products.slice(1, 4);
 
 const SearchOverlay: FC<SearchOverlayProps> = ({ isOpen, onClose, onProductClick }) => {
     const { formatPrice } = useCurrency();
-    
+    const [isMounted, setIsMounted] = useState(isOpen);
+    const [isActive, setIsActive] = useState(isOpen);
+
     useEffect(() => {
+        let mountTimeout: number;
+        let activeTimeout: number;
+
         if (isOpen) {
             document.body.style.overflow = 'hidden';
+            setIsMounted(true);
+            mountTimeout = window.setTimeout(() => {
+                 setIsActive(true);
+            }, 10);
         } else {
-            document.body.style.overflow = 'unset';
+            setIsActive(false);
+            activeTimeout = window.setTimeout(() => {
+                setIsMounted(false);
+                document.body.style.overflow = 'unset';
+            }, 300); // Corresponds to animation duration
         }
+        
         return () => {
-            document.body.style.overflow = 'unset';
+            window.clearTimeout(mountTimeout);
+            window.clearTimeout(activeTimeout);
+            if (document.body.style.overflow === 'hidden') {
+                document.body.style.overflow = 'unset';
+            }
         };
     }, [isOpen]);
 
-  if (!isOpen) return null;
+  if (!isMounted) return null;
 
   return (
     <div 
-        className={`fixed inset-0 z-50 flex justify-end transition-opacity duration-300 ease-in-out ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        className={`fixed inset-0 z-50 flex justify-end transition-opacity duration-300 ease-in-out ${isActive ? 'opacity-100' : 'opacity-0'}`}
         aria-modal="true"
         role="dialog"
     >
@@ -41,7 +59,8 @@ const SearchOverlay: FC<SearchOverlayProps> = ({ isOpen, onClose, onProductClick
       
       {/* Search Panel */}
       <div 
-        className={`relative w-full max-w-sm bg-white h-full shadow-xl transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        className={`relative w-full max-w-sm bg-white h-full shadow-xl transform transition-transform duration-300 ease-in-out ${isActive ? 'translate-x-0' : 'translate-x-full'}`}
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="flex flex-col h-full">
             {/* Header */}

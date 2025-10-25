@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CloseIcon, EmptyCartIcon, TrashIcon, PlusIcon, MinusIcon, EyeIcon } from './icons';
 import { useCurrency } from '../contexts/CurrencyContext';
@@ -17,17 +17,37 @@ const CartModal: FC<CartModalProps> = ({ isOpen, onClose, onProductClick }) => {
     const { cartItems, removeFromCart, updateQuantity, subtotal } = useCart();
     const { formatPrice } = useCurrency();
     const navigate = useNavigate();
+    const [isMounted, setIsMounted] = useState(isOpen);
+    const [isActive, setIsActive] = useState(isOpen);
 
     useEffect(() => {
+        let mountTimeout: number;
+        let activeTimeout: number;
+
         if (isOpen) {
             document.body.style.overflow = 'hidden';
+            setIsMounted(true);
+            mountTimeout = window.setTimeout(() => {
+                 setIsActive(true);
+            }, 10);
         } else {
-            document.body.style.overflow = 'unset';
+            setIsActive(false);
+            activeTimeout = window.setTimeout(() => {
+                setIsMounted(false);
+                document.body.style.overflow = 'unset';
+            }, 300); // Corresponds to animation duration
         }
-        return () => { document.body.style.overflow = 'unset'; };
+        
+        return () => {
+            window.clearTimeout(mountTimeout);
+            window.clearTimeout(activeTimeout);
+            if (document.body.style.overflow === 'hidden') {
+                document.body.style.overflow = 'unset';
+            }
+        };
     }, [isOpen]);
 
-    if (!isOpen) return null;
+    if (!isMounted) return null;
 
     const handleViewCart = () => {
         onClose();
@@ -41,7 +61,7 @@ const CartModal: FC<CartModalProps> = ({ isOpen, onClose, onProductClick }) => {
 
     return (
         <div 
-            className={`fixed inset-0 z-50 flex justify-end transition-opacity duration-300 ease-in-out ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+            className={`fixed inset-0 z-50 flex justify-end transition-opacity duration-300 ease-in-out ${isActive ? 'opacity-100' : 'opacity-0'}`}
             aria-modal="true"
             role="dialog"
         >
@@ -52,7 +72,8 @@ const CartModal: FC<CartModalProps> = ({ isOpen, onClose, onProductClick }) => {
             ></div>
             
             <div 
-                className={`relative w-full max-w-sm bg-white h-full shadow-xl transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+                className={`relative w-full max-w-sm bg-white h-full shadow-xl transform transition-transform duration-300 ease-in-out ${isActive ? 'translate-x-0' : 'translate-x-full'}`}
+                onClick={(e) => e.stopPropagation()}
             >
                 <div className="flex flex-col h-full">
                     {/* Header */}

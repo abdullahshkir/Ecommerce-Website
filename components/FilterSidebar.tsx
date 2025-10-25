@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CloseIcon, MinusIcon, PlusIcon } from './icons';
 
 interface FilterSidebarProps {
@@ -37,6 +37,27 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose }) => {
     
     const [selectedColors, setSelectedColors] = useState<string[]>([]);
     const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+
+    const [isMounted, setIsMounted] = useState(isOpen);
+    const [isActive, setIsActive] = useState(isOpen);
+
+    useEffect(() => {
+        let mountTimeout: number;
+        let activeTimeout: number;
+
+        if (isOpen) {
+            setIsMounted(true);
+            mountTimeout = window.setTimeout(() => setIsActive(true), 10);
+        } else {
+            setIsActive(false);
+            activeTimeout = window.setTimeout(() => setIsMounted(false), 300);
+        }
+        
+        return () => {
+            window.clearTimeout(mountTimeout);
+            window.clearTimeout(activeTimeout);
+        };
+    }, [isOpen]);
 
     const handleColorClick = (color: string) => {
         setSelectedColors(prev => prev.includes(color) ? prev.filter(c => c !== color) : [...prev, color]);
@@ -102,12 +123,15 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose }) => {
     return (
         <>
             {/* Mobile Off-canvas */}
-            <div className={`fixed inset-0 z-50 lg:hidden transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-                <div className="absolute inset-0 bg-black bg-opacity-50" onClick={onClose}></div>
-                <div className={`relative w-full max-w-xs bg-white h-full shadow-xl transform transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-                   {sidebarContent}
+            {isMounted && (
+                <div className={`fixed inset-0 z-50 lg:hidden transition-opacity duration-300 ease-in-out ${isActive ? 'opacity-100' : 'opacity-0'}`}>
+                    <div className="absolute inset-0 bg-black bg-opacity-50" onClick={onClose}></div>
+                    <div className={`relative w-full max-w-xs bg-white h-full shadow-xl transform transition-transform duration-300 ease-in-out ${isActive ? 'translate-x-0' : '-translate-x-full'}`} onClick={(e) => e.stopPropagation()}>
+                       {sidebarContent}
+                    </div>
                 </div>
-            </div>
+            )}
+
 
             {/* Desktop Sidebar */}
             <aside className="hidden lg:block">

@@ -9,31 +9,50 @@ interface LoginModalProps {
 const LoginModal: FC<LoginModalProps> = ({ isOpen, onClose }) => {
     const [showPassword, setShowPassword] = useState(false);
     const [formType, setFormType] = useState<'login' | 'register'>('login');
+    const [isMounted, setIsMounted] = useState(isOpen);
+    const [isActive, setIsActive] = useState(isOpen);
 
     useEffect(() => {
+        let mountTimeout: number;
+        let activeTimeout: number;
+
         if (isOpen) {
             document.body.style.overflow = 'hidden';
+            setIsMounted(true);
+            mountTimeout = window.setTimeout(() => {
+                 setIsActive(true);
+            }, 10);
         } else {
-            document.body.style.overflow = 'unset';
+            setIsActive(false);
+            activeTimeout = window.setTimeout(() => {
+                setIsMounted(false);
+                document.body.style.overflow = 'unset';
+            }, 300); // Animation duration
         }
+        
+        return () => {
+            window.clearTimeout(mountTimeout);
+            window.clearTimeout(activeTimeout);
+            if (document.body.style.overflow === 'hidden') {
+                document.body.style.overflow = 'unset';
+            }
+        };
+    }, [isOpen]);
 
+    useEffect(() => {
         // Reset to login form when modal is closed
         if (!isOpen) {
             // Delay to match closing animation and prevent flickering
             const timer = setTimeout(() => setFormType('login'), 300);
             return () => clearTimeout(timer);
         }
-
-        return () => {
-            document.body.style.overflow = 'unset';
-        };
     }, [isOpen]);
 
-  if (!isOpen) return null;
+  if (!isMounted) return null;
 
   return (
     <div 
-        className={`fixed inset-0 z-50 flex justify-end transition-opacity duration-300 ease-in-out ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        className={`fixed inset-0 z-50 flex justify-end transition-opacity duration-300 ease-in-out ${isActive ? 'opacity-100' : 'opacity-0'}`}
         aria-modal="true"
         role="dialog"
     >
@@ -46,7 +65,8 @@ const LoginModal: FC<LoginModalProps> = ({ isOpen, onClose }) => {
       
       {/* Login Panel */}
       <div 
-        className={`relative w-full max-w-md bg-white h-full shadow-xl transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        className={`relative w-full max-w-md bg-white h-full shadow-xl transform transition-transform duration-300 ease-in-out ${isActive ? 'translate-x-0' : 'translate-x-full'}`}
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="flex flex-col h-full">
             {/* Header */}

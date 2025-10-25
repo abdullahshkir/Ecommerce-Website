@@ -72,14 +72,34 @@ const MobileMenuItem: FC<{ item: MenuItem; onAction: (item: MenuItem) => void; o
 
 const MobileMenu: FC<MobileMenuProps> = ({ isOpen, onClose, onSearchClick, onLoginClick }) => {
     const [activeTab, setActiveTab] = useState('menu');
+    const [isMounted, setIsMounted] = useState(isOpen);
+    const [isActive, setIsActive] = useState(isOpen);
 
     useEffect(() => {
+        let mountTimeout: number;
+        let activeTimeout: number;
+
         if (isOpen) {
             document.body.style.overflow = 'hidden';
+            setIsMounted(true);
+            mountTimeout = window.setTimeout(() => {
+                 setIsActive(true);
+            }, 10);
         } else {
-            document.body.style.overflow = 'unset';
+            setIsActive(false);
+            activeTimeout = window.setTimeout(() => {
+                setIsMounted(false);
+                document.body.style.overflow = 'unset';
+            }, 300); // Corresponds to animation duration
         }
-        return () => { document.body.style.overflow = 'unset'; };
+        
+        return () => {
+            window.clearTimeout(mountTimeout);
+            window.clearTimeout(activeTimeout);
+            if (document.body.style.overflow === 'hidden') {
+                document.body.style.overflow = 'unset';
+            }
+        };
     }, [isOpen]);
     
     const menuItems: MenuItem[] = [
@@ -108,13 +128,13 @@ const MobileMenu: FC<MobileMenuProps> = ({ isOpen, onClose, onSearchClick, onLog
         if (item.action === 'login') onLoginClick();
     };
     
-    if (!isOpen) return null;
+    if (!isMounted) return null;
 
     return (
         <div className="fixed inset-0 z-50 flex justify-start" aria-modal="true" role="dialog">
-            <div className="absolute inset-0 bg-black bg-opacity-50 transition-opacity duration-300" onClick={onClose} aria-hidden="true"></div>
+            <div className={`absolute inset-0 bg-black transition-opacity duration-300 ${isActive ? 'bg-opacity-50' : 'bg-opacity-0'}`} onClick={onClose} aria-hidden="true"></div>
             
-            <div className={`relative w-full max-w-sm bg-white h-full shadow-xl transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+            <div className={`relative w-full max-w-sm bg-white h-full shadow-xl transform transition-transform duration-300 ease-in-out ${isActive ? 'translate-x-0' : '-translate-x-full'}`} onClick={(e) => e.stopPropagation()}>
                 <div className="flex flex-col h-full">
                     <div className="flex-shrink-0 flex items-stretch border-b">
                         <div className="grid grid-cols-2 flex-grow text-center font-semibold text-gray-500">
