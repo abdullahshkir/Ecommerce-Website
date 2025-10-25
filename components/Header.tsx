@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { PhoneIcon, MailIcon, SearchIcon, UserIcon, HeartIcon, CartIcon, ChevronDownIcon, ArrowRightIcon, CloseIcon, MenuIcon } from './icons';
 import SearchOverlay from './SearchOverlay';
 
@@ -79,7 +80,7 @@ const Header: React.FC = () => {
                     <div className="flex justify-between items-center py-4">
                         {/* Left & Center: Logo and Nav */}
                         <div className="flex items-center flex-grow">
-                            <a href="#" className="text-3xl font-extrabold tracking-tighter text-black">Mobixo</a>
+                            <Link to="/" className="text-3xl font-extrabold tracking-tighter text-black">Mobixo</Link>
                             <nav className="hidden lg:flex items-center space-x-6 ml-10">
                                 {navLinks.map((link) => (
                                     <NavItem key={link.name} href={link.href} new={link.new} sale={link.sale}>
@@ -93,7 +94,10 @@ const Header: React.FC = () => {
                         <div className="flex items-center space-x-4">
                             <button onClick={() => setSearchOpen(true)} className="text-gray-700 hover:text-black"><SearchIcon /></button>
                             <a href="#" className="hidden sm:block text-gray-700 hover:text-black"><UserIcon /></a>
-                            <IconWithCounter icon={<HeartIcon />} count={0} />
+                            <Link to="/wishlist" className="relative text-gray-700 hover:text-black">
+                                <HeartIcon />
+                                <span className="absolute -top-1 -right-2 bg-black text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">6</span>
+                            </Link>
                             <IconWithCounter icon={<CartIcon />} count={0} />
                             <div className="hidden sm:flex items-center space-x-1 cursor-pointer text-gray-700 hover:text-black">
                                 <span className="text-sm font-medium">PKR</span>
