@@ -20,6 +20,7 @@ import ThankYouPage from './components/ThankYouPage';
 import SearchOverlay from './components/SearchOverlay';
 import LoginModal from './components/LoginModal';
 import MobileBottomNav from './components/MobileBottomNav';
+import { SEO } from './components/SEO';
 
 const HomePage = ({ onProductQuickView, onProductClick }: { onProductQuickView: (product: Product) => void, onProductClick: (id: number) => void }) => (
   <>
@@ -56,12 +57,68 @@ const App: React.FC = () => {
       <Header onSearchClick={() => setSearchOpen(true)} onLoginClick={() => setLoginOpen(true)} />
       <main>
         <Routes>
-          <Route path="/" element={<HomePage onProductQuickView={handleOpenQuickView} onProductClick={handleProductClick} />} />
-          <Route path="/wishlist" element={<WishlistPage />} />
+          <Route
+            path="/"
+            element={
+              <>
+                <SEO
+                  title="Mobixo - Modern Ecommerce Store | The Future of Online Shopping"
+                  description="Shop the latest electronics, gadgets, and accessories at Mobixo. Discover amazing deals on smart TVs, cameras, drones, and more. Free shipping and 24/7 support."
+                  imageUrl="https://res.cloudinary.com/dzx5zkl7v/image/upload/v1761378383/Hero_image_tyy9x9.jpg"
+                />
+                <HomePage onProductQuickView={handleOpenQuickView} onProductClick={handleProductClick} />
+              </>
+            }
+          />
+          <Route
+            path="/wishlist"
+            element={
+              <>
+                <SEO
+                  title="My Wishlist | Mobixo"
+                  description="View and manage your saved items. Keep track of all your favorite products in one place at Mobixo."
+                />
+                <WishlistPage />
+              </>
+            }
+          />
           <Route path="/product/:id" element={<ProductPage onProductClick={handleProductClick} />} />
-          <Route path="/cart" element={<CartPage />} />
-          <Route path="/checkout" element={<CheckoutPage />} />
-          <Route path="/thank-you" element={<ThankYouPage />} />
+          <Route
+            path="/cart"
+            element={
+              <>
+                <SEO
+                  title="Shopping Cart | Mobixo"
+                  description="Review your items and proceed to checkout. Secure and easy shopping at Mobixo."
+                />
+                <CartPage />
+              </>
+            }
+          />
+          <Route
+            path="/checkout"
+            element={
+              <>
+                <SEO
+                  title="Checkout | Mobixo"
+                  description="Complete your purchase securely. Enter your shipping and payment information to place your order at Mobixo."
+                />
+                <CheckoutPage />
+              </>
+            }
+          />
+          <Route
+            path="/thank-you"
+            element={
+              <>
+                <SEO
+                  title="Order Confirmed | Mobixo"
+                  description="Thank you for your purchase from Mobixo. Your order has been confirmed."
+                />
+                <ThankYouPage />
+              </>
+            }
+          />
         </Routes>
       </main>
       <Footer />
