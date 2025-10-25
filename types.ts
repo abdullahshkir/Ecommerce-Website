@@ -10,6 +10,7 @@ export interface Product {
   isNew?: boolean;
   collection?: string;
   description?: string;
+  longDescription?: string;
   availability?: string;
   categories?: string[];
   tags?: string[];
