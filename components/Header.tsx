@@ -31,7 +31,7 @@ const Header: React.FC<HeaderProps> = ({ onSearchClick, onLoginClick }) => {
     const navLinks: { name: string; to: string; new?: boolean; sale?: boolean }[] = [
         { name: 'Home', to: '/' },
         { name: 'Shop', to: '/shop', new: true, sale: true },
-        { name: 'About', to: '#' },
+        { name: 'About', to: '/about' },
         { name: 'Contact', to: '/contact' },
     ];
     

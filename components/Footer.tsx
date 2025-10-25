@@ -20,7 +20,7 @@ const Footer: React.FC = () => {
 
     const footerLinks = {
         'Information': [
-            { href: '#', text: 'About Us' },
+            { href: '#/about', text: 'About Us' },
             { href: '#/contact', text: 'Contact Us' },
             { href: '#', text: 'Terms & Conditions' },
             { href: '#', text: 'Returns & Exchanges' },
