@@ -93,8 +93,6 @@ const CheckoutPage: React.FC = () => {
                 {/* Left side - Information */}
                 <div className="lg:col-span-7 py-12 px-4 sm:px-6 lg:px-12 xl:px-20">
                     <div className="max-w-2xl mx-auto">
-                        <Link to="/" className="text-4xl font-extrabold tracking-tighter text-black">Mobixo</Link>
-
                         <form onSubmit={handlePlaceOrder} className="mt-10">
                              <div className="space-y-8">
                                 <div>
