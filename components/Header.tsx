@@ -38,7 +38,7 @@ const Header: React.FC = () => {
 
     return (
         <>
-            <header className="relative bg-white shadow-sm z-10">
+            <header className="sticky top-0 bg-white shadow-sm z-10">
                 {/* Top Announcement Bar */}
                 {isTopBarVisible && (
                     <div className="bg-blue-600 text-white text-sm font-medium">
