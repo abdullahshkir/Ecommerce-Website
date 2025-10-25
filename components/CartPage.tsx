@@ -16,12 +16,6 @@ const CartPage: React.FC = () => {
     const giftWrapCost = 5.00;
     const finalSubtotal = giftWrap ? subtotal + giftWrapCost : subtotal;
 
-    const handleUpdateQuantity = (id: number, newQuantity: number) => {
-        if (newQuantity > 0) {
-            updateQuantity(id, newQuantity);
-        }
-    };
-
     const handleCheckout = () => {
         if (agreeTerms) {
             navigate('/checkout');
@@ -47,9 +41,9 @@ const CartPage: React.FC = () => {
             {/* Quantity */}
             <div className="col-span-6 md:col-span-2">
                 <div className="flex items-center border rounded-full w-fit">
-                    <button onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)} className="px-3 py-1 text-gray-600"><MinusIcon/></button>
+                    <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="px-3 py-1 text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed" disabled={item.quantity <= 1}><MinusIcon/></button>
                     <span className="w-8 text-center text-sm">{item.quantity}</span>
-                    <button onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)} className="px-3 py-1 text-gray-600"><PlusIcon/></button>
+                    <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="px-3 py-1 text-gray-600"><PlusIcon/></button>
                 </div>
             </div>
             {/* Total */}

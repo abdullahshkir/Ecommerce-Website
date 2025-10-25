@@ -94,7 +94,7 @@ const CartModal: FC<CartModalProps> = ({ isOpen, onClose }) => {
                                                 <p className="text-sm text-gray-600">{formatPrice(item.price)}</p>
                                                 <div className="flex items-center justify-between mt-2">
                                                     <div className="flex items-center border border-gray-300 rounded-full">
-                                                        <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-l-full transition-colors"><MinusIcon className="w-4 h-4"/></button>
+                                                        <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-l-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled={item.quantity <= 1}><MinusIcon className="w-4 h-4"/></button>
                                                         <input type="text" value={item.quantity} readOnly className="w-8 text-center border-0 p-0 text-sm focus:outline-none focus:ring-0 bg-transparent"/>
                                                         <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-r-full transition-colors"><PlusIcon className="w-4 h-4"/></button>
                                                     </div>

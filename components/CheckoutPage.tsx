@@ -133,7 +133,7 @@ const CheckoutPage: React.FC = () => {
                                                 <button
                                                     onClick={() => buyNowItem ? handleBuyNowQuantityChange(item.quantity - 1) : updateQuantity(item.id, item.quantity - 1)}
                                                     className="px-2 py-1 text-gray-600 hover:bg-gray-100 rounded-l-full disabled:opacity-50 disabled:cursor-not-allowed"
-                                                    disabled={buyNowItem && item.quantity <= 1}
+                                                    disabled={item.quantity <= 1}
                                                     aria-label={`Decrease quantity of ${item.name}`}
                                                 >
                                                     <MinusIcon className="w-4 h-4" />

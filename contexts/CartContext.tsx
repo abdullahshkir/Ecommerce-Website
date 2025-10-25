@@ -57,15 +57,14 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const updateQuantity = (productId: number, newQuantity: number) => {
-    if (newQuantity <= 0) {
-      removeFromCart(productId);
-    } else {
-      setCartItems((prevItems) =>
-        prevItems.map(item =>
-          item.id === productId ? { ...item, quantity: newQuantity } : item
-        )
-      );
+    if (newQuantity < 1) {
+      return; // Do not allow quantity to be less than 1
     }
+    setCartItems((prevItems) =>
+      prevItems.map(item =>
+        item.id === productId ? { ...item, quantity: newQuantity } : item
+      )
+    );
   };
 
   const clearCart = () => {
