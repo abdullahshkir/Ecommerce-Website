@@ -38,7 +38,7 @@ const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ onSearchClick, onAcco
     return (
         <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white shadow-[0_-2px_5px_rgba(0,0,0,0.05)] z-40">
             <div className="flex justify-around items-center h-16">
-                <NavItem to="/" icon={<ShopIcon className="w-6 h-6" />} label="Shop" />
+                <NavItem to="/shop" icon={<ShopIcon className="w-6 h-6" />} label="Shop" />
                 <NavItem to="/wishlist" icon={<HeartIcon className="w-6 h-6" />} label="Wishlist" badgeCount={wishlistItems.length} />
                 <NavItem onClick={openCart} icon={<CartIcon className="w-6 h-6" />} label="Cart" badgeCount={cartCount} />
                 <NavItem onClick={onAccountClick} icon={<UserIcon className="w-6 h-6" />} label="Account" />

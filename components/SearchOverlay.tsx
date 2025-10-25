@@ -1,38 +1,16 @@
 import React, { useEffect, FC } from 'react';
 import { CloseIcon, SearchIcon, ChevronDownIcon, ArrowRightIcon } from './icons';
 import { useCurrency } from '../contexts/CurrencyContext';
+import { products } from '../data/products';
 
 interface SearchOverlayProps {
   isOpen: boolean;
   onClose: () => void;
+  onProductClick: (id: number) => void;
 }
-const newImageUrl = 'https://darlingretail.com/cdn/shop/products/1_7b64958c-304b-43bd-b759-c5366bfa9914_600x.jpg?v=1661581431';
+const suggestedProducts = products.slice(1, 4);
 
-const suggestedProducts = [
-  {
-    id: 1,
-    name: 'Video & Air Quality Monitor',
-    price: 239.00,
-    oldPrice: 312.00,
-    imageUrl: newImageUrl,
-  },
-  {
-    id: 2,
-    name: 'X-Star Premium Drone with 4K',
-    price: 450.00,
-    oldPrice: null,
-    imageUrl: newImageUrl,
-  },
-  {
-    id: 3,
-    name: 'Digital 20.1 4K Video',
-    price: 400.00,
-    oldPrice: 440.00,
-    imageUrl: newImageUrl,
-  },
-];
-
-const SearchOverlay: FC<SearchOverlayProps> = ({ isOpen, onClose }) => {
+const SearchOverlay: FC<SearchOverlayProps> = ({ isOpen, onClose, onProductClick }) => {
     const { formatPrice } = useCurrency();
     
     useEffect(() => {
@@ -105,7 +83,14 @@ const SearchOverlay: FC<SearchOverlayProps> = ({ isOpen, onClose }) => {
                 <h3 className="text-base font-semibold text-gray-800 mb-4">Need some inspiration?</h3>
                 <div className="space-y-5">
                     {suggestedProducts.map(product => (
-                        <a href="#" key={product.id} className="flex items-center space-x-4 group">
+                        <button
+                            onClick={() => {
+                                onClose();
+                                onProductClick(product.id);
+                            }}
+                            key={product.id}
+                            className="flex items-center space-x-4 group w-full text-left"
+                        >
                             <div className="w-20 h-20 flex-shrink-0 bg-gray-100 rounded-md overflow-hidden">
                                 <img src={product.imageUrl} alt={product.name} className="w-full h-full object-contain" />
                             </div>
@@ -120,7 +105,7 @@ const SearchOverlay: FC<SearchOverlayProps> = ({ isOpen, onClose }) => {
                                     )}
                                 </div>
                             </div>
-                        </a>
+                        </button>
                     ))}
                 </div>
             </div>

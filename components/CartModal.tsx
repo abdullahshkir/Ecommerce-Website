@@ -3,22 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import { CloseIcon, EmptyCartIcon, TrashIcon, PlusIcon, MinusIcon, EyeIcon } from './icons';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { useCart } from '../contexts/CartContext';
+import { products } from '../data/products';
 
 interface CartModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onProductClick: (id: number) => void;
 }
 
-const newImageUrl = 'https://darlingretail.com/cdn/shop/products/1_7b64958c-304b-43bd-b759-c5366bfa9914_600x.jpg?v=1661581431';
+const recommendedProduct = products[3];
 
-const recommendedProduct = {
-    name: 'Video & Air Quality...',
-    price: 239.00,
-    oldPrice: 312.00,
-    imageUrl: newImageUrl,
-};
-
-const CartModal: FC<CartModalProps> = ({ isOpen, onClose }) => {
+const CartModal: FC<CartModalProps> = ({ isOpen, onClose, onProductClick }) => {
     const { cartItems, removeFromCart, updateQuantity, subtotal } = useCart();
     const { formatPrice } = useCurrency();
     const navigate = useNavigate();
@@ -110,21 +105,29 @@ const CartModal: FC<CartModalProps> = ({ isOpen, onClose }) => {
                                 {/* You may also like */}
                                 <div>
                                     <h4 className="font-semibold text-gray-800 mb-4">You may also like</h4>
-                                    <div className="bg-gray-50 rounded-lg p-4 flex items-center space-x-4">
+                                    <button
+                                        onClick={() => {
+                                            onClose();
+                                            onProductClick(recommendedProduct.id);
+                                        }}
+                                        className="w-full bg-gray-50 rounded-lg p-4 flex items-center space-x-4 text-left group"
+                                    >
                                         <div className="w-16 h-16 flex-shrink-0">
-                                            <img src={recommendedProduct.imageUrl} alt={recommendedProduct.name} className="w-full h-full object-contain" />
+                                            <img src={recommendedProduct.imageUrl} alt={recommendedProduct.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform" />
                                         </div>
                                         <div className="flex-grow">
-                                            <p className="text-sm font-medium text-gray-800">{recommendedProduct.name}</p>
+                                            <p className="text-sm font-medium text-gray-800 group-hover:text-blue-600 transition-colors">{recommendedProduct.name}</p>
                                             <div className="flex items-baseline space-x-2 mt-1">
                                                 <span className="text-sm font-bold text-red-600">{formatPrice(recommendedProduct.price)}</span>
-                                                <span className="text-xs text-gray-400 line-through">{formatPrice(recommendedProduct.oldPrice)}</span>
+                                                {recommendedProduct.oldPrice && (
+                                                    <span className="text-xs text-gray-400 line-through">{formatPrice(recommendedProduct.oldPrice)}</span>
+                                                )}
                                             </div>
                                         </div>
-                                        <button className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700">
+                                        <div className="bg-white p-2 rounded-full shadow group-hover:bg-blue-600 group-hover:text-white transition-colors">
                                             <EyeIcon className="w-5 h-5" />
-                                        </button>
-                                    </div>
+                                        </div>
+                                    </button>
                                 </div>
                             </div>
                             {/* Footer */}

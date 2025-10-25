@@ -29,7 +29,7 @@ const HomePage = ({ onProductQuickView, onProductClick }: { onProductQuickView: 
     <Features />
     <PromoGrid />
     <BestSellers onProductQuickView={onProductQuickView} onProductClick={onProductClick} />
-    <DealsOfTheDay />
+    <DealsOfTheDay onProductClick={onProductClick} />
     <FeaturedCollection onProductQuickView={onProductQuickView} onProductClick={onProductClick} />
   </>
 );
@@ -136,8 +136,8 @@ const App: React.FC = () => {
       </main>
       <Footer />
       <QuickViewModal product={quickViewProduct} onClose={handleCloseQuickView} />
-      <CartModal isOpen={isCartOpen} onClose={closeCart} />
-      <SearchOverlay isOpen={isSearchOpen} onClose={() => setSearchOpen(false)} />
+      <CartModal isOpen={isCartOpen} onClose={closeCart} onProductClick={handleProductClick} />
+      <SearchOverlay isOpen={isSearchOpen} onClose={() => setSearchOpen(false)} onProductClick={handleProductClick} />
       <LoginModal isOpen={isLoginOpen} onClose={() => setLoginOpen(false)} />
       <MobileBottomNav 
         onSearchClick={() => setSearchOpen(true)} 

@@ -8,42 +8,42 @@ const newImageUrl = 'https://darlingretail.com/cdn/shop/products/1_7b64958c-304b
 
 const dealsData = [
     {
-        id: 1,
+        id: 8, // Corresponds to '4K Action Camera' in products.ts
         name: '4K Action Camera',
         description: 'Capture your adventures in stunning 4K. Waterproof, durable, and ready for anything.',
         imageUrl: newImageUrl,
         price: 350.00,
-        oldPrice: 450.00,
+        oldPrice: 420.00,
         dealEndDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days from now
         rating: 5,
     },
     {
-        id: 2,
-        name: 'Smart Home Hub',
+        id: 5, // Corresponds to 'Smart TV Soundbar'
+        name: 'Smart TV Soundbar',
         imageUrl: newImageUrl,
-        price: 120.00,
-        oldPrice: 150.00,
-    },
-    {
-        id: 3,
-        name: 'Fitness Tracker Band',
-        imageUrl: newImageUrl,
-        price: 60.00,
-        oldPrice: 80.00,
-    },
-    {
-        id: 4,
-        name: 'VR Headset',
-        imageUrl: newImageUrl,
-        price: 299.00,
+        price: 285.00,
         oldPrice: 350.00,
     },
     {
-        id: 5,
-        name: 'Portable Power Bank',
+        id: 2, // Corresponds to 'Noise-Cancelling Headphones'
+        name: 'Noise-Cancelling Headphones',
         imageUrl: newImageUrl,
-        price: 45.00,
-        oldPrice: 60.00,
+        price: 180.00,
+        oldPrice: null,
+    },
+    {
+        id: 3, // Corresponds to 'Compact Digital Camera'
+        name: 'Compact Digital Camera',
+        imageUrl: newImageUrl,
+        price: 450.00,
+        oldPrice: 500.00,
+    },
+    {
+        id: 7, // Corresponds to 'Wireless Mouse'
+        name: 'Wireless Mouse',
+        imageUrl: newImageUrl,
+        price: 40.00,
+        oldPrice: null,
     },
 ];
 
@@ -86,17 +86,16 @@ const CountdownTimer: React.FC<{ endDate: string }> = ({ endDate }) => {
     );
 };
 
-
-const SmallProductCard: React.FC<Omit<typeof dealsData[0], 'description' | 'dealEndDate' | 'rating'>> = ({ name, imageUrl, price, oldPrice }) => {
+const SmallProductCard: React.FC<Omit<typeof dealsData[0], 'description' | 'dealEndDate' | 'rating'> & { onProductClick: (id: number) => void }> = ({ id, name, imageUrl, price, oldPrice, onProductClick }) => {
     const { formatPrice } = useCurrency();
     return (
-        <div className="group relative flex items-center space-x-4 bg-gray-50 p-4 rounded-lg overflow-hidden">
+        <div onClick={() => onProductClick(id)} className="group relative flex items-center space-x-4 bg-gray-50 p-4 rounded-lg overflow-hidden cursor-pointer">
             <div className="w-1/3">
                 <img src={imageUrl} alt={name} className="w-full h-auto object-cover rounded transition-transform duration-300 group-hover:scale-110" />
             </div>
             <div className="w-2/3">
                 <h4 className="text-sm font-semibold text-gray-800 mb-1">
-                    <a href="#" className="hover:text-black">{name}</a>
+                    <span className="group-hover:text-black transition-colors">{name}</span>
                 </h4>
                 <div className="flex items-baseline space-x-2">
                     <span className="text-base font-bold text-black">{formatPrice(price)}</span>
@@ -108,13 +107,14 @@ const SmallProductCard: React.FC<Omit<typeof dealsData[0], 'description' | 'deal
 };
 
 
-const DealsOfTheDay: React.FC = () => {
+const DealsOfTheDay: React.FC<{ onProductClick: (id: number) => void }> = ({ onProductClick }) => {
     const mainDeal = dealsData[0];
     const otherDeals = dealsData.slice(1);
     const { formatPrice } = useCurrency();
     const { addToCart, openCart } = useCart();
 
-    const handleAddToCart = () => {
+    const handleAddToCart = (e: React.MouseEvent) => {
+        e.stopPropagation();
         const productToAdd: Product = {
             id: mainDeal.id,
             name: mainDeal.name,
@@ -140,7 +140,7 @@ const DealsOfTheDay: React.FC = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
                     {/* Main Deal Card */}
                     <div className="group relative bg-white p-6 rounded-lg shadow-lg flex flex-col md:flex-row items-center gap-6">
-                        <div className="md:w-1/2 w-full">
+                        <div className="md:w-1/2 w-full cursor-pointer" onClick={() => onProductClick(mainDeal.id)}>
                             <img src={mainDeal.imageUrl} alt={mainDeal.name} className="w-full h-auto object-cover rounded-md transition-transform duration-300 group-hover:scale-105" />
                         </div>
                         <div className="md:w-1/2 w-full text-center md:text-left">
@@ -150,7 +150,7 @@ const DealsOfTheDay: React.FC = () => {
                                 ))}
                             </div>
                             <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                                <a href="#" className="hover:text-blue-600">{mainDeal.name}</a>
+                                <span onClick={() => onProductClick(mainDeal.id)} className="hover:text-blue-600 cursor-pointer">{mainDeal.name}</span>
                             </h3>
                             <p className="text-gray-600 mb-4 text-sm">{mainDeal.description}</p>
                             <div className="flex justify-center md:justify-start items-baseline space-x-2 mb-4">
@@ -170,7 +170,7 @@ const DealsOfTheDay: React.FC = () => {
                     {/* Other Deals Grid */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         {otherDeals.map(deal => (
-                            <SmallProductCard key={deal.id} {...deal} />
+                            <SmallProductCard key={deal.id} {...deal} onProductClick={onProductClick} />
                         ))}
                     </div>
                 </div>
