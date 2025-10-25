@@ -12,7 +12,7 @@ const ProductCard: React.FC<{ product: Product; onClick: (id: number) => void }>
     return (
         <div className="group relative text-center cursor-pointer" onClick={() => onClick(product.id)}>
             <div className="relative overflow-hidden">
-                 <div className="relative h-[250px] sm:h-[300px]">
+                 <div className="relative h-[220px] sm:h-[300px]">
                     <img src={product.imageUrl} alt={product.name} className="absolute inset-0 w-full h-full object-cover" />
                 </div>
             </div>
@@ -196,7 +196,7 @@ const ProductPage: React.FC<{onProductClick: (id: number) => void}> = ({ onProdu
                         <div className="text-center mb-12">
                             <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">You may also like</h2>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
+                        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
                             {relatedProducts.map(p => (
                                 <ProductCard key={p.id} product={p} onClick={onProductClick} />
                             ))}

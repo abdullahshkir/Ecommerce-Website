@@ -36,7 +36,7 @@ const ProductCard: React.FC<{ product: Product, onQuickView: (product: Product) 
         <div className="group relative text-center cursor-pointer" onClick={handleCardClick}>
             <div className="relative overflow-hidden">
                 {/* Image Container */}
-                <div className="relative h-[300px] sm:h-[350px]">
+                <div className="relative h-[220px] sm:h-[350px]">
                     <img src={imageUrl} alt={name} className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ease-in-out opacity-100 group-hover:opacity-0" />
                     <img src={imageUrl2} alt={`${name} hover`} className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ease-in-out opacity-0 group-hover:opacity-100" />
                 </div>
@@ -105,7 +105,7 @@ const FeaturedCollection: React.FC<{ onProductQuickView: (product: Product) => v
                     ))}
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
                      {filteredProducts.map((product) => (
                         <ProductCard key={product.id} product={product} onQuickView={onProductQuickView} onProductClick={onProductClick} />
                     ))}
