@@ -92,7 +92,7 @@ const CheckoutPage: React.FC = () => {
             <div className="min-h-screen lg:grid lg:grid-cols-12">
                 {/* Right side - Order Summary */}
                 <div className="lg:col-span-5 lg:col-start-8 bg-gray-50 lg:border-l border-b lg:border-b-0 border-gray-200">
-                    <div className="py-12 px-4 sm:px-6 lg:px-12 lg:sticky top-0">
+                    <div className="py-6 lg:py-12 px-4 sm:px-6 lg:px-12 lg:sticky top-0">
                          {/* Mobile summary toggle */}
                         <div className="lg:hidden">
                             <button onClick={() => setIsSummaryOpen(!isSummaryOpen)} className="w-full flex justify-between items-center text-lg">
@@ -150,10 +150,10 @@ const CheckoutPage: React.FC = () => {
                 </div>
                 
                 {/* Left side - Information */}
-                <div className="lg:col-span-7 lg:row-start-1 py-12 px-4 sm:px-6 lg:px-12 xl:px-20">
+                <div className="lg:col-span-7 lg:row-start-1 py-8 lg:py-12 px-4 sm:px-6 lg:px-12 xl:px-20">
                     <div className="max-w-2xl mx-auto">
-                        <form onSubmit={handlePlaceOrder} className="mt-10">
-                             <div className="space-y-8">
+                        <form onSubmit={handlePlaceOrder} className="mt-6">
+                             <div className="space-y-6">
                                 <div>
                                     <h2 className="text-xl font-semibold mb-4">Contact information</h2>
                                     <FormInput id="email" label="Email address" type="email" autoComplete="email" value={formData.email} onChange={handleInputChange} />
