@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { PhoneIcon, MailIcon, SearchIcon, UserIcon, HeartIcon, CartIcon, ChevronDownIcon, ArrowRightIcon, CloseIcon, MenuIcon } from './icons';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { useWishlist } from '../contexts/WishlistContext';
@@ -18,15 +18,18 @@ const NavItem: React.FC<{ to: string; children: React.ReactNode; new?: boolean; 
 interface HeaderProps {
     onSearchClick: () => void;
     onLoginClick: () => void;
+    isLoggedIn: boolean;
+    onLogout: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ onSearchClick, onLoginClick }) => {
+const Header: React.FC<HeaderProps> = ({ onSearchClick, onLoginClick, isLoggedIn, onLogout }) => {
     const [isTopBarVisible, setTopBarVisible] = useState(true);
     const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
     const { currency, setCurrency } = useCurrency();
     const [isCurrencyDropdownOpen, setCurrencyDropdownOpen] = useState(false);
     const { wishlistItems } = useWishlist();
     const { openCart, cartCount } = useCart();
+    const navigate = useNavigate();
 
     const navLinks: { name: string; to: string; new?: boolean; sale?: boolean }[] = [
         { name: 'Home', to: '/' },
@@ -36,6 +39,14 @@ const Header: React.FC<HeaderProps> = ({ onSearchClick, onLoginClick }) => {
     ];
     
     const handleMobileMenuClose = () => setMobileMenuOpen(false);
+
+    const handleUserIconClick = () => {
+        if (isLoggedIn) {
+            navigate('/account');
+        } else {
+            onLoginClick();
+        }
+    };
 
     return (
         <>
@@ -116,7 +127,7 @@ const Header: React.FC<HeaderProps> = ({ onSearchClick, onLoginClick }) => {
                                 
                                 {/* Desktop-only icons */}
                                 <div className="hidden lg:flex items-center space-x-4">
-                                    <button onClick={onLoginClick} className="text-gray-700 hover:text-black"><UserIcon /></button>
+                                    <button onClick={handleUserIconClick} className="text-gray-700 hover:text-black"><UserIcon /></button>
                                     <Link to="/wishlist" className="relative text-gray-700 hover:text-black">
                                         <HeartIcon />
                                         {wishlistItems.length > 0 && (
@@ -167,7 +178,7 @@ const Header: React.FC<HeaderProps> = ({ onSearchClick, onLoginClick }) => {
                 }}
                 onLoginClick={() => {
                     handleMobileMenuClose();
-                    onLoginClick();
+                    handleUserIconClick();
                 }}
             />
         </>

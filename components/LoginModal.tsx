@@ -4,9 +4,10 @@ import { CloseIcon, EnvelopeIcon, EyeIcon, EyeOffIcon } from './icons';
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onLoginSuccess: () => void;
 }
 
-const LoginModal: FC<LoginModalProps> = ({ isOpen, onClose }) => {
+const LoginModal: FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
     const [showPassword, setShowPassword] = useState(false);
     const [formType, setFormType] = useState<'login' | 'register'>('login');
     const [isMounted, setIsMounted] = useState(isOpen);
@@ -47,6 +48,13 @@ const LoginModal: FC<LoginModalProps> = ({ isOpen, onClose }) => {
             return () => clearTimeout(timer);
         }
     }, [isOpen]);
+    
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        // Since there is no auth, we just call the success handler
+        onLoginSuccess();
+    };
+
 
   if (!isMounted) return null;
 
@@ -81,7 +89,7 @@ const LoginModal: FC<LoginModalProps> = ({ isOpen, onClose }) => {
 
             {/* Form Container */}
             <div className="flex-grow p-8 overflow-y-auto">
-                <form className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-6">
                     {formType === 'register' && (
                         <>
                             <div>

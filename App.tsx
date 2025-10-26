@@ -27,6 +27,12 @@ import AboutPage from './components/AboutPage';
 import TermsPage from './components/TermsPage';
 import ReturnsPage from './components/ReturnsPage';
 import ShippingPage from './components/ShippingPage';
+import DashboardLayout from './components/dashboard/DashboardLayout';
+import DashboardPage from './components/dashboard/DashboardPage';
+import OrdersPage from './components/dashboard/OrdersPage';
+import OrderTrackingPage from './components/dashboard/OrderTrackingPage';
+import AddressesPage from './components/dashboard/AddressesPage';
+import AccountDetailsPage from './components/dashboard/AccountDetailsPage';
 
 const HomePage = ({ onProductQuickView, onProductClick }: { onProductQuickView: (product: Product) => void, onProductClick: (id: number) => void }) => (
   <>
@@ -43,6 +49,7 @@ const App: React.FC = () => {
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const [isSearchOpen, setSearchOpen] = useState(false);
   const [isLoginOpen, setLoginOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
   const { isCartOpen, closeCart } = useCart();
 
@@ -58,9 +65,25 @@ const App: React.FC = () => {
     navigate(`/product/${id}`);
   };
 
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true);
+    setLoginOpen(false);
+    navigate('/account');
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    navigate('/');
+  };
+
   return (
     <div className="bg-white font-sans pb-16 lg:pb-0">
-      <Header onSearchClick={() => setSearchOpen(true)} onLoginClick={() => setLoginOpen(true)} />
+      <Header 
+        onSearchClick={() => setSearchOpen(true)} 
+        onLoginClick={() => setLoginOpen(true)}
+        isLoggedIn={isLoggedIn}
+        onLogout={handleLogout}
+      />
       <main>
         <Routes>
           <Route
@@ -197,16 +220,23 @@ const App: React.FC = () => {
               </>
             }
           />
+           <Route path="/account" element={<DashboardLayout onLogout={handleLogout} />}>
+              <Route index element={<DashboardPage />} />
+              <Route path="orders" element={<OrdersPage />} />
+              <Route path="orders/:orderId" element={<OrderTrackingPage />} />
+              <Route path="addresses" element={<AddressesPage />} />
+              <Route path="details" element={<AccountDetailsPage />} />
+          </Route>
         </Routes>
       </main>
-      <Footer onLoginClick={() => setLoginOpen(true)} />
+      <Footer onLoginClick={() => setLoginOpen(true)} isLoggedIn={isLoggedIn} onLogout={handleLogout} />
       <QuickViewModal product={quickViewProduct} onClose={handleCloseQuickView} />
       <CartModal isOpen={isCartOpen} onClose={closeCart} onProductClick={handleProductClick} />
       <SearchOverlay isOpen={isSearchOpen} onClose={() => setSearchOpen(false)} onProductClick={handleProductClick} />
-      <LoginModal isOpen={isLoginOpen} onClose={() => setLoginOpen(false)} />
+      <LoginModal isOpen={isLoginOpen} onClose={() => setLoginOpen(false)} onLoginSuccess={handleLoginSuccess} />
       <MobileBottomNav 
         onSearchClick={() => setSearchOpen(true)} 
-        onAccountClick={() => setLoginOpen(true)} 
+        onAccountClick={() => isLoggedIn ? navigate('/account') : setLoginOpen(true)} 
       />
     </div>
   );

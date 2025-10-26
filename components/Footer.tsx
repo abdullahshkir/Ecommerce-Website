@@ -5,12 +5,15 @@ import {
     InstagramIcon,
     YoutubeIcon,
 } from './icons';
+import { Link } from 'react-router-dom';
 
 interface FooterProps {
     onLoginClick: () => void;
+    isLoggedIn: boolean;
+    onLogout: () => void;
 }
 
-const Footer: React.FC<FooterProps> = ({ onLoginClick }) => {
+const Footer: React.FC<FooterProps> = ({ onLoginClick, isLoggedIn, onLogout }) => {
     const socialLinks = [
         { href: '#', icon: <FacebookIcon className="w-5 h-5" /> },
         { href: '#', icon: <TwitterIcon className="w-5 h-5" /> },
@@ -27,8 +30,8 @@ const Footer: React.FC<FooterProps> = ({ onLoginClick }) => {
             { href: '#/shipping', text: 'Shipping & Delivery' },
         ],
         'Account': [
-            { href: '#', text: 'My Account' },
-            { href: '#', text: 'Track your Order' },
+            { href: '#/account', text: 'My Account' },
+            { href: '#/account/orders', text: 'Track your Order' },
             { href: '#/wishlist', text: 'Wishlist' },
             { href: '#', text: 'Payment Methods' },
         ],
@@ -96,15 +99,15 @@ const Footer: React.FC<FooterProps> = ({ onLoginClick }) => {
                                         <a href={link.href} className="text-sm hover:text-white transition-colors">{link.text}</a>
                                     </li>
                                 ))}
-                                {title === 'Useful Links' && (
-                                    <>
-                                        <li>
-                                            <button onClick={onLoginClick} className="text-sm hover:text-white transition-colors text-left bg-transparent border-none p-0 cursor-pointer focus:outline-none">Login</button>
-                                        </li>
-                                        <li>
-                                            <button onClick={onLoginClick} className="text-sm hover:text-white transition-colors text-left bg-transparent border-none p-0 cursor-pointer focus:outline-none">Register</button>
-                                        </li>
-                                    </>
+                                {title === 'Account' && !isLoggedIn && (
+                                     <li>
+                                        <button onClick={onLoginClick} className="text-sm hover:text-white transition-colors text-left bg-transparent border-none p-0 cursor-pointer focus:outline-none">Login / Register</button>
+                                    </li>
+                                )}
+                                 {title === 'Account' && isLoggedIn && (
+                                     <li>
+                                        <button onClick={onLogout} className="text-sm hover:text-white transition-colors text-left bg-transparent border-none p-0 cursor-pointer focus:outline-none">Logout</button>
+                                    </li>
                                 )}
                             </ul>
                         </div>
