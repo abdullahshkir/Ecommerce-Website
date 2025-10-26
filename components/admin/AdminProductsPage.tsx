@@ -1,23 +1,20 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { products } from '../../data/products';
 import { useCurrency } from '../../contexts/CurrencyContext';
 import { Product } from '../../types';
-import { PlusIcon, EditIcon, TrashIcon, MoreVerticalIcon } from '../icons';
-import ProductFormModal from './ProductFormModal';
+import { PlusIcon, EditIcon, TrashIcon } from '../icons';
 
 const AdminProductsPage: React.FC = () => {
     const { formatPrice } = useCurrency();
-    const [isModalOpen, setModalOpen] = useState(false);
-    const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+    const navigate = useNavigate();
 
     const handleAddNew = () => {
-        setEditingProduct(null);
-        setModalOpen(true);
+        navigate('/adminpanel/products/new');
     };
 
     const handleEdit = (product: Product) => {
-        setEditingProduct(product);
-        setModalOpen(true);
+        navigate(`/adminpanel/products/edit/${product.id}`);
     };
 
     return (
@@ -75,12 +72,6 @@ const AdminProductsPage: React.FC = () => {
                     </tbody>
                 </table>
             </div>
-
-            <ProductFormModal 
-                isOpen={isModalOpen}
-                onClose={() => setModalOpen(false)}
-                product={editingProduct}
-            />
         </div>
     );
 };

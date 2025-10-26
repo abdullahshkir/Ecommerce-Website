@@ -40,6 +40,9 @@ import AdminDashboardPage from './components/admin/AdminDashboardPage';
 import AdminProductsPage from './components/admin/AdminProductsPage';
 import AdminOrdersPage from './components/admin/AdminOrdersPage';
 import AdminUsersPage from './components/admin/AdminUsersPage';
+import AdminProductFormPage from './components/admin/AdminProductFormPage';
+import AdminOrderDetailPage from './components/admin/AdminOrderDetailPage';
+import AdminUserDetailPage from './components/admin/AdminUserDetailPage';
 
 
 const HomePage = ({ onProductQuickView, onProductClick }: { onProductQuickView: (product: Product) => void, onProductClick: (id: number) => void }) => (
@@ -100,8 +103,12 @@ const App: React.FC = () => {
             <Route path="/adminpanel" element={<AdminLayout onLogout={handleAdminLogout} />}>
               <Route path="dashboard" element={<AdminDashboardPage />} />
               <Route path="products" element={<AdminProductsPage />} />
+              <Route path="products/new" element={<AdminProductFormPage />} />
+              <Route path="products/edit/:productId" element={<AdminProductFormPage />} />
               <Route path="orders" element={<AdminOrdersPage />} />
+              <Route path="orders/:orderId" element={<AdminOrderDetailPage />} />
               <Route path="users" element={<AdminUsersPage />} />
+               <Route path="users/:userId" element={<AdminUserDetailPage />} />
             </Route>
           ) : null}
 

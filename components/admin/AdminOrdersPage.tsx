@@ -1,7 +1,8 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useCurrency } from '../../contexts/CurrencyContext';
 import { Order } from '../../types';
-import { EyeIcon, MoreVerticalIcon } from '../icons';
+import { MoreVerticalIcon } from '../icons';
 
 const mockOrders: (Order & { customer: string })[] = [
     { id: 'MX54321', customer: 'John Doe', date: '2025-07-29', status: 'Delivered', total: 180.00, items: [], shippingAddress: {} as any },
@@ -24,6 +25,11 @@ const getStatusClass = (status: Order['status']) => {
 
 const AdminOrdersPage: React.FC = () => {
     const { formatPrice } = useCurrency();
+    const navigate = useNavigate();
+
+    const handleRowClick = (orderId: string) => {
+        navigate(`/adminpanel/orders/${orderId}`);
+    };
     
     return (
         <div className="bg-white p-6 rounded-lg shadow-md">
@@ -48,7 +54,7 @@ const AdminOrdersPage: React.FC = () => {
                     </thead>
                     <tbody className="divide-y">
                         {mockOrders.map(order => (
-                            <tr key={order.id} className="hover:bg-gray-50">
+                            <tr key={order.id} onClick={() => handleRowClick(order.id)} className="hover:bg-gray-50 cursor-pointer">
                                 <td className="px-4 py-3 font-semibold text-blue-600">#{order.id}</td>
                                 <td className="px-4 py-3 text-gray-800">{order.customer}</td>
                                 <td className="px-4 py-3 text-gray-600">{order.date}</td>
@@ -59,7 +65,7 @@ const AdminOrdersPage: React.FC = () => {
                                     </span>
                                 </td>
                                 <td className="px-4 py-3 text-center">
-                                     <button className="p-2 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-colors">
+                                     <button className="p-2 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-colors" onClick={(e) => e.stopPropagation()}>
                                         <MoreVerticalIcon className="w-5 h-5" />
                                      </button>
                                 </td>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MoreVerticalIcon } from '../icons';
 
 const mockUsers = [
@@ -11,6 +12,12 @@ const mockUsers = [
 ];
 
 const AdminUsersPage: React.FC = () => {
+    const navigate = useNavigate();
+
+    const handleUserClick = (userId: number) => {
+        navigate(`/adminpanel/users/${userId}`);
+    };
+
     return (
         <div className="bg-white p-6 rounded-lg shadow-md">
             <div className="flex justify-between items-center mb-6">
@@ -32,7 +39,7 @@ const AdminUsersPage: React.FC = () => {
                     </thead>
                     <tbody className="divide-y">
                         {mockUsers.map(user => (
-                            <tr key={user.id} className="hover:bg-gray-50">
+                            <tr key={user.id} onClick={() => handleUserClick(user.id)} className="hover:bg-gray-50 cursor-pointer">
                                 <td className="px-4 py-3">
                                     <div className="flex items-center gap-3">
                                         <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold">
@@ -44,7 +51,7 @@ const AdminUsersPage: React.FC = () => {
                                 <td className="px-4 py-3 text-gray-600">{user.email}</td>
                                 <td className="px-4 py-3 text-gray-600">{user.registrationDate}</td>
                                 <td className="px-4 py-3 text-center">
-                                    <button className="p-2 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-colors">
+                                    <button className="p-2 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-colors" onClick={(e) => e.stopPropagation()}>
                                         <MoreVerticalIcon className="w-5 h-5" />
                                     </button>
                                 </td>
