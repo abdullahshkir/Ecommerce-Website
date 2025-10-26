@@ -47,7 +47,7 @@ const AdminUserDetailPage: React.FC = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-1">
-                    <div className="bg-white p-6 rounded-lg shadow-md text-center">
+                    <div className="bg-white p-6 rounded-lg shadow-sm text-center">
                         <div className="w-24 h-24 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-4xl mx-auto mb-4">
                             {mockUser.name.charAt(0)}
                         </div>
@@ -58,7 +58,7 @@ const AdminUserDetailPage: React.FC = () => {
                 </div>
 
                 <div className="lg:col-span-2">
-                    <div className="bg-white p-6 rounded-lg shadow-md">
+                    <div className="bg-white p-6 rounded-lg shadow-sm">
                         <h3 className="text-lg font-semibold text-gray-800 border-b pb-3 mb-4">Contact Information</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                             <div>
@@ -85,7 +85,7 @@ const AdminUserDetailPage: React.FC = () => {
                 </div>
             </div>
 
-             <div className="bg-white p-6 rounded-lg shadow-md">
+             <div className="bg-white p-6 rounded-lg shadow-sm">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Order History</h3>
                  <div className="overflow-x-auto">
                     <table className="min-w-full text-left text-sm">

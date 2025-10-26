@@ -27,7 +27,7 @@ const mockOrder: (Order & { customer: { name: string; email: string; phone: stri
 };
 
 const InfoCard: React.FC<{ title: string; icon: React.ReactNode; children: React.ReactNode }> = ({ title, icon, children }) => (
-    <div className="bg-white p-6 rounded-lg shadow-md">
+    <div className="bg-white p-6 rounded-lg shadow-sm">
         <div className="flex items-center border-b pb-3 mb-4">
             {icon}
             <h3 className="text-lg font-semibold text-gray-800 ml-3">{title}</h3>
@@ -40,6 +40,8 @@ const AdminOrderDetailPage: React.FC = () => {
     const { orderId } = useParams<{ orderId: string }>();
     const { formatPrice } = useCurrency();
     const [orderStatus, setOrderStatus] = useState(mockOrder.status);
+    
+    const formElementStyle = "w-full text-sm py-2.5 px-4 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors duration-200";
 
     return (
         <div className="space-y-6">
@@ -53,7 +55,7 @@ const AdminOrderDetailPage: React.FC = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-white p-6 rounded-lg shadow-md">
+                    <div className="bg-white p-6 rounded-lg shadow-sm">
                         <h3 className="text-lg font-semibold text-gray-800 border-b pb-3 mb-4">Order Items ({mockOrder.items.length})</h3>
                         <div className="divide-y">
                             {mockOrder.items.map(item => (
@@ -71,7 +73,7 @@ const AdminOrderDetailPage: React.FC = () => {
                             ))}
                         </div>
                     </div>
-                     <div className="bg-white p-6 rounded-lg shadow-md">
+                     <div className="bg-white p-6 rounded-lg shadow-sm">
                         <h3 className="text-lg font-semibold text-gray-800 border-b pb-3 mb-4">Payment Summary</h3>
                         <div className="space-y-2 text-sm">
                             <div className="flex justify-between"><span className="text-gray-600">Subtotal:</span><span>{formatPrice(mockOrder.total)}</span></div>
@@ -101,7 +103,7 @@ const AdminOrderDetailPage: React.FC = () => {
                         <select
                             value={orderStatus}
                             onChange={(e) => setOrderStatus(e.target.value as Order['status'])}
-                            className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            className={formElementStyle}
                         >
                             <option>Processing</option>
                             <option>Shipped</option>

@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { products } from '../../data/products';
 import { Product } from '../../types';
-// FIX: Import PlusIcon.
 import { UploadIcon, TrashIcon, PlusIcon } from '../icons';
 
+const formElementStyle = "w-full text-sm py-2.5 px-4 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors duration-200";
+
 const Section: React.FC<{ title: string; description?: string; children: React.ReactNode }> = ({ title, description, children }) => (
-    <div className="bg-white p-6 rounded-lg shadow-md">
+    <div className="bg-white p-6 rounded-lg shadow-sm">
         <h3 className="text-lg font-semibold text-gray-800 border-b pb-3 mb-4">{title}</h3>
         {description && <p className="text-sm text-gray-500 mb-4">{description}</p>}
         <div className="space-y-4">{children}</div>
@@ -16,7 +17,7 @@ const Section: React.FC<{ title: string; description?: string; children: React.R
 const FormInput: React.FC<{ label: string; name: string; value: string | number; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; type?: string; placeholder?: string; required?: boolean; }> = 
 ({ label, name, value, onChange, type = 'text', placeholder, required }) => (
     <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">{label}</label>
         <input 
             type={type} 
             name={name}
@@ -24,7 +25,7 @@ const FormInput: React.FC<{ label: string; name: string; value: string | number;
             onChange={onChange}
             placeholder={placeholder}
             required={required}
-            className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            className={formElementStyle}
         />
     </div>
 );
@@ -76,13 +77,13 @@ const AdminProductFormPage: React.FC = () => {
                     <Section title="General Information">
                         <FormInput label="Product Name" name="name" value={product.name || ''} onChange={handleChange} required />
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Description</label>
                             <textarea
                                 name="description"
                                 value={product.description || ''}
                                 onChange={handleChange}
                                 rows={6}
-                                className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                className={formElementStyle}
                             />
                         </div>
                     </Section>
@@ -130,7 +131,7 @@ const AdminProductFormPage: React.FC = () => {
                             name="availability"
                             value={product.availability || 'In Stock'}
                             onChange={handleChange}
-                            className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            className={formElementStyle}
                         >
                             <option value="In Stock">In Stock</option>
                             <option value="Out of Stock">Out of Stock</option>
@@ -140,8 +141,8 @@ const AdminProductFormPage: React.FC = () => {
                     <Section title="Organization">
                         <FormInput label="Category" name="category" value={product.category || ''} onChange={handleChange} />
                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Tags</label>
-                            <input type="text" placeholder="Add tags..." className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Tags</label>
+                            <input type="text" placeholder="Add tags..." className={formElementStyle} />
                             <p className="text-xs text-gray-500 mt-1">Separate tags with commas.</p>
                         </div>
                     </Section>

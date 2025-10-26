@@ -13,7 +13,7 @@ const mockRecentOrders: Order[] = [
 
 const StatCard: React.FC<{ title: string; value: string; icon: React.ReactNode; change: string; changeType: 'increase' | 'decrease' }> = 
 ({ title, value, icon, change, changeType }) => (
-    <div className="bg-white p-6 rounded-lg shadow-md flex items-center justify-between">
+    <div className="bg-white p-6 rounded-lg shadow-sm flex items-center justify-between">
         <div>
             <p className="text-sm text-gray-500">{title}</p>
             <p className="text-2xl font-bold text-gray-800">{value}</p>
@@ -50,7 +50,7 @@ const AdminDashboardPage: React.FC = () => {
             
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Sales Chart */}
-                <div className="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
+                <div className="lg:col-span-2 bg-white p-6 rounded-lg shadow-sm">
                     <h3 className="font-semibold text-lg mb-4">Sales Overview</h3>
                     <div className="h-72 bg-gray-100 rounded-md flex items-center justify-center">
                         <p className="text-gray-500">[Sales Chart Placeholder]</p>
@@ -58,7 +58,7 @@ const AdminDashboardPage: React.FC = () => {
                 </div>
 
                 {/* Recent Activity */}
-                <div className="bg-white p-6 rounded-lg shadow-md">
+                <div className="bg-white p-6 rounded-lg shadow-sm">
                     <h3 className="font-semibold text-lg mb-4">Recent Activity</h3>
                     <div className="space-y-4">
                         <div className="flex items-start">
@@ -84,7 +84,7 @@ const AdminDashboardPage: React.FC = () => {
             </div>
 
             {/* Recent Orders Table */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
+            <div className="bg-white p-6 rounded-lg shadow-sm">
                 <div className="flex justify-between items-center mb-4">
                     <h3 className="font-semibold text-lg">Recent Orders</h3>
                     <Link to="/adminpanel/orders" className="text-sm font-medium text-blue-600 hover:underline">View all</Link>
