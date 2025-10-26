@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../contexts/CartContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { CartIcon, ChevronDownIcon, ChevronUpIcon, PlusIcon, MinusIcon, TrashIcon } from './icons';
-import { CartItem } from '../types';
+import { CartItem, Address } from '../types';
+import { useUser } from '../contexts/UserContext';
 
 const FormInput: React.FC<{ id: string; label: string; type?: string; autoComplete?: string; required?: boolean; value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; }> = ({ id, label, type = 'text', autoComplete, required = true, value, onChange }) => (
     <div className="relative">
@@ -34,6 +34,7 @@ const FormInput: React.FC<{ id: string; label: string; type?: string; autoComple
 const CheckoutPage: React.FC = () => {
     const location = useLocation();
     const { cartItems: contextCartItems, subtotal: contextSubtotal, clearCart, updateQuantity, removeFromCart } = useCart();
+    const { user, addOrder, addresses } = useUser();
     const { formatPrice } = useCurrency();
     const [isSummaryOpen, setIsSummaryOpen] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
@@ -49,15 +50,9 @@ const CheckoutPage: React.FC = () => {
 
     const itemsToDisplay = buyNowItem ? [buyNowItem] : contextCartItems;
     const subtotalToDisplay = buyNowItem ? buyNowItem.price * buyNowItem.quantity : contextSubtotal;
-
-    const handleBuyNowQuantityChange = (newQuantity: number) => {
-        if (buyNowItem && newQuantity > 0) {
-            setBuyNowItem({ ...buyNowItem, quantity: newQuantity });
-        }
-    };
     
     const [formData, setFormData] = useState({
-        email: '',
+        email: user?.email || '',
         country: 'Pakistan',
         firstName: '',
         lastName: '',
@@ -67,6 +62,35 @@ const CheckoutPage: React.FC = () => {
         state: '',
         zip: '',
     });
+
+    useEffect(() => {
+        const defaultAddress = addresses.find(a => a.isDefault);
+        if (defaultAddress) {
+            setFormData(prev => ({
+                ...prev,
+                firstName: defaultAddress.firstName,
+                lastName: defaultAddress.lastName,
+                address: defaultAddress.address,
+                apartment: defaultAddress.apartment,
+                city: defaultAddress.city,
+                state: defaultAddress.state,
+                zip: defaultAddress.zip,
+                country: defaultAddress.country,
+            }));
+        } else if (user) {
+            setFormData(prev => ({
+                ...prev,
+                firstName: user.firstName,
+                lastName: user.lastName,
+            }));
+        }
+    }, [addresses, user]);
+
+    const handleBuyNowQuantityChange = (newQuantity: number) => {
+        if (buyNowItem && newQuantity > 0) {
+            setBuyNowItem({ ...buyNowItem, quantity: newQuantity });
+        }
+    };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -79,22 +103,24 @@ const CheckoutPage: React.FC = () => {
 
     const handlePlaceOrder = (e: React.FormEvent) => {
         e.preventDefault();
-        
-        const orderNumber = `MX${Math.floor(Math.random() * 90000) + 10000}`;
-        const today = new Date();
-        const deliveryDate = new Date(today.setDate(today.getDate() + 5)).toLocaleDateString('en-US', {
-            year: 'numeric', month: 'long', day: 'numeric'
-        });
 
-        const orderDetails = {
-            orderNumber,
-            deliveryDate,
+        const orderDetailsForThankYou = {
+            orderNumber: `MX${Math.floor(Math.random() * 90000) + 10000}`,
+            deliveryDate: new Date(new Date().setDate(new Date().getDate() + 5)).toLocaleDateString('en-US', {
+                year: 'numeric', month: 'long', day: 'numeric'
+            }),
             shippingAddress: formData,
             items: itemsToDisplay,
             total: totalToDisplay
         };
 
-        navigate('/thank-you', { state: { orderDetails } });
+        addOrder({
+            items: itemsToDisplay,
+            total: totalToDisplay,
+            shippingAddress: formData,
+        });
+
+        navigate('/thank-you', { state: { orderDetails: orderDetailsForThankYou } });
         
         if (!buyNowItem) {
             clearCart();

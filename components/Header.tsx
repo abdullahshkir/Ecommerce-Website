@@ -5,6 +5,7 @@ import { useCurrency } from '../contexts/CurrencyContext';
 import { useWishlist } from '../contexts/WishlistContext';
 import { useCart } from '../contexts/CartContext';
 import MobileMenu from './MobileMenu';
+import { useUser } from '../contexts/UserContext';
 
 const NavItem: React.FC<{ to: string; children: React.ReactNode; new?: boolean; sale?: boolean }> = ({ to, children, new: isNew, sale: isSale }) => (
     <Link to={to} className="text-gray-700 hover:text-black transition-colors relative group py-2">
@@ -18,17 +19,16 @@ const NavItem: React.FC<{ to: string; children: React.ReactNode; new?: boolean; 
 interface HeaderProps {
     onSearchClick: () => void;
     onLoginClick: () => void;
-    isLoggedIn: boolean;
-    onLogout: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ onSearchClick, onLoginClick, isLoggedIn, onLogout }) => {
+const Header: React.FC<HeaderProps> = ({ onSearchClick, onLoginClick }) => {
     const [isTopBarVisible, setTopBarVisible] = useState(true);
     const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
     const { currency, setCurrency } = useCurrency();
     const [isCurrencyDropdownOpen, setCurrencyDropdownOpen] = useState(false);
     const { wishlistItems } = useWishlist();
     const { openCart, cartCount } = useCart();
+    const { isLoggedIn } = useUser();
     const navigate = useNavigate();
 
     const navLinks: { name: string; to: string; new?: boolean; sale?: boolean }[] = [

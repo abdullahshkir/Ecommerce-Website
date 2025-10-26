@@ -1,12 +1,13 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { mockOrders } from '../../data/orders';
+import { useUser } from '../../contexts/UserContext';
 import { useCurrency } from '../../contexts/CurrencyContext';
-import { CheckCircleIcon, TruckIcon } from '../icons';
+import { CheckCircleIcon } from '../icons';
 
 const OrderTrackingPage: React.FC = () => {
     const { orderId } = useParams<{ orderId: string }>();
-    const order = mockOrders.find(o => o.id === orderId);
+    const { orders } = useUser();
+    const order = orders.find(o => o.id === orderId);
     const { formatPrice } = useCurrency();
 
     if (!order) {
@@ -21,9 +22,18 @@ const OrderTrackingPage: React.FC = () => {
     
     const trackingSteps = ['Processing', 'Shipped', 'Delivered'];
     const currentStepIndex = trackingSteps.indexOf(order.status);
+    const orderPlacedDate = new Date(order.date);
 
-    const TrackingStep: React.FC<{ title: string; date: string; isCompleted: boolean; isCurrent: boolean; isFirst: boolean; isLast: boolean; }> = 
-    ({ title, date, isCompleted, isCurrent, isFirst, isLast }) => {
+    const getStepDate = (index: number) => {
+        if (index > currentStepIndex) return "";
+        const stepDate = new Date(orderPlacedDate);
+        // Mocking date progression
+        stepDate.setDate(stepDate.getDate() + index * 2); 
+        return stepDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    const TrackingStep: React.FC<{ title: string; date: string; isCompleted: boolean; isLast: boolean; }> = 
+    ({ title, date, isCompleted, isLast }) => {
         const circleClass = isCompleted ? 'bg-blue-600 border-blue-600' : 'bg-white border-gray-300';
         const textClass = isCompleted ? 'text-black' : 'text-gray-500';
         const lineClass = isCompleted ? 'bg-blue-600' : 'bg-gray-300';
@@ -31,13 +41,13 @@ const OrderTrackingPage: React.FC = () => {
         return (
             <div className="flex items-start">
                  <div className="flex flex-col items-center mr-4">
-                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${circleClass}`}>
+                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors duration-300 ${circleClass}`}>
                         {isCompleted && <CheckCircleIcon className="w-4 h-4 text-white" />}
                     </div>
-                    {!isLast && <div className={`w-0.5 h-16 ${lineClass}`}></div>}
+                    {!isLast && <div className={`w-0.5 h-16 transition-colors duration-300 ${lineClass}`}></div>}
                 </div>
                 <div>
-                    <h4 className={`font-semibold ${textClass}`}>{title}</h4>
+                    <h4 className={`font-semibold transition-colors duration-300 ${textClass}`}>{title}</h4>
                     <p className="text-sm text-gray-500">{date}</p>
                 </div>
             </div>
@@ -64,10 +74,8 @@ const OrderTrackingPage: React.FC = () => {
                            <TrackingStep 
                                 key={step}
                                 title={step}
-                                date={index <= currentStepIndex ? "July 29, 2025" : ""} // Mock date
+                                date={getStepDate(index)}
                                 isCompleted={index <= currentStepIndex}
-                                isCurrent={index === currentStepIndex}
-                                isFirst={index === 0}
                                 isLast={index === trackingSteps.length - 1}
                            />
                          ))}

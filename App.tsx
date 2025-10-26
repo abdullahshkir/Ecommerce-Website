@@ -10,7 +10,7 @@ import DealsOfTheDay from './components/DealsOfTheDay';
 import FeaturedCollection from './components/FeaturedCollection';
 import Footer from './components/Footer';
 import QuickViewModal from './components/QuickViewModal';
-import { Product } from './types';
+import { Product, User } from './types';
 import ProductPage from './components/ProductPage';
 import CartModal from './components/CartModal';
 import { useCart } from './contexts/CartContext';
@@ -33,6 +33,7 @@ import OrdersPage from './components/dashboard/OrdersPage';
 import OrderTrackingPage from './components/dashboard/OrderTrackingPage';
 import AddressesPage from './components/dashboard/AddressesPage';
 import AccountDetailsPage from './components/dashboard/AccountDetailsPage';
+import { useUser } from './contexts/UserContext';
 
 const HomePage = ({ onProductQuickView, onProductClick }: { onProductQuickView: (product: Product) => void, onProductClick: (id: number) => void }) => (
   <>
@@ -49,9 +50,10 @@ const App: React.FC = () => {
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const [isSearchOpen, setSearchOpen] = useState(false);
   const [isLoginOpen, setLoginOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
   const { isCartOpen, closeCart } = useCart();
+  const { isLoggedIn, login, logout } = useUser();
+
 
   const handleOpenQuickView = (product: Product) => {
     setQuickViewProduct(product);
@@ -65,14 +67,14 @@ const App: React.FC = () => {
     navigate(`/product/${id}`);
   };
 
-  const handleLoginSuccess = () => {
-    setIsLoggedIn(true);
+  const handleLoginSuccess = (user: User) => {
+    login(user);
     setLoginOpen(false);
     navigate('/account');
   };
-
+  
   const handleLogout = () => {
-    setIsLoggedIn(false);
+    logout();
     navigate('/');
   };
 
@@ -81,8 +83,6 @@ const App: React.FC = () => {
       <Header 
         onSearchClick={() => setSearchOpen(true)} 
         onLoginClick={() => setLoginOpen(true)}
-        isLoggedIn={isLoggedIn}
-        onLogout={handleLogout}
       />
       <main>
         <Routes>
@@ -220,16 +220,18 @@ const App: React.FC = () => {
               </>
             }
           />
-           <Route path="/account" element={<DashboardLayout onLogout={handleLogout} />}>
-              <Route index element={<DashboardPage />} />
-              <Route path="orders" element={<OrdersPage />} />
-              <Route path="orders/:orderId" element={<OrderTrackingPage />} />
-              <Route path="addresses" element={<AddressesPage />} />
-              <Route path="details" element={<AccountDetailsPage />} />
-          </Route>
+           {isLoggedIn && (
+            <Route path="/account" element={<DashboardLayout />}>
+                <Route index element={<DashboardPage />} />
+                <Route path="orders" element={<OrdersPage />} />
+                <Route path="orders/:orderId" element={<OrderTrackingPage />} />
+                <Route path="addresses" element={<AddressesPage />} />
+                <Route path="details" element={<AccountDetailsPage />} />
+            </Route>
+           )}
         </Routes>
       </main>
-      <Footer onLoginClick={() => setLoginOpen(true)} isLoggedIn={isLoggedIn} onLogout={handleLogout} />
+      <Footer onLoginClick={() => setLoginOpen(true)} />
       <QuickViewModal product={quickViewProduct} onClose={handleCloseQuickView} />
       <CartModal isOpen={isCartOpen} onClose={closeCart} onProductClick={handleProductClick} />
       <SearchOverlay isOpen={isSearchOpen} onClose={() => setSearchOpen(false)} onProductClick={handleProductClick} />

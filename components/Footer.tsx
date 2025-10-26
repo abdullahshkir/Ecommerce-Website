@@ -5,15 +5,15 @@ import {
     InstagramIcon,
     YoutubeIcon,
 } from './icons';
-import { Link } from 'react-router-dom';
+import { useUser } from '../contexts/UserContext';
 
 interface FooterProps {
     onLoginClick: () => void;
-    isLoggedIn: boolean;
-    onLogout: () => void;
 }
 
-const Footer: React.FC<FooterProps> = ({ onLoginClick, isLoggedIn, onLogout }) => {
+const Footer: React.FC<FooterProps> = ({ onLoginClick }) => {
+    const { isLoggedIn, logout } = useUser();
+
     const socialLinks = [
         { href: '#', icon: <FacebookIcon className="w-5 h-5" /> },
         { href: '#', icon: <TwitterIcon className="w-5 h-5" /> },
@@ -106,7 +106,7 @@ const Footer: React.FC<FooterProps> = ({ onLoginClick, isLoggedIn, onLogout }) =
                                 )}
                                  {title === 'Account' && isLoggedIn && (
                                      <li>
-                                        <button onClick={onLogout} className="text-sm hover:text-white transition-colors text-left bg-transparent border-none p-0 cursor-pointer focus:outline-none">Logout</button>
+                                        <button onClick={logout} className="text-sm hover:text-white transition-colors text-left bg-transparent border-none p-0 cursor-pointer focus:outline-none">Logout</button>
                                     </li>
                                 )}
                             </ul>

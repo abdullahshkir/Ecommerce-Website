@@ -2,11 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, Link, Navigate } from 'react-router-dom';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { CheckCircleIcon } from './icons';
+import { Order, Address } from '../types';
+
+
+interface OrderDetailsForPage extends Omit<Order, 'shippingAddress'> {
+    deliveryDate: string;
+    orderNumber: string;
+    shippingAddress: Omit<Address, 'id' | 'isDefault'>;
+}
 
 const ThankYouPage: React.FC = () => {
     const location = useLocation();
     const { formatPrice } = useCurrency();
-    const orderDetails = location.state?.orderDetails;
+    const orderDetails: OrderDetailsForPage | undefined = location.state?.orderDetails;
     const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {

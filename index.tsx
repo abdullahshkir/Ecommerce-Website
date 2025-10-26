@@ -5,6 +5,7 @@ import App from './App';
 import { CurrencyProvider } from './contexts/CurrencyContext';
 import { WishlistProvider } from './contexts/WishlistContext';
 import { CartProvider } from './contexts/CartContext';
+import { UserProvider } from './contexts/UserContext';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -16,11 +17,13 @@ root.render(
   <React.StrictMode>
     <HashRouter>
       <CurrencyProvider>
-        <WishlistProvider>
-          <CartProvider>
-            <App />
-          </CartProvider>
-        </WishlistProvider>
+        <UserProvider>
+          <WishlistProvider>
+            <CartProvider>
+              <App />
+            </CartProvider>
+          </WishlistProvider>
+        </UserProvider>
       </CurrencyProvider>
     </HashRouter>
   </React.StrictMode>

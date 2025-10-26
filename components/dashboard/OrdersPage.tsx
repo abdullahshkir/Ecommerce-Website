@@ -1,10 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { mockOrders, Order } from '../../data/orders';
+import { useUser } from '../../contexts/UserContext';
 import { useCurrency } from '../../contexts/CurrencyContext';
+import { Order } from '../../types';
 
 const OrdersPage: React.FC = () => {
     const { formatPrice } = useCurrency();
+    const { orders } = useUser();
 
     const getStatusClass = (status: Order['status']) => {
         switch (status) {
@@ -20,7 +22,7 @@ const OrdersPage: React.FC = () => {
         <div className="p-6 bg-white rounded-lg border">
             <h2 className="text-xl font-semibold text-gray-800 mb-6">My Orders</h2>
             
-            {mockOrders.length === 0 ? (
+            {orders.length === 0 ? (
                 <div className="text-center py-10">
                     <p className="text-gray-600">You haven't placed any orders yet.</p>
                     <Link to="/shop" className="mt-4 inline-block bg-black text-white font-bold py-3 px-6 rounded-full hover:bg-gray-800 transition-colors text-sm">
@@ -40,7 +42,7 @@ const OrdersPage: React.FC = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y">
-                            {mockOrders.map(order => (
+                            {orders.map(order => (
                                 <tr key={order.id} className="hover:bg-gray-50">
                                     <td className="px-6 py-4 font-semibold text-gray-800">#{order.id}</td>
                                     <td className="px-6 py-4 text-gray-600">{order.date}</td>
@@ -55,7 +57,7 @@ const OrdersPage: React.FC = () => {
                                             to={`/account/orders/${order.id}`}
                                             className="font-semibold text-blue-600 hover:text-blue-800 border border-gray-300 px-3 py-1.5 rounded-md hover:bg-gray-100 transition-colors"
                                         >
-                                            Track
+                                            View
                                         </Link>
                                     </td>
                                 </tr>

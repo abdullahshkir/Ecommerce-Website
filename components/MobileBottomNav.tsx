@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ShopIcon, HeartIcon, CartIcon, UserIcon, SearchIcon } from './icons';
 import { useWishlist } from '../contexts/WishlistContext';
 import { useCart } from '../contexts/CartContext';
+import { useUser } from '../contexts/UserContext';
 
 interface MobileBottomNavProps {
   onSearchClick: () => void;
@@ -34,6 +35,7 @@ const NavItem: React.FC<{ to?: string; onClick?: () => void; icon: React.ReactNo
 const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ onSearchClick, onAccountClick }) => {
     const { wishlistItems } = useWishlist();
     const { openCart, cartCount } = useCart();
+    const { isLoggedIn } = useUser();
 
     return (
         <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white shadow-[0_-2px_5px_rgba(0,0,0,0.05)] z-40">
@@ -41,7 +43,7 @@ const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ onSearchClick, onAcco
                 <NavItem to="/shop" icon={<ShopIcon className="w-6 h-6" />} label="Shop" />
                 <NavItem to="/wishlist" icon={<HeartIcon className="w-6 h-6" />} label="Wishlist" badgeCount={wishlistItems.length} />
                 <NavItem onClick={openCart} icon={<CartIcon className="w-6 h-6" />} label="Cart" badgeCount={cartCount} />
-                <NavItem onClick={onAccountClick} icon={<UserIcon className="w-6 h-6" />} label="Account" />
+                <NavItem onClick={onAccountClick} icon={<UserIcon className="w-6 h-6" />} label={isLoggedIn ? "Account" : "Login"} />
                 <NavItem onClick={onSearchClick} icon={<SearchIcon className="w-6 h-6" />} label="Search" />
             </div>
         </div>

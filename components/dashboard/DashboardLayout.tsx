@@ -1,13 +1,18 @@
 import React from 'react';
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet, Link, useNavigate } from 'react-router-dom';
 import DashboardSidebar from './DashboardSidebar';
 import { SEO } from '../SEO';
+import { useUser } from '../../contexts/UserContext';
 
-interface DashboardLayoutProps {
-    onLogout: () => void;
-}
+const DashboardLayout: React.FC = () => {
+    const { logout } = useUser();
+    const navigate = useNavigate();
 
-const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onLogout }) => {
+    const handleLogout = () => {
+        logout();
+        navigate('/');
+    };
+
     return (
         <>
         <SEO title="My Account | Mobixo" description="Manage your Mobixo account, view orders, and update your details." />
@@ -24,7 +29,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ onLogout }) => {
             </div>
             <div className="container mx-auto px-4 py-12">
                 <div className="flex flex-col md:flex-row gap-8">
-                    <DashboardSidebar onLogout={onLogout} />
+                    <DashboardSidebar onLogout={handleLogout} />
                     <main className="flex-1">
                         <Outlet />
                     </main>

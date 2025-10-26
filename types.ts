@@ -23,3 +23,32 @@ export interface Product {
 }
 
 export type CartItem = Product & { quantity: number; };
+
+export interface Address {
+  id: string;
+  firstName: string;
+  lastName: string;
+  address: string;
+  apartment: string;
+  city: string;
+  state: string;
+  zip: string;
+  country: string;
+  isDefault: boolean;
+}
+
+export interface User {
+  firstName: string;
+  lastName: string;
+  displayName: string;
+  email: string;
+}
+
+export interface Order {
+  id: string;
+  date: string;
+  status: 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
+  total: number;
+  items: CartItem[];
+  shippingAddress: Omit<Address, 'id' | 'isDefault'>;
+}

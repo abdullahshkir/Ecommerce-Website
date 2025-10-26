@@ -1,10 +1,11 @@
 import React, { useEffect, FC, useState } from 'react';
 import { CloseIcon, EnvelopeIcon, EyeIcon, EyeOffIcon } from './icons';
+import { User } from '../types';
 
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onLoginSuccess: () => void;
+  onLoginSuccess: (user: User) => void;
 }
 
 const LoginModal: FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
@@ -12,6 +13,17 @@ const LoginModal: FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess }) =>
     const [formType, setFormType] = useState<'login' | 'register'>('login');
     const [isMounted, setIsMounted] = useState(isOpen);
     const [isActive, setIsActive] = useState(isOpen);
+    const [formData, setFormData] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: ''
+    });
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
 
     useEffect(() => {
         let mountTimeout: number;
@@ -43,16 +55,23 @@ const LoginModal: FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess }) =>
     useEffect(() => {
         // Reset to login form when modal is closed
         if (!isOpen) {
-            // Delay to match closing animation and prevent flickering
-            const timer = setTimeout(() => setFormType('login'), 300);
+            const timer = setTimeout(() => {
+                setFormType('login');
+                setFormData({ firstName: '', lastName: '', email: '', password: '' });
+            }, 300);
             return () => clearTimeout(timer);
         }
     }, [isOpen]);
     
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        // Since there is no auth, we just call the success handler
-        onLoginSuccess();
+        const user: User = {
+            firstName: formData.firstName || 'Customer',
+            lastName: formData.lastName || '',
+            displayName: formData.firstName || 'Customer',
+            email: formData.email
+        };
+        onLoginSuccess(user);
     };
 
 
@@ -101,6 +120,8 @@ const LoginModal: FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess }) =>
                                     name="firstName"
                                     type="text"
                                     required
+                                    value={formData.firstName}
+                                    onChange={handleInputChange}
                                     className="bg-white appearance-none block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                                 />
                             </div>
@@ -113,6 +134,8 @@ const LoginModal: FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess }) =>
                                     name="lastName"
                                     type="text"
                                     required
+                                    value={formData.lastName}
+                                    onChange={handleInputChange}
                                     className="bg-white appearance-none block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                                 />
                             </div>
@@ -129,6 +152,8 @@ const LoginModal: FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess }) =>
                                 name="email"
                                 type="email"
                                 required
+                                value={formData.email}
+                                onChange={handleInputChange}
                                 className="bg-white appearance-none block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                             />
                              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
@@ -147,6 +172,8 @@ const LoginModal: FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess }) =>
                                 name="password"
                                 type={showPassword ? 'text' : 'password'}
                                 required
+                                value={formData.password}
+                                onChange={handleInputChange}
                                 className="bg-white appearance-none block w-full px-4 py-3 pr-10 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                             />
                              <button
