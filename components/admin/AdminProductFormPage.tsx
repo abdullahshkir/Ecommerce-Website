@@ -1,19 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { products } from '../../data/products';
 import { Product } from '../../types';
-import { UploadIcon } from '../icons';
+import { UploadIcon, TrashIcon, PlusIcon } from '../icons';
 
 const formElementStyle = "w-full text-sm py-2.5 px-4 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors duration-200";
 
-const FormInput: React.FC<{ label: string; name: string; value: any; onChange: (e: any) => void; type?: string; placeholder?: string; required?: boolean; }> = ({ label, name, value, onChange, type = "text", placeholder, required }) => (
+const Section: React.FC<{ title: string; description?: string; children: React.ReactNode }> = ({ title, description, children }) => (
+    <div className="bg-white p-6 rounded-lg shadow-sm">
+        <h3 className="text-lg font-semibold text-gray-800 border-b pb-3 mb-4">{title}</h3>
+        {description && <p className="text-sm text-gray-500 mb-4">{description}</p>}
+        <div className="space-y-4">{children}</div>
+    </div>
+);
+
+const FormInput: React.FC<{ label: string; name: string; value: string | number; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; type?: string; placeholder?: string; required?: boolean; }> = 
+({ label, name, value, onChange, type = 'text', placeholder, required }) => (
     <div>
-        <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-        <input
-            id={name}
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">{label}</label>
+        <input 
+            type={type} 
             name={name}
-            type={type}
-            value={value || ''}
+            value={value}
             onChange={onChange}
             placeholder={placeholder}
             required={required}
@@ -22,181 +30,123 @@ const FormInput: React.FC<{ label: string; name: string; value: any; onChange: (
     </div>
 );
 
-const FormTextarea: React.FC<{ label: string; name: string; value: string; onChange: (e: any) => void; rows?: number; }> = ({ label, name, value, onChange, rows = 4 }) => (
-    <div>
-        <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-        <textarea
-            id={name}
-            name={name}
-            value={value}
-            onChange={onChange}
-            rows={rows}
-            className={formElementStyle}
-        ></textarea>
-    </div>
-);
-
-const FormSelect: React.FC<{ label: string; name: string; value: string; onChange: (e: any) => void; children: React.ReactNode; }> = ({ label, name, value, onChange, children }) => (
-     <div>
-        <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-        <select id={name} name={name} value={value} onChange={onChange} className={formElementStyle}>
-            {children}
-        </select>
-    </div>
-);
-
-const FormCheckbox: React.FC<{ label: string; name: string; checked: boolean; onChange: (e: any) => void; }> = ({ label, name, checked, onChange }) => (
-    <div className="flex items-center">
-        <input
-            id={name}
-            name={name}
-            type="checkbox"
-            checked={checked}
-            onChange={onChange}
-            className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-        />
-        <label htmlFor={name} className="ml-2 block text-sm text-gray-800">{label}</label>
-    </div>
-);
-
 const AdminProductFormPage: React.FC = () => {
     const { productId } = useParams<{ productId: string }>();
     const navigate = useNavigate();
     const isEditing = Boolean(productId);
-
-    const [product, setProduct] = useState<Partial<Product>>({
-        name: '',
-        price: 0,
-        oldPrice: undefined,
-        category: '',
-        availability: 'In Stock',
-        description: '',
-        longDescription: '',
-        imageUrl: '',
-        imageUrl2: '',
-        isNew: false,
-        isSale: false,
-        collection: 'Accesories',
-        tags: [],
-    });
-
+    const [product, setProduct] = useState<Partial<Product>>({});
+    
     useEffect(() => {
         if (isEditing) {
-            const productToEdit = products.find(p => p.id === parseInt(productId!, 10));
-            if (productToEdit) {
-                setProduct(productToEdit);
-            } else {
-                // Handle product not found, maybe navigate away
-                navigate('/adminpanel/products');
+            const existingProduct = products.find(p => p.id === parseInt(productId!));
+            if (existingProduct) {
+                setProduct(existingProduct);
             }
         }
-    }, [productId, isEditing, navigate]);
+    }, [productId, isEditing]);
+    
+    const pageTitle = isEditing ? 'Edit Product' : 'Add New Product';
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        const { name, value, type } = e.target;
-        
-        if (type === 'checkbox') {
-            const checked = (e.target as HTMLInputElement).checked;
-            setProduct(prev => ({ ...prev, [name]: checked }));
-        } else if (type === 'number') {
-             setProduct(prev => ({ ...prev, [name]: parseFloat(value) || 0 }));
-        } else {
-            setProduct(prev => ({ ...prev, [name]: value }));
-        }
+        const { name, value } = e.target;
+        setProduct(prev => ({ ...prev, [name]: value }));
     };
-    
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        // Here you would normally send the data to your API
-        console.log("Submitting Product Data:", product);
-        alert(`Product successfully ${isEditing ? 'updated' : 'created'}!`);
+        console.log('Saving product:', product);
         navigate('/adminpanel/products');
     };
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
             <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold text-gray-800">{isEditing ? 'Edit Product' : 'Add New Product'}</h2>
-                <button type="button" onClick={() => navigate('/adminpanel/products')} className="text-sm font-medium text-gray-600 hover:underline">Cancel</button>
+                <h2 className="text-2xl font-bold text-gray-800">{pageTitle}</h2>
+                <div className="flex gap-2">
+                    <Link to="/adminpanel/products" className="bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded-full font-semibold text-sm hover:bg-gray-100 transition-colors">
+                        Discard
+                    </Link>
+                    <button type="submit" className="bg-black text-white py-2 px-4 rounded-full font-semibold text-sm hover:bg-gray-800 transition-colors">
+                        Save Product
+                    </button>
+                </div>
             </div>
-            
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Left Column */}
                 <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-white p-6 rounded-lg shadow-sm">
-                        <h3 className="text-lg font-semibold border-b pb-3 mb-4">Basic Information</h3>
-                        <div className="space-y-4">
-                            <FormInput label="Product Name" name="name" value={product.name} onChange={handleChange} required />
-                            <FormTextarea label="Short Description" name="description" value={product.description || ''} onChange={handleChange} />
-                             <FormTextarea label="Long Description (HTML)" name="longDescription" value={product.longDescription || ''} onChange={handleChange} rows={8}/>
+                    <Section title="General Information">
+                        <FormInput label="Product Name" name="name" value={product.name || ''} onChange={handleChange} required />
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Description</label>
+                            <textarea
+                                name="description"
+                                value={product.description || ''}
+                                onChange={handleChange}
+                                rows={6}
+                                className={formElementStyle}
+                            />
                         </div>
-                    </div>
-                    <div className="bg-white p-6 rounded-lg shadow-sm">
-                        <h3 className="text-lg font-semibold border-b pb-3 mb-4">Images</h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    </Section>
+
+                     <Section title="Product Images">
+                        <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Main Image URL</label>
-                                <input name="imageUrl" value={product.imageUrl || ''} onChange={handleChange} className={formElementStyle} />
+                               <label className="block text-sm font-medium text-gray-700 mb-2">Main Image</label>
+                                <div className="border-2 border-dashed rounded-lg p-6 text-center cursor-pointer hover:border-blue-500">
+                                    <UploadIcon className="mx-auto h-12 w-12 text-gray-400" />
+                                    <p className="mt-1 text-sm text-gray-600">Drag & drop or click to upload</p>
+                                </div>
                             </div>
-                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Hover Image URL</label>
-                                <input name="imageUrl2" value={product.imageUrl2 || ''} onChange={handleChange} className={formElementStyle} />
+                            <div>
+                               <label className="block text-sm font-medium text-gray-700 mb-2">Gallery</label>
+                                <div className="grid grid-cols-3 gap-2">
+                                    {[...Array(3)].map((_, i) => (
+                                        <div key={i} className="relative aspect-square border-2 border-dashed rounded-lg flex items-center justify-center text-gray-400 hover:border-blue-500 cursor-pointer">
+                                            <PlusIcon className="w-6 h-6"/>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </Section>
+
+                    <Section title="Pricing">
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormInput label="Price" name="price" value={product.price || ''} onChange={handleChange} type="number" placeholder="$0.00" />
+                            <FormInput label="Sale Price" name="oldPrice" value={product.oldPrice || ''} onChange={handleChange} type="number" placeholder="$0.00" />
+                        </div>
+                    </Section>
+
+                    <Section title="Inventory">
+                         <div className="grid grid-cols-2 gap-4">
+                            <FormInput label="SKU" name="sku" value={(product as any).sku || ''} onChange={handleChange} />
+                            <FormInput label="Stock Quantity" name="stock" value={(product as any).stock || ''} onChange={handleChange} type="number" />
+                        </div>
+                    </Section>
                 </div>
 
-                {/* Right Column */}
                 <div className="space-y-6">
-                     <div className="bg-white p-6 rounded-lg shadow-sm">
-                        <h3 className="text-lg font-semibold border-b pb-3 mb-4">Pricing</h3>
-                        <div className="space-y-4">
-                             <FormInput label="Price" name="price" type="number" value={product.price} onChange={handleChange} />
-                             <FormInput label="Old Price (for sale display)" name="oldPrice" type="number" value={product.oldPrice} onChange={handleChange} />
-                        </div>
-                    </div>
-                     <div className="bg-white p-6 rounded-lg shadow-sm">
-                        <h3 className="text-lg font-semibold border-b pb-3 mb-4">Organization</h3>
-                        <div className="space-y-4">
-                            <FormSelect label="Category" name="category" value={product.category || ''} onChange={handleChange}>
-                                <option>Watch</option>
-                                <option>Headphones</option>
-                                <option>Camera</option>
-                                <option>Digital</option>
-                                <option>Speaker</option>
-                                <option>Laptop</option>
-                                <option>Accessories</option>
-                            </FormSelect>
-                             <FormSelect label="Collection" name="collection" value={product.collection || ''} onChange={handleChange}>
-                                <option>Accesories</option>
-                                <option>Smart TV</option>
-                                <option>Camera</option>
-                                <option>Digital</option>
-                            </FormSelect>
-                             <FormInput label="Tags (comma separated)" name="tags" value={Array.isArray(product.tags) ? product.tags.join(',') : ''} onChange={handleChange} />
-                        </div>
-                    </div>
-                     <div className="bg-white p-6 rounded-lg shadow-sm">
-                        <h3 className="text-lg font-semibold border-b pb-3 mb-4">Status & Visibility</h3>
-                        <div className="space-y-3">
-                           <FormSelect label="Availability" name="availability" value={product.availability || 'In Stock'} onChange={handleChange}>
-                                <option>In Stock</option>
-                                <option>Out of Stock</option>
-                            </FormSelect>
-                           <FormCheckbox label="New Product" name="isNew" checked={product.isNew || false} onChange={handleChange} />
-                           <FormCheckbox label="On Sale" name="isSale" checked={product.isSale || false} onChange={handleChange} />
-                        </div>
-                    </div>
-                </div>
-            </div>
+                    <Section title="Product Status">
+                        <select
+                            name="availability"
+                            value={product.availability || 'In Stock'}
+                            onChange={handleChange}
+                            className={formElementStyle}
+                        >
+                            <option value="In Stock">In Stock</option>
+                            <option value="Out of Stock">Out of Stock</option>
+                        </select>
+                    </Section>
 
-            <div className="flex justify-end gap-4 mt-6">
-                <button type="button" onClick={() => navigate('/adminpanel/products')} className="bg-gray-200 text-gray-800 py-2 px-6 rounded-full font-semibold text-sm hover:bg-gray-300 transition-colors">
-                    Cancel
-                </button>
-                <button type="submit" className="bg-black text-white py-2 px-6 rounded-full font-semibold text-sm hover:bg-gray-800 transition-colors">
-                    {isEditing ? 'Save Changes' : 'Create Product'}
-                </button>
+                    <Section title="Organization">
+                        <FormInput label="Category" name="category" value={product.category || ''} onChange={handleChange} />
+                         <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Tags</label>
+                            <input type="text" placeholder="Add tags..." className={formElementStyle} />
+                            <p className="text-xs text-gray-500 mt-1">Separate tags with commas.</p>
+                        </div>
+                    </Section>
+                </div>
             </div>
         </form>
     );

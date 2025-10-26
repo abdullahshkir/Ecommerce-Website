@@ -40,7 +40,6 @@ import AdminDashboardPage from './components/admin/AdminDashboardPage';
 import AdminProductsPage from './components/admin/AdminProductsPage';
 import AdminOrdersPage from './components/admin/AdminOrdersPage';
 import AdminUsersPage from './components/admin/AdminUsersPage';
-// FIX: The component `AdminProductFormPage` was not found. Created the component and fixed the import.
 import AdminProductFormPage from './components/admin/AdminProductFormPage';
 import AdminOrderDetailPage from './components/admin/AdminOrderDetailPage';
 import AdminUserDetailPage from './components/admin/AdminUserDetailPage';
