@@ -25,30 +25,34 @@ export interface Product {
 export type CartItem = Product & { quantity: number; };
 
 export interface Address {
-  id: string;
-  firstName: string;
-  lastName: string;
+  id: string; // Changed to string for UUID
+  user_id?: string;
+  first_name: string;
+  last_name: string;
   address: string;
   apartment: string;
   city: string;
   state: string;
   zip: string;
   country: string;
-  isDefault: boolean;
+  is_default: boolean;
 }
 
 export interface User {
-  firstName: string;
-  lastName: string;
-  displayName: string;
+  id: string;
+  first_name: string;
+  last_name: string;
+  display_name: string;
   email: string;
 }
 
 export interface Order {
-  id: string;
-  date: string;
+  id: string; // Changed to string for UUID
+  user_id?: string;
+  order_number: string;
+  created_at: string;
   status: 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
   total: number;
   items: CartItem[];
-  shippingAddress: Omit<Address, 'id' | 'isDefault'>;
+  shipping_address: Omit<Address, 'id' | 'is_default' | 'user_id'>;
 }

@@ -62,7 +62,7 @@ const App: React.FC = () => {
   const [isLoginOpen, setLoginOpen] = useState(false);
   const navigate = useNavigate();
   const { isCartOpen, closeCart } = useCart();
-  const { isLoggedIn, login, logout } = useUser();
+  const { isLoggedIn, logout } = useUser();
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
 
 
@@ -78,8 +78,7 @@ const App: React.FC = () => {
     navigate(`/product/${id}`);
   };
 
-  const handleLoginSuccess = (user: User) => {
-    login(user);
+  const handleLoginSuccess = () => {
     setLoginOpen(false);
     navigate('/account');
   };
