@@ -1,13 +1,24 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { supabase } from '../src/integrations/supabase/client';
+import { useSession } from '../contexts/SessionContext';
 
 interface SupabaseAuthProps {
     onSuccess: () => void;
 }
 
 const SupabaseAuth: React.FC<SupabaseAuthProps> = ({ onSuccess }) => {
+    const { user } = useSession();
+
+    useEffect(() => {
+        if (user) {
+            // If the user object is present (meaning successful sign-in/session update),
+            // call the success handler to close the modal.
+            onSuccess();
+        }
+    }, [user, onSuccess]);
+
     return (
         <div className="w-full max-w-md mx-auto">
             <Auth
