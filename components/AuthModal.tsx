@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import { CloseIcon } from './icons';
-import SupabaseAuth from '../src/components/SupabaseAuth';
+import SupabaseAuth from './SupabaseAuth';
 
 interface AuthModalProps {
   isOpen: boolean;
