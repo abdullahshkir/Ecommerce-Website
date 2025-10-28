@@ -6,7 +6,9 @@ import { CartIcon, ChevronDownIcon, ChevronUpIcon, PlusIcon, MinusIcon, TrashIco
 import { CartItem, Address } from '../types';
 import { useUser } from '../contexts/UserContext';
 
-const FormInput: React.FC<{ id: string; label: string; type?: string; autoComplete?: string; required?: boolean; value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; }> = ({ id, label, type = 'text', autoComplete, required = true, value, onChange }) => (
+type InputChangeEvent = React.ChangeEvent<HTMLInputElement | HTMLSelectElement>;
+
+const FormInput: React.FC<{ id: string; label: string; type?: string; autoComplete?: string; required?: boolean; value: string; onChange: (e: InputChangeEvent) => void; }> = ({ id, label, type = 'text', autoComplete, required = true, value, onChange }) => (
     <div className="relative">
         <input
             id={id}
@@ -49,7 +51,7 @@ const CheckoutPage: React.FC = () => {
     const [buyNowItem, setBuyNowItem] = useState<CartItem | undefined>(initialBuyNowItem);
 
     const itemsToDisplay = buyNowItem ? [buyNowItem] : contextCartItems;
-    const subtotalToDisplay = buyNowItem ? buyNowItem.price * buyNowItem.quantity : contextSubtotal;
+    const subtotalToDisplay = itemsToDisplay.reduce((total, item) => total + item.price * item.quantity, 0);
     
     const [formData, setFormData] = useState({
         email: user?.email || '',
@@ -71,7 +73,7 @@ const CheckoutPage: React.FC = () => {
                 first_name: defaultAddress.first_name,
                 last_name: defaultAddress.last_name,
                 address: defaultAddress.address,
-                apartment: defaultAddress.apartment,
+                apartment: defaultAddress.apartment || '',
                 city: defaultAddress.city,
                 state: defaultAddress.state,
                 zip: defaultAddress.zip,
@@ -82,6 +84,7 @@ const CheckoutPage: React.FC = () => {
                 ...prev,
                 first_name: user.first_name,
                 last_name: user.last_name,
+                email: user.email,
             }));
         }
     }, [addresses, user]);
@@ -92,7 +95,7 @@ const CheckoutPage: React.FC = () => {
         }
     };
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const handleInputChange = (e: InputChangeEvent) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
@@ -228,10 +231,26 @@ const CheckoutPage: React.FC = () => {
                                 <div>
                                     <h2 className="text-xl font-semibold mb-4">Shipping address</h2>
                                     <div className="space-y-6">
-                                        <select name="country" value={formData.country} onChange={handleInputChange} className="w-full p-3 border-b border-gray-300 bg-white focus:outline-none focus:border-black">
-                                            <option>Pakistan</option>
-                                            <option>United States</option>
-                                        </select>
+                                        <div className="relative">
+                                            <select 
+                                                name="country" 
+                                                value={formData.country} 
+                                                onChange={handleInputChange} 
+                                                className="peer w-full border-b border-gray-300 focus:border-black p-3 pt-6 bg-white placeholder-transparent focus:outline-none transition-colors appearance-none"
+                                            >
+                                                <option value="Pakistan">Pakistan</option>
+                                                <option value="United States">United States</option>
+                                            </select>
+                                            <label
+                                                htmlFor="country"
+                                                className="absolute left-3 top-1 text-xs text-gray-500 transition-all 
+                                                           peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-4
+                                                           peer-focus:top-1 peer-focus:text-xs peer-focus:text-gray-500"
+                                            >
+                                                Country *
+                                            </label>
+                                            <ChevronDownIcon className="absolute right-3 top-1/2 mt-1 w-4 h-4 text-gray-500 pointer-events-none" />
+                                        </div>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                             <FormInput id="first_name" label="First name" autoComplete="given-name" value={formData.first_name} onChange={handleInputChange}/>
                                             <FormInput id="last_name" label="Last name" autoComplete="family-name" value={formData.last_name} onChange={handleInputChange}/>
