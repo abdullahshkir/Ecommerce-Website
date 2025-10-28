@@ -1,23 +1,8 @@
 import { Product } from '../types';
-import { productService } from '../lib/products';
 
 const newImageUrl = 'https://darlingretail.com/cdn/shop/products/1_7b64958c-304b-43bd-b759-c5366bfa9914_600x.jpg?v=1661581431';
 
-let cachedProducts: Product[] | null = null;
-
-export const loadProducts = async (): Promise<Product[]> => {
-  if (cachedProducts) return cachedProducts;
-
-  try {
-    cachedProducts = await productService.getAllProducts();
-    return cachedProducts;
-  } catch (error) {
-    console.error('Error loading products from database:', error);
-    return fallbackProducts;
-  }
-};
-
-const fallbackProducts: Product[] = [
+export const products: Product[] = [
     {
         id: 1,
         collection: 'Accesories',
@@ -221,5 +206,3 @@ const fallbackProducts: Product[] = [
         brand: 'GoPro'
     }
 ];
-
-export const products = fallbackProducts;

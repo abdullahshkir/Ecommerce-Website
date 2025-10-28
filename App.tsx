@@ -34,7 +34,6 @@ import OrderTrackingPage from './components/dashboard/OrderTrackingPage';
 import AddressesPage from './components/dashboard/AddressesPage';
 import AccountDetailsPage from './components/dashboard/AccountDetailsPage';
 import { useUser } from './contexts/UserContext';
-import { useAdmin } from './contexts/AdminContext';
 import AdminLoginPage from './components/admin/AdminLoginPage';
 import AdminLayout from './components/admin/AdminLayout';
 import AdminDashboardPage from './components/admin/AdminDashboardPage';
@@ -64,7 +63,7 @@ const App: React.FC = () => {
   const navigate = useNavigate();
   const { isCartOpen, closeCart } = useCart();
   const { isLoggedIn, logout } = useUser();
-  const { isAdminLoggedIn, adminLogout } = useAdmin();
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
 
 
   const handleOpenQuickView = (product: Product) => {
@@ -81,17 +80,23 @@ const App: React.FC = () => {
 
   const handleLoginSuccess = () => {
     setLoginOpen(false);
+    navigate('/account');
   };
   
-  const handleAdminLogout = async () => {
-    await adminLogout();
+  const handleAdminLoginSuccess = () => {
+    setIsAdminLoggedIn(true);
+    navigate('/adminpanel/dashboard');
+  };
+
+  const handleAdminLogout = () => {
+    setIsAdminLoggedIn(false);
     navigate('/adminpanel');
   };
 
   return (
     <>
         <Routes>
-          <Route path="/adminpanel" element={!isAdminLoggedIn ? <AdminLoginPage /> : <Navigate to="/adminpanel/dashboard" />} />
+          <Route path="/adminpanel" element={!isAdminLoggedIn ? <AdminLoginPage onLoginSuccess={handleAdminLoginSuccess} /> : <Navigate to="/adminpanel/dashboard" />} />
           
           {isAdminLoggedIn ? (
             <Route path="/adminpanel" element={<AdminLayout onLogout={handleAdminLogout} />}>

@@ -6,7 +6,6 @@ import { CurrencyProvider } from './contexts/CurrencyContext';
 import { WishlistProvider } from './contexts/WishlistContext';
 import { CartProvider } from './contexts/CartContext';
 import { UserProvider } from './contexts/UserContext';
-import { AdminProvider } from './contexts/AdminContext';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -19,13 +18,11 @@ root.render(
     <HashRouter>
       <CurrencyProvider>
         <UserProvider>
-          <AdminProvider>
-            <WishlistProvider>
-              <CartProvider>
-                <App />
-              </CartProvider>
-            </WishlistProvider>
-          </AdminProvider>
+          <WishlistProvider>
+            <CartProvider>
+              <App />
+            </CartProvider>
+          </WishlistProvider>
         </UserProvider>
       </CurrencyProvider>
     </HashRouter>

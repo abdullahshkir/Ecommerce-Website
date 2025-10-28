@@ -1,31 +1,23 @@
 import React, { useState } from 'react';
 import { EyeIcon, EyeOffIcon } from '../icons';
-import { useAdmin } from '../../contexts/AdminContext';
-import { useNavigate } from 'react-router-dom';
 
-interface AdminLoginPageProps {}
+interface AdminLoginPageProps {
+  onLoginSuccess: () => void;
+}
 
-const AdminLoginPage: React.FC<AdminLoginPageProps> = () => {
-  const { adminLogin } = useAdmin();
-  const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ onLoginSuccess }) => {
+  const [email, setEmail] = useState('admin@mobixo.com');
+  const [password, setPassword] = useState('admin123');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setLoading(true);
-
-    try {
-      await adminLogin(email, password);
-      navigate('/adminpanel/dashboard');
-    } catch (err: any) {
-      setError(err.message || 'Invalid credentials. Please try again.');
-    } finally {
-      setLoading(false);
+    if (email === 'admin@mobixo.com' && password === 'admin123') {
+      setError('');
+      onLoginSuccess();
+    } else {
+      setError('Invalid credentials. Please try again.');
     }
   };
   
@@ -76,10 +68,9 @@ const AdminLoginPage: React.FC<AdminLoginPageProps> = () => {
           <div>
             <button
               type="submit"
-              disabled={loading}
-              className="w-full flex justify-center bg-black text-white p-3 rounded-full tracking-wide font-semibold cursor-pointer hover:bg-gray-800 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex justify-center bg-black text-white p-3 rounded-full tracking-wide font-semibold cursor-pointer hover:bg-gray-800 transition-all duration-300"
             >
-              {loading ? 'Signing in...' : 'Sign in'}
+              Sign in
             </button>
           </div>
         </form>
