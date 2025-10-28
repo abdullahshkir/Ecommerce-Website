@@ -51,11 +51,12 @@ const CheckoutPage: React.FC = () => {
     const itemsToDisplay = buyNowItem ? [buyNowItem] : contextCartItems;
     const subtotalToDisplay = buyNowItem ? buyNowItem.price * buyNowItem.quantity : contextSubtotal;
     
+    // FIX: Use snake_case for form data state to align with type definitions.
     const [formData, setFormData] = useState({
         email: user?.email || '',
         country: 'Pakistan',
-        firstName: '',
-        lastName: '',
+        first_name: '',
+        last_name: '',
         address: '',
         apartment: '',
         city: '',
@@ -64,12 +65,14 @@ const CheckoutPage: React.FC = () => {
     });
 
     useEffect(() => {
-        const defaultAddress = addresses.find(a => a.isDefault);
+        // FIX: Property 'isDefault' does not exist on type 'Address'. Did you mean 'is_default'?
+        const defaultAddress = addresses.find(a => a.is_default);
         if (defaultAddress) {
             setFormData(prev => ({
                 ...prev,
-                firstName: defaultAddress.firstName,
-                lastName: defaultAddress.lastName,
+                // FIX: Property 'firstName'/'lastName' does not exist on type 'Address'.
+                first_name: defaultAddress.first_name,
+                last_name: defaultAddress.last_name,
                 address: defaultAddress.address,
                 apartment: defaultAddress.apartment,
                 city: defaultAddress.city,
@@ -80,8 +83,9 @@ const CheckoutPage: React.FC = () => {
         } else if (user) {
             setFormData(prev => ({
                 ...prev,
-                firstName: user.firstName,
-                lastName: user.lastName,
+                // FIX: Property 'firstName'/'lastName' does not exist on type 'User'.
+                first_name: user.first_name,
+                last_name: user.last_name,
             }));
         }
     }, [addresses, user]);
@@ -114,10 +118,11 @@ const CheckoutPage: React.FC = () => {
             total: totalToDisplay
         };
 
+        // FIX: Object literal may only specify known properties, but 'shippingAddress' does not exist in type 'Omit<Order, "id" | "status" | "date">'. Did you mean to write 'shipping_address'?
         addOrder({
             items: itemsToDisplay,
             total: totalToDisplay,
-            shippingAddress: formData,
+            shipping_address: formData,
         });
 
         navigate('/thank-you', { state: { orderDetails: orderDetailsForThankYou } });
@@ -233,8 +238,8 @@ const CheckoutPage: React.FC = () => {
                                             <option>United States</option>
                                         </select>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                            <FormInput id="firstName" label="First name" autoComplete="given-name" value={formData.firstName} onChange={handleInputChange}/>
-                                            <FormInput id="lastName" label="Last name" autoComplete="family-name" value={formData.lastName} onChange={handleInputChange}/>
+                                            <FormInput id="first_name" label="First name" autoComplete="given-name" value={formData.first_name} onChange={handleInputChange}/>
+                                            <FormInput id="last_name" label="Last name" autoComplete="family-name" value={formData.last_name} onChange={handleInputChange}/>
                                         </div>
                                         <FormInput id="address" label="Address" autoComplete="street-address" value={formData.address} onChange={handleInputChange}/>
                                         <FormInput id="apartment" label="Apartment, suite, etc." required={false} value={formData.apartment} onChange={handleInputChange}/>

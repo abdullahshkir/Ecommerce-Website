@@ -4,13 +4,14 @@ import { useCurrency } from '../../contexts/CurrencyContext';
 import { Order } from '../../types';
 import { MoreVerticalIcon } from '../icons';
 
-const mockOrders: (Order & { customer: string })[] = [
-    { id: 'MX54321', customer: 'John Doe', date: '2025-07-29', status: 'Delivered', total: 180.00, items: [], shippingAddress: {} as any },
-    { id: 'MX54322', customer: 'Jane Smith', date: '2025-07-29', status: 'Processing', total: 450.00, items: [], shippingAddress: {} as any },
-    { id: 'MX54323', customer: 'Bob Johnson', date: '2025-07-28', status: 'Shipped', total: 250.00, items: [], shippingAddress: {} as any },
-    { id: 'MX54324', customer: 'Alice Williams', date: '2025-07-28', status: 'Cancelled', total: 40.00, items: [], shippingAddress: {} as any },
-    { id: 'MX54325', customer: 'Charlie Brown', date: '2025-07-27', status: 'Delivered', total: 1200.00, items: [], shippingAddress: {} as any },
-    { id: 'MX54326', customer: 'Diana Miller', date: '2025-07-26', status: 'Shipped', total: 285.00, items: [], shippingAddress: {} as any },
+// FIX: Object literal may only specify known properties, and 'date' does not exist in type 'Order'.
+const mockOrders: (Omit<Order, 'items' | 'shipping_address' | 'user_id'> & { customer: string })[] = [
+    { id: 'MX54321', customer: 'John Doe', order_number: 'MX54321', created_at: '2025-07-29T10:00:00Z', status: 'Delivered', total: 180.00 },
+    { id: 'MX54322', customer: 'Jane Smith', order_number: 'MX54322', created_at: '2025-07-29T11:00:00Z', status: 'Processing', total: 450.00 },
+    { id: 'MX54323', customer: 'Bob Johnson', order_number: 'MX54323', created_at: '2025-07-28T14:30:00Z', status: 'Shipped', total: 250.00 },
+    { id: 'MX54324', customer: 'Alice Williams', order_number: 'MX54324', created_at: '2025-07-28T09:00:00Z', status: 'Cancelled', total: 40.00 },
+    { id: 'MX54325', customer: 'Charlie Brown', order_number: 'MX54325', created_at: '2025-07-27T18:00:00Z', status: 'Delivered', total: 1200.00 },
+    { id: 'MX54326', customer: 'Diana Miller', order_number: 'MX54326', created_at: '2025-07-26T12:00:00Z', status: 'Shipped', total: 285.00 },
 ];
 
 const getStatusClass = (status: Order['status']) => {
@@ -55,9 +56,10 @@ const AdminOrdersPage: React.FC = () => {
                     <tbody className="divide-y">
                         {mockOrders.map(order => (
                             <tr key={order.id} onClick={() => handleRowClick(order.id)} className="hover:bg-gray-50 cursor-pointer">
-                                <td className="px-4 py-3 font-semibold text-blue-600">#{order.id}</td>
+                                <td className="px-4 py-3 font-semibold text-blue-600">#{order.order_number}</td>
                                 <td className="px-4 py-3 text-gray-800">{order.customer}</td>
-                                <td className="px-4 py-3 text-gray-600">{order.date}</td>
+                                {/* FIX: Property 'date' does not exist on type 'Order'. */}
+                                <td className="px-4 py-3 text-gray-600">{new Date(order.created_at).toLocaleDateString()}</td>
                                 <td className="px-4 py-3 text-gray-600">{formatPrice(order.total)}</td>
                                 <td className="px-4 py-3">
                                     <span className={`px-2 py-1 text-xs rounded-full font-semibold ${getStatusClass(order.status)}`}>

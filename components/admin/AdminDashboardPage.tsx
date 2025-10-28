@@ -3,12 +3,13 @@ import { Link } from 'react-router-dom';
 import { DollarSignIcon, CartIcon, UsersIcon, ProductsIcon } from '../icons';
 import { Order } from '../../types';
 
-const mockRecentOrders: Order[] = [
-    { id: 'MX54321', date: '2025-07-29', status: 'Delivered', total: 180.00, items: [], shippingAddress: {} as any },
-    { id: 'MX54322', date: '2025-07-29', status: 'Processing', total: 450.00, items: [], shippingAddress: {} as any },
-    { id: 'MX54323', date: '2025-07-28', status: 'Shipped', total: 250.00, items: [], shippingAddress: {} as any },
-    { id: 'MX54324', date: '2025-07-28', status: 'Cancelled', total: 40.00, items: [], shippingAddress: {} as any },
-    { id: 'MX54325', date: '2025-07-27', status: 'Delivered', total: 1200.00, items: [], shippingAddress: {} as any },
+// FIX: Object literal may only specify known properties, and 'date' does not exist in type 'Order'.
+const mockRecentOrders: Omit<Order, 'items' | 'shipping_address' | 'user_id'>[] = [
+    { id: 'MX54321', order_number: 'MX54321', created_at: '2025-07-29T10:00:00Z', status: 'Delivered', total: 180.00 },
+    { id: 'MX54322', order_number: 'MX54322', created_at: '2025-07-29T11:00:00Z', status: 'Processing', total: 450.00 },
+    { id: 'MX54323', order_number: 'MX54323', created_at: '2025-07-28T14:30:00Z', status: 'Shipped', total: 250.00 },
+    { id: 'MX54324', order_number: 'MX54324', created_at: '2025-07-28T09:00:00Z', status: 'Cancelled', total: 40.00 },
+    { id: 'MX54325', order_number: 'MX54325', created_at: '2025-07-27T18:00:00Z', status: 'Delivered', total: 1200.00 },
 ];
 
 const StatCard: React.FC<{ title: string; value: string; icon: React.ReactNode; change: string; changeType: 'increase' | 'decrease' }> = 
@@ -102,8 +103,9 @@ const AdminDashboardPage: React.FC = () => {
                         <tbody>
                             {mockRecentOrders.map(order => (
                                 <tr key={order.id} className="border-b last:border-0 hover:bg-gray-50">
-                                    <td className="p-3 font-medium text-gray-800">{order.id}</td>
-                                    <td className="p-3">{order.date}</td>
+                                    <td className="p-3 font-medium text-gray-800">{order.order_number}</td>
+                                    {/* FIX: Property 'date' does not exist on type 'Order'. */}
+                                    <td className="p-3">{new Date(order.created_at).toLocaleDateString()}</td>
                                     <td className="p-3">${order.total.toFixed(2)}</td>
                                     <td className="p-3">
                                         <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusClass(order.status)}`}>

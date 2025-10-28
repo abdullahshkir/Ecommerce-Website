@@ -5,18 +5,20 @@ import { Order } from '../../types';
 import { products } from '../../data/products';
 import { UserIcon, MapPinIcon, TruckIcon } from '../icons';
 
+// FIX: Object literal may only specify known properties, and 'date' does not exist in type 'Order'.
 const mockOrder: (Order & { customer: { name: string; email: string; phone: string } }) = {
     id: 'MX54322', 
+    order_number: 'MX54322',
     customer: { name: 'Jane Smith', email: 'jane.smith@example.com', phone: '+1 234 567 890' },
-    date: '2025-07-29', 
+    created_at: '2025-07-29T11:00:00Z', 
     status: 'Processing', 
     total: 450.00,
     items: [
         { ...products[2], quantity: 1 }
     ],
-    shippingAddress: {
-        firstName: 'Jane',
-        lastName: 'Smith',
+    shipping_address: {
+        first_name: 'Jane',
+        last_name: 'Smith',
         address: '456 Oak Avenue',
         apartment: 'Suite 200',
         city: 'Metropolis',
@@ -48,7 +50,8 @@ const AdminOrderDetailPage: React.FC = () => {
             <div className="flex justify-between items-center">
                 <div>
                     <h2 className="text-2xl font-bold text-gray-800">Order #{orderId}</h2>
-                    <p className="text-sm text-gray-500">{mockOrder.date}</p>
+                    {/* FIX: Property 'date' does not exist. */}
+                    <p className="text-sm text-gray-500">{new Date(mockOrder.created_at).toLocaleDateString()}</p>
                 </div>
                 <Link to="/adminpanel/orders" className="text-sm font-medium text-blue-600 hover:underline">&larr; Back to Orders</Link>
             </div>
@@ -91,11 +94,12 @@ const AdminOrderDetailPage: React.FC = () => {
                     </InfoCard>
 
                     <InfoCard title="Shipping Address" icon={<MapPinIcon className="w-5 h-5 text-gray-500"/>}>
+                        {/* FIX: Property 'shippingAddress' does not exist. Did you mean 'shipping_address'? */}
                         <address className="not-italic">
-                            {mockOrder.shippingAddress.firstName} {mockOrder.shippingAddress.lastName}<br/>
-                            {mockOrder.shippingAddress.address}<br/>
-                            {mockOrder.shippingAddress.city}, {mockOrder.shippingAddress.state} {mockOrder.shippingAddress.zip}<br/>
-                            {mockOrder.shippingAddress.country}
+                            {mockOrder.shipping_address.first_name} {mockOrder.shipping_address.last_name}<br/>
+                            {mockOrder.shipping_address.address}<br/>
+                            {mockOrder.shipping_address.city}, {mockOrder.shipping_address.state} {mockOrder.shipping_address.zip}<br/>
+                            {mockOrder.shipping_address.country}
                         </address>
                     </InfoCard>
                     

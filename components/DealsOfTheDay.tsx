@@ -3,49 +3,30 @@ import { CartIcon, StarIcon } from './icons';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { useCart } from '../contexts/CartContext';
 import { Product } from '../types';
+import { products } from '../data/products';
 
-const newImageUrl = 'https://darlingretail.com/cdn/shop/products/1_7b64958c-304b-43bd-b759-c5366bfa9914_600x.jpg?v=1661581431';
 
-const dealsData = [
+const localDealsData = [
     {
-        id: 8, // Corresponds to '4K Action Camera' in products.ts
-        name: '4K Action Camera',
+        id: 8,
         description: 'Capture your adventures in stunning 4K. Waterproof, durable, and ready for anything.',
-        imageUrl: newImageUrl,
-        price: 350.00,
-        oldPrice: 420.00,
         dealEndDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days from now
-        rating: 5,
     },
-    {
-        id: 5, // Corresponds to 'Smart TV Soundbar'
-        name: 'Smart TV Soundbar',
-        imageUrl: newImageUrl,
-        price: 285.00,
-        oldPrice: 350.00,
-    },
-    {
-        id: 2, // Corresponds to 'Noise-Cancelling Headphones'
-        name: 'Noise-Cancelling Headphones',
-        imageUrl: newImageUrl,
-        price: 180.00,
-        oldPrice: null,
-    },
-    {
-        id: 3, // Corresponds to 'Compact Digital Camera'
-        name: 'Compact Digital Camera',
-        imageUrl: newImageUrl,
-        price: 450.00,
-        oldPrice: 500.00,
-    },
-    {
-        id: 7, // Corresponds to 'Wireless Mouse'
-        name: 'Wireless Mouse',
-        imageUrl: newImageUrl,
-        price: 40.00,
-        oldPrice: null,
-    },
+    { id: 5 },
+    { id: 2 },
+    { id: 3 },
+    { id: 7 },
 ];
+
+const dealsData = localDealsData.map(dealInfo => {
+    const productInfo = products.find(p => p.id === dealInfo.id);
+    if (!productInfo) return null;
+    return {
+        ...productInfo,
+        ...dealInfo,
+    };
+}).filter((p): p is Product & typeof localDealsData[0] => p !== null);
+
 
 const CountdownTimer: React.FC<{ endDate: string }> = ({ endDate }) => {
     const calculateTimeLeft = () => {
@@ -114,6 +95,8 @@ const DealsOfTheDay: React.FC<{ onProductClick: (id: number) => void }> = ({ onP
     const { addToCart, openCart } = useCart();
     const [isLoaded, setIsLoaded] = useState(false);
 
+    const isOutOfStock = mainDeal.availability === 'Out of Stock';
+
     useEffect(() => {
         const timer = setTimeout(() => setIsLoaded(true), 100);
         return () => clearTimeout(timer);
@@ -121,18 +104,7 @@ const DealsOfTheDay: React.FC<{ onProductClick: (id: number) => void }> = ({ onP
 
     const handleAddToCart = (e: React.MouseEvent) => {
         e.stopPropagation();
-        const productToAdd: Product = {
-            id: mainDeal.id,
-            name: mainDeal.name,
-            price: mainDeal.price,
-            oldPrice: mainDeal.oldPrice,
-            category: 'Deals',
-            imageUrl: mainDeal.imageUrl,
-            imageUrl2: mainDeal.imageUrl,
-            description: mainDeal.description,
-            rating: mainDeal.rating
-        };
-        addToCart(productToAdd, 1);
+        addToCart(mainDeal, 1);
         openCart();
     };
 
@@ -161,14 +133,22 @@ const DealsOfTheDay: React.FC<{ onProductClick: (id: number) => void }> = ({ onP
                             <p className="text-gray-600 mb-4 text-sm">{mainDeal.description}</p>
                             <div className="flex justify-center md:justify-start items-baseline space-x-2 mb-4">
                                 <span className="text-3xl font-bold text-blue-600">{formatPrice(mainDeal.price)}</span>
-                                <span className="text-lg text-gray-400 line-through">{formatPrice(mainDeal.oldPrice)}</span>
+                                {mainDeal.oldPrice && <span className="text-lg text-gray-400 line-through">{formatPrice(mainDeal.oldPrice)}</span>}
                             </div>
                             <div className="mb-6 flex justify-center md:justify-start">
-                                <CountdownTimer endDate={mainDeal.dealEndDate} />
+                                {mainDeal.dealEndDate && <CountdownTimer endDate={mainDeal.dealEndDate} />}
                             </div>
-                            <button onClick={handleAddToCart} className="inline-flex items-center justify-center bg-black text-white font-bold py-3 px-8 rounded-full hover:bg-gray-800 transition-colors duration-300">
-                                <CartIcon className="w-5 h-5 mr-2" />
-                                Add to Cart
+                             <button 
+                                onClick={handleAddToCart} 
+                                disabled={isOutOfStock}
+                                className="inline-flex items-center justify-center bg-black text-white font-bold py-3 px-8 rounded-full hover:bg-gray-800 transition-colors duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                            >
+                                {isOutOfStock ? 'Out of Stock' : (
+                                    <>
+                                        <CartIcon className="w-5 h-5 mr-2" />
+                                        Add to Cart
+                                    </>
+                                )}
                             </button>
                         </div>
                     </div>

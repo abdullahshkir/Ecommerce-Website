@@ -19,10 +19,11 @@ const FormInput: React.FC<{ id: string, name: string, label: string, type?: stri
 
 const AccountDetailsPage: React.FC = () => {
     const { user, updateUserDetails } = useUser();
+    // FIX: Use snake_case for form data state to align with type definitions.
     const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
-        displayName: '',
+        first_name: '',
+        last_name: '',
+        display_name: '',
         email: '',
     });
     const [passwordData, setPasswordData] = useState({
@@ -33,10 +34,11 @@ const AccountDetailsPage: React.FC = () => {
 
     useEffect(() => {
         if (user) {
+            // FIX: Property 'firstName'/'lastName'/'displayName' does not exist on type 'User'.
             setFormData({
-                firstName: user.firstName,
-                lastName: user.lastName,
-                displayName: user.displayName,
+                first_name: user.first_name,
+                last_name: user.last_name,
+                display_name: user.display_name,
                 email: user.email
             });
         }
@@ -65,11 +67,11 @@ const AccountDetailsPage: React.FC = () => {
             
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormInput id="firstName" name="firstName" label="First Name *" value={formData.firstName} onChange={handleFormChange} required />
-                    <FormInput id="lastName" name="lastName" label="Last Name *" value={formData.lastName} onChange={handleFormChange} required />
+                    <FormInput id="first_name" name="first_name" label="First Name *" value={formData.first_name} onChange={handleFormChange} required />
+                    <FormInput id="last_name" name="last_name" label="Last Name *" value={formData.last_name} onChange={handleFormChange} required />
                 </div>
                 
-                <FormInput id="displayName" name="displayName" label="Display Name *" value={formData.displayName} onChange={handleFormChange} required />
+                <FormInput id="display_name" name="display_name" label="Display Name *" value={formData.display_name} onChange={handleFormChange} required />
                 <p className="text-xs text-gray-500 -mt-4">This will be how your name will be displayed in the account section and in reviews.</p>
                 
                 <FormInput id="email" name="email" label="Email Address *" type="email" value={formData.email} onChange={handleFormChange} required />

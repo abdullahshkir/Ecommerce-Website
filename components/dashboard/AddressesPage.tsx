@@ -6,8 +6,10 @@ import { Address } from '../../types';
 const AddressCard: React.FC<{ address: Address; onEdit: (address: Address) => void; onRemove: (id: string) => void; onSetDefault: (id: string) => void; }> = ({ address, onEdit, onRemove, onSetDefault }) => (
     <div className="border rounded-lg p-4 flex flex-col">
         <div className="flex justify-between items-start">
-            <h4 className="font-semibold text-gray-800">{address.firstName} {address.lastName}</h4>
-            {address.isDefault && <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full font-medium">Default</span>}
+            {/* FIX: Property 'firstName'/'lastName' does not exist on type 'Address'. */}
+            <h4 className="font-semibold text-gray-800">{address.first_name} {address.last_name}</h4>
+            {/* FIX: Property 'isDefault' does not exist on type 'Address'. */}
+            {address.is_default && <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full font-medium">Default</span>}
         </div>
         <address className="text-sm text-gray-600 mt-2 not-italic flex-grow">
             {address.address}, {address.apartment}<br/>
@@ -17,25 +19,38 @@ const AddressCard: React.FC<{ address: Address; onEdit: (address: Address) => vo
         <div className="mt-4 space-x-4 text-sm pt-2">
             <button onClick={() => onEdit(address)} className="font-medium text-blue-600 hover:underline">Edit</button>
             <button onClick={() => onRemove(address.id)} className="font-medium text-red-500 hover:underline">Remove</button>
-            {!address.isDefault && <button onClick={() => onSetDefault(address.id)} className="font-medium text-gray-600 hover:underline">Set as Default</button>}
+            {/* FIX: Property 'isDefault' does not exist on type 'Address'. */}
+            {!address.is_default && <button onClick={() => onSetDefault(address.id)} className="font-medium text-gray-600 hover:underline">Set as Default</button>}
         </div>
     </div>
 );
 
 const AddressForm: React.FC<{ onCancel: () => void; editingAddress: Address | null }> = ({ onCancel, editingAddress }) => {
     const { addAddress, updateAddress } = useUser();
+    // FIX: Use snake_case for form data state to align with type definitions.
     const [formData, setFormData] = useState({
-        firstName: '', lastName: '', address: '', apartment: '',
-        city: '', state: '', zip: '', country: 'Pakistan', isDefault: false
+        first_name: '', last_name: '', address: '', apartment: '',
+        city: '', state: '', zip: '', country: 'Pakistan', is_default: false
     });
 
     useEffect(() => {
         if (editingAddress) {
-            setFormData(editingAddress);
+            // FIX: Type 'Address' is not assignable to state type.
+            setFormData({
+                first_name: editingAddress.first_name,
+                last_name: editingAddress.last_name,
+                address: editingAddress.address,
+                apartment: editingAddress.apartment,
+                city: editingAddress.city,
+                state: editingAddress.state,
+                zip: editingAddress.zip,
+                country: editingAddress.country,
+                is_default: editingAddress.is_default,
+            });
         } else {
             setFormData({
-                firstName: '', lastName: '', address: '', apartment: '',
-                city: '', state: '', zip: '', country: 'Pakistan', isDefault: false
+                first_name: '', last_name: '', address: '', apartment: '',
+                city: '', state: '', zip: '', country: 'Pakistan', is_default: false
             });
         }
     }, [editingAddress]);
@@ -51,6 +66,7 @@ const AddressForm: React.FC<{ onCancel: () => void; editingAddress: Address | nu
         if (editingAddress) {
             updateAddress({ ...editingAddress, ...formData });
         } else {
+            // FIX: Argument is not assignable to parameter of type 'Omit<Address, "id">'.
             addAddress(formData);
         }
         onCancel();
@@ -59,8 +75,8 @@ const AddressForm: React.FC<{ onCancel: () => void; editingAddress: Address | nu
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <input name="firstName" value={formData.firstName} onChange={handleChange} type="text" placeholder="First name *" required className="w-full p-3 border rounded-md" />
-                <input name="lastName" value={formData.lastName} onChange={handleChange} type="text" placeholder="Last name *" required className="w-full p-3 border rounded-md" />
+                <input name="first_name" value={formData.first_name} onChange={handleChange} type="text" placeholder="First name *" required className="w-full p-3 border rounded-md" />
+                <input name="last_name" value={formData.last_name} onChange={handleChange} type="text" placeholder="Last name *" required className="w-full p-3 border rounded-md" />
             </div>
             <input name="address" value={formData.address} onChange={handleChange} type="text" placeholder="Address *" required className="w-full p-3 border rounded-md" />
             <input name="apartment" value={formData.apartment} onChange={handleChange} type="text" placeholder="Apartment, suite, etc. (optional)" className="w-full p-3 border rounded-md" />
@@ -70,8 +86,8 @@ const AddressForm: React.FC<{ onCancel: () => void; editingAddress: Address | nu
                 <input name="zip" value={formData.zip} onChange={handleChange} type="text" placeholder="ZIP code *" required className="w-full p-3 border rounded-md" />
             </div>
             <div className="flex items-center">
-                <input id="isDefault" name="isDefault" type="checkbox" checked={formData.isDefault} onChange={handleChange} className="h-4 w-4 rounded border-gray-300 text-blue-600" />
-                <label htmlFor="isDefault" className="ml-2 text-sm text-gray-700">Set as default address</label>
+                <input id="is_default" name="is_default" type="checkbox" checked={formData.is_default} onChange={handleChange} className="h-4 w-4 rounded border-gray-300 text-blue-600" />
+                <label htmlFor="is_default" className="ml-2 text-sm text-gray-700">Set as default address</label>
             </div>
             <div className="flex gap-4 pt-2">
                 <button type="submit" className="bg-black text-white px-6 py-2 rounded-full font-semibold">Save Address</button>

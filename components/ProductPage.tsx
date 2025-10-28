@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { products } from '../data/products';
-import { Product } from '../types';
-import { StarIcon, PlusIcon, MinusIcon, HeartIcon, ExpandIcon, FacebookIcon, TwitterIcon, InstagramIcon, PinterestIcon } from './icons';
+import { Product, Review } from '../types';
+import { StarIcon, PlusIcon, MinusIcon, HeartIcon, ExpandIcon, FacebookIcon, TwitterIcon, InstagramIcon, PinterestIcon, UserIcon } from './icons';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { useWishlist } from '../contexts/WishlistContext';
 import { useCart } from '../contexts/CartContext';
@@ -29,6 +29,102 @@ const ProductCard: React.FC<{ product: Product; onClick: (id: number) => void }>
         </div>
     );
 };
+
+const StarRatingInput: React.FC<{ rating: number; setRating: (rating: number) => void; }> = ({ rating, setRating }) => {
+    return (
+        <div className="flex items-center">
+            {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                    type="button"
+                    key={star}
+                    onClick={() => setRating(star)}
+                    onMouseEnter={() => {}}
+                    onMouseLeave={() => {}}
+                    className="text-gray-300 focus:outline-none"
+                >
+                    <StarIcon filled={star <= rating} className={`w-5 h-5 transition-colors ${star <= rating ? 'text-yellow-400' : 'hover:text-yellow-300'}`} />
+                </button>
+            ))}
+        </div>
+    );
+};
+
+const ReviewsTab: React.FC<{ product: Product }> = ({ product }) => {
+    const [newReview, setNewReview] = useState({ rating: 0, text: '', author: '', email: '' });
+    const [reviewSubmitted, setReviewSubmitted] = useState(false);
+
+    const handleReviewSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        console.log('Review submitted:', newReview);
+        setReviewSubmitted(true);
+        setTimeout(() => {
+            setNewReview({ rating: 0, text: '', author: '', email: '' });
+            setReviewSubmitted(false);
+        }, 4000);
+    };
+    
+    return (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div>
+                <h3 className="text-xl font-semibold mb-6">{product.reviews?.length || 0} review for "{product.name}"</h3>
+                <div className="space-y-6">
+                    {product.reviews && product.reviews.length > 0 ? (
+                        product.reviews.map(review => (
+                            <div key={review.id} className="flex items-start space-x-4">
+                                <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+                                    <UserIcon className="w-6 h-6 text-gray-500" />
+                                </div>
+                                <div>
+                                    <div className="flex items-center mb-1">
+                                        {[...Array(5)].map((_, i) => (
+                                            <StarIcon key={i} filled={i < review.rating} className="w-4 h-4 text-yellow-400" />
+                                        ))}
+                                    </div>
+                                    <p className="font-semibold text-gray-800">{review.author} <span className="text-sm text-gray-500 font-normal">- {review.date}</span></p>
+                                    <p className="text-gray-600 mt-2">{review.text}</p>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <p className="text-gray-600">There are no reviews yet.</p>
+                    )}
+                </div>
+            </div>
+            <div>
+                <h3 className="text-xl font-semibold mb-6">Add a review</h3>
+                {reviewSubmitted ? (
+                    <div className="p-4 bg-green-50 text-green-800 rounded-md">
+                        Thank you for your review! It has been submitted for approval.
+                    </div>
+                ) : (
+                    <form onSubmit={handleReviewSubmit} className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Your rating *</label>
+                            <StarRatingInput rating={newReview.rating} setRating={(r) => setNewReview(prev => ({ ...prev, rating: r }))} />
+                        </div>
+                        <div>
+                            <label htmlFor="reviewText" className="block text-sm font-medium text-gray-700 mb-1">Your review *</label>
+                            <textarea id="reviewText" value={newReview.text} onChange={(e) => setNewReview(prev => ({ ...prev, text: e.target.value }))} rows={4} required className="w-full p-3 border rounded-md"></textarea>
+                        </div>
+                         <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label htmlFor="reviewAuthor" className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                                <input type="text" id="reviewAuthor" value={newReview.author} onChange={(e) => setNewReview(prev => ({ ...prev, author: e.target.value }))} required className="w-full p-3 border rounded-md" />
+                            </div>
+                            <div>
+                                <label htmlFor="reviewEmail" className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                                <input type="email" id="reviewEmail" value={newReview.email} onChange={(e) => setNewReview(prev => ({ ...prev, email: e.target.value }))} required className="w-full p-3 border rounded-md" />
+                            </div>
+                        </div>
+                        <p className="text-xs text-gray-500">Your email address will not be published.</p>
+                        <button type="submit" className="bg-black text-white py-3 px-6 rounded-full font-semibold hover:bg-gray-800">Submit</button>
+                    </form>
+                )}
+            </div>
+        </div>
+    );
+};
+
 
 const ProductPage: React.FC<{onProductClick: (id: number) => void}> = ({ onProductClick }) => {
     const { id } = useParams<{ id: string }>();
@@ -76,6 +172,15 @@ const ProductPage: React.FC<{onProductClick: (id: number) => void}> = ({ onProdu
         );
     }
 
+    const TABS = [
+        { id: 'description', title: 'Description' },
+        { id: 'custom', title: 'Custom tab' },
+        { id: 'reviews', title: `Reviews (${product.reviews?.length || 0})` }
+    ];
+
+    const isOutOfStock = product.availability === 'Out of Stock';
+
+
     const productSchema = {
         "@context": "https://schema.org/",
         "@type": "Product",
@@ -87,18 +192,19 @@ const ProductPage: React.FC<{onProductClick: (id: number) => void}> = ({ onProdu
             "@type": "Brand",
             "name": "Mobixo"
         },
-        "review": {
+        "review": product.reviews?.map(review => ({
             "@type": "Review",
             "reviewRating": {
               "@type": "Rating",
-              "ratingValue": product.rating || "4",
+              "ratingValue": review.rating,
               "bestRating": "5"
             },
             "author": {
               "@type": "Person",
-              "name": "Mobixo Customer"
-            }
-        },
+              "name": review.author
+            },
+            "reviewBody": review.text
+        })),
         "aggregateRating": {
             "@type": "AggregateRating",
             "ratingValue": product.rating || "4.5",
@@ -111,7 +217,7 @@ const ProductPage: React.FC<{onProductClick: (id: number) => void}> = ({ onProdu
             "price": product.price.toFixed(2),
             "priceValidUntil": "2025-12-31",
             "itemCondition": "https://schema.org/NewCondition",
-            "availability": product.availability === 'In Stock' ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
+            "availability": isOutOfStock ? "https://schema.org/OutOfStock" : "https://schema.org/InStock"
         }
     };
 
@@ -134,12 +240,6 @@ const ProductPage: React.FC<{onProductClick: (id: number) => void}> = ({ onProdu
         }]
     };
     
-    const TABS = [
-        { id: 'description', title: 'Description', content: product.longDescription || '<p>No description available.</p>' },
-        { id: 'custom', title: 'Custom tab', content: '<p>Content for custom tab goes here.</p>' },
-        { id: 'reviews', title: 'Reviews', content: '<p>Reviews will be displayed here.</p>' }
-    ];
-
     const isWishlisted = isInWishlist(product.id);
     const handleWishlistClick = () => {
         if (isWishlisted) {
@@ -165,6 +265,32 @@ const ProductPage: React.FC<{onProductClick: (id: number) => void}> = ({ onProdu
 
     const images = product.images || [product.imageUrl, product.imageUrl2];
     const relatedProducts = products.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
+
+    const renderTabContent = () => {
+        switch (activeTab) {
+            case 'description':
+                return <div dangerouslySetInnerHTML={{ __html: product.longDescription || '<p>No description available.</p>' }} />;
+            case 'custom':
+                return <div dangerouslySetInnerHTML={{ __html: '<p>Content for custom tab goes here.</p>' }} />;
+            case 'reviews':
+                return <ReviewsTab product={product!} />;
+            default:
+                return null;
+        }
+    };
+
+    const renderAccordionContent = (tabId: string) => {
+        switch (tabId) {
+            case 'description':
+                return <div className="text-gray-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: product.longDescription || '<p>No description available.</p>' }} />;
+            case 'custom':
+                return <div className="text-gray-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: '<p>Content for custom tab goes here.</p>' }} />;
+            case 'reviews':
+                return <ReviewsTab product={product!} />;
+            default:
+                return null;
+        }
+    };
 
     return (
         <>
@@ -222,28 +348,33 @@ const ProductPage: React.FC<{onProductClick: (id: number) => void}> = ({ onProdu
                             </div>
                             <p className="text-4xl font-bold text-gray-900 mb-4">{formatPrice(product.price)}</p>
                             <p className="text-gray-600 mb-6">{product.description}</p>
-
-                            <div className="flex items-center space-x-4 mb-6">
-                                <div className="flex items-center border border-gray-300 rounded-full">
-                                    <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="px-4 py-3 text-gray-600"><MinusIcon className="w-6 h-6"/></button>
-                                    <input type="text" value={quantity} readOnly className="w-12 text-center border-0 p-0 text-lg focus:ring-0 bg-transparent" />
-                                    <button onClick={() => setQuantity(quantity + 1)} className="px-4 py-3 text-gray-600"><PlusIcon className="w-6 h-6"/></button>
-                                </div>
-                                <button onClick={handleAddToCart} className="flex-grow bg-blue-600 text-white py-3 px-6 rounded-full font-semibold hover:bg-blue-700">ADD TO CART</button>
-                                <button onClick={handleWishlistClick} className={`p-3 border rounded-full transition-colors ${isWishlisted ? 'bg-red-50 text-red-500 border-red-200' : 'border-gray-300 hover:bg-gray-100'}`}>
-                                    <HeartIcon filled={isWishlisted} className={`w-6 h-6 ${isWishlisted ? 'text-red-500' : 'text-gray-700'}`}/>
-                                </button>
-                            </div>
                             
-                            <button onClick={handleBuyNow} className="w-full bg-gray-900 text-white py-4 px-6 rounded-full font-semibold hover:bg-gray-800 mb-6">BUY IT NOW</button>
+                            {isOutOfStock && <span className="block mb-4 text-lg font-semibold text-red-500 bg-red-50 p-3 rounded-md">Out of Stock</span>}
 
+                            {!isOutOfStock && (
+                                <>
+                                <div className="flex items-center space-x-4 mb-6">
+                                    <div className="flex items-center border border-gray-300 rounded-full">
+                                        <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="px-4 py-3 text-gray-600"><MinusIcon className="w-6 h-6"/></button>
+                                        <input type="text" value={quantity} readOnly className="w-12 text-center border-0 p-0 text-lg focus:ring-0 bg-transparent" />
+                                        <button onClick={() => setQuantity(quantity + 1)} className="px-4 py-3 text-gray-600"><PlusIcon className="w-6 h-6"/></button>
+                                    </div>
+                                    <button onClick={handleAddToCart} className="flex-grow bg-blue-600 text-white py-3 px-6 rounded-full font-semibold hover:bg-blue-700">ADD TO CART</button>
+                                    <button onClick={handleWishlistClick} className={`p-3 border rounded-full transition-colors ${isWishlisted ? 'bg-red-50 text-red-500 border-red-200' : 'border-gray-300 hover:bg-gray-100'}`}>
+                                        <HeartIcon filled={isWishlisted} className={`w-6 h-6 ${isWishlisted ? 'text-red-500' : 'text-gray-700'}`}/>
+                                    </button>
+                                </div>
+                                <button onClick={handleBuyNow} className="w-full bg-gray-900 text-white py-4 px-6 rounded-full font-semibold hover:bg-gray-800 mb-6">BUY IT NOW</button>
+                                </>
+                            )}
+                            
                             <div className="flex justify-center space-x-4 mb-6">
                                 <img src="https://d33v4339jhl8k0.cloudfront.net/docs/assets/6033aa1e6f44a32676aad8a8/images/606c51bef8c0ef2d98def68c/file-0kP4KUVJZw.png" alt="Trust Seals" className="h-auto w-full max-w-sm" />
                             </div>
                             
                             <div className="text-sm text-gray-600 space-y-2 border-t pt-6">
                                 <p><a href="#" className="text-blue-600 underline hover:text-blue-800">Ask a Question</a></p>
-                                <p><strong>Availability:</strong> <span className="text-green-600 font-semibold">{product.availability}</span></p>
+                                <p><strong>Availability:</strong> <span className={`font-semibold ${isOutOfStock ? 'text-red-600' : 'text-green-600'}`}>{product.availability}</span></p>
                                 <p><strong>Categories:</strong> {product.categories?.join(', ')}</p>
                                 <p><strong>Tags:</strong> {product.tags?.join(', ')}</p>
                                 <div className="flex items-center space-x-4 pt-4">
@@ -275,9 +406,7 @@ const ProductPage: React.FC<{onProductClick: (id: number) => void}> = ({ onProdu
                                 ))}
                             </div>
                             <div className="max-w-4xl mx-auto text-gray-700 leading-relaxed">
-                                {TABS.map(tab => activeTab === tab.id && (
-                                    <div key={tab.id} dangerouslySetInnerHTML={{ __html: tab.content }} />
-                                ))}
+                                {renderTabContent()}
                             </div>
                         </div>
 
@@ -296,7 +425,7 @@ const ProductPage: React.FC<{onProductClick: (id: number) => void}> = ({ onProdu
                                     </button>
                                     {openAccordion === tab.id && (
                                         <div className="bg-white p-4">
-                                            <div className="text-gray-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: tab.content }} />
+                                            {renderAccordionContent(tab.id)}
                                         </div>
                                     )}
                                 </div>

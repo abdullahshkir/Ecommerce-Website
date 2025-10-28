@@ -20,19 +20,57 @@ const ShopPage: React.FC<ShopPageProps> = ({ onProductQuickView, onProductClick 
     const [currentPage, setCurrentPage] = useState(1);
     const [isFilterOpen, setFilterOpen] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
+    const [totalPages, setTotalPages] = useState(0);
+
+    const [filters, setFilters] = useState({
+        categories: [] as string[],
+        price: { min: 0, max: 1500 },
+        colors: [] as string[],
+        sizes: [] as string[],
+        brands: [] as string[],
+    });
+
+    const handleFilterChange = (filterName: string, value: any) => {
+        setFilters(prev => ({...prev, [filterName]: value}));
+        setCurrentPage(1); // Reset to first page on filter change
+    };
+
+    const clearFilters = () => {
+        setFilters({
+            categories: [],
+            price: { min: 0, max: 1500 },
+            colors: [],
+            sizes: [],
+            brands: [],
+        });
+        setCurrentPage(1);
+    };
 
     useEffect(() => {
         const timer = setTimeout(() => setIsLoaded(true), 100);
         return () => clearTimeout(timer);
     }, []);
 
-    const productsPerPage = 12;
-    const totalPages = Math.ceil(allProducts.length / productsPerPage);
+    const productsPerPage = 8;
 
     useEffect(() => {
-        // Here you would typically apply filters and sorting
         let processedProducts = [...allProducts];
 
+        // Filtering logic
+        if (filters.categories.length > 0) {
+            processedProducts = processedProducts.filter(p => filters.categories.includes(p.category));
+        }
+        processedProducts = processedProducts.filter(p => p.price >= filters.price.min && p.price <= filters.price.max);
+        if (filters.colors.length > 0) {
+            processedProducts = processedProducts.filter(p => p.color?.some(c => filters.colors.includes(c)));
+        }
+        if (filters.sizes.length > 0) {
+            processedProducts = processedProducts.filter(p => p.size?.some(s => filters.sizes.includes(s)));
+        }
+        if (filters.brands.length > 0) {
+            processedProducts = processedProducts.filter(p => p.brand && filters.brands.includes(p.brand));
+        }
+        
         // Sorting logic
         processedProducts.sort((a, b) => {
             switch (sortOption) {
@@ -42,11 +80,14 @@ const ShopPage: React.FC<ShopPageProps> = ({ onProductQuickView, onProductClick 
                 default: return 0;
             }
         });
+        
+        setTotalPages(Math.ceil(processedProducts.length / productsPerPage));
 
         const startIndex = (currentPage - 1) * productsPerPage;
         const endIndex = startIndex + productsPerPage;
         setDisplayedProducts(processedProducts.slice(startIndex, endIndex));
-    }, [allProducts, currentPage, sortOption]);
+
+    }, [allProducts, currentPage, sortOption, filters]);
     
     const gridClasses: { [key: number]: string } = {
         1: 'grid-cols-1',
@@ -61,6 +102,17 @@ const ShopPage: React.FC<ShopPageProps> = ({ onProductQuickView, onProductClick 
         { cols: 3, icon: <Grid3Icon className="w-5 h-5" /> },
         { cols: 4, icon: <Grid4Icon className="w-5 h-5" /> },
     ];
+
+    const currentProductCount = displayedProducts.length;
+    const totalFilteredProducts = allProducts.filter(p => {
+         if (filters.categories.length > 0 && !filters.categories.includes(p.category)) return false;
+         if (p.price < filters.price.min || p.price > filters.price.max) return false;
+         if (filters.colors.length > 0 && !p.color?.some(c => filters.colors.includes(c))) return false;
+         if (filters.sizes.length > 0 && !p.size?.some(s => filters.sizes.includes(s))) return false;
+         if (filters.brands.length > 0 && (!p.brand || !filters.brands.includes(p.brand))) return false;
+         return true;
+    }).length;
+
 
     return (
         <div className="bg-white">
@@ -78,14 +130,20 @@ const ShopPage: React.FC<ShopPageProps> = ({ onProductQuickView, onProductClick 
             <div className={`container mx-auto px-4 py-12 transition-opacity duration-700 ease-out ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
                 <div className="grid grid-cols-1 lg:grid-cols-4 lg:gap-8">
                     {/* Filters */}
-                    <FilterSidebar isOpen={isFilterOpen} onClose={() => setFilterOpen(false)} />
+                    <FilterSidebar 
+                        isOpen={isFilterOpen} 
+                        onClose={() => setFilterOpen(false)} 
+                        filters={filters}
+                        onFilterChange={handleFilterChange}
+                        onClearFilters={clearFilters}
+                    />
 
                     {/* Products Grid */}
                     <div className="lg:col-span-3">
                         {/* Top bar */}
                         <div className="flex flex-wrap sm:flex-nowrap justify-between items-center mb-6 border-b pb-4 gap-y-4">
                             <p className="text-sm text-gray-600 w-full sm:w-auto order-2 sm:order-1 text-left">
-                                Showing {Math.min((currentPage - 1) * productsPerPage + 1, allProducts.length)}–{Math.min(currentPage * productsPerPage, allProducts.length)} of {allProducts.length} results
+                                Showing {Math.min((currentPage - 1) * productsPerPage + 1, totalFilteredProducts)}–{Math.min(currentPage * productsPerPage, totalFilteredProducts)} of {totalFilteredProducts} results
                             </p>
 
                             <div className="flex items-center justify-between sm:justify-end gap-x-4 w-full sm:w-auto order-1 sm:order-2">
@@ -123,16 +181,22 @@ const ShopPage: React.FC<ShopPageProps> = ({ onProductQuickView, onProductClick 
                         </div>
 
                         {/* Product grid */}
-                        <div className={`grid ${gridClasses[gridCols]} gap-6`}>
-                            {displayedProducts.map(product => (
-                                <ProductCard 
-                                    key={product.id} 
-                                    product={product} 
-                                    onQuickView={onProductQuickView} 
-                                    onProductClick={onProductClick} 
-                                />
-                            ))}
-                        </div>
+                        {displayedProducts.length > 0 ? (
+                             <div className={`grid ${gridClasses[gridCols]} gap-6`}>
+                                {displayedProducts.map(product => (
+                                    <ProductCard 
+                                        key={product.id} 
+                                        product={product} 
+                                        onQuickView={onProductQuickView} 
+                                        onProductClick={onProductClick} 
+                                    />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-20">
+                                <p className="text-lg text-gray-600">No products found matching your criteria.</p>
+                            </div>
+                        )}
 
                         {/* Pagination */}
                         <Pagination 

@@ -85,7 +85,7 @@ export const products: Product[] = [
         oldPrice: null,
         isNew: true,
         rating: 5,
-        reviewCount: 1,
+        reviewCount: 2,
         description: 'Go kalles this summer with this vintage navy and white striped v-neck t-shirt from the Nike. Perfect for pairing with denim and white kicks for a stylish kalles vibe.',
         longDescription: `
             <h4 class="font-bold text-lg mb-2">Viverra a consectetur</h4>
@@ -105,6 +105,22 @@ export const products: Product[] = [
             newImageUrl,
             newImageUrl,
             newImageUrl,
+        ],
+        reviews: [
+            {
+                id: 1,
+                author: 'John Doe',
+                rating: 5,
+                date: 'July 25, 2025',
+                text: 'Absolutely fantastic drone! The 4K camera is stunning and it\'s very easy to fly. Highly recommended for both beginners and pros.'
+            },
+            {
+                id: 2,
+                author: 'Jane Smith',
+                rating: 4,
+                date: 'July 20, 2025',
+                text: 'Great drone for the price. The battery life is decent, but I\'d recommend getting a spare. The footage is stable and crisp.'
+            }
         ],
         color: ['White'],
         size: ['L'],
@@ -146,7 +162,7 @@ export const products: Product[] = [
         rating: 5,
         reviewCount: 50,
         description: 'A lightweight yet powerful laptop for professionals on the go.',
-        availability: 'In Stock',
+        availability: 'Out of Stock',
         categories: ['Digital', 'Computers'],
         tags: ['laptop', 'ultrabook', 'computer'],
         images: [

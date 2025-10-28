@@ -11,6 +11,8 @@ const ProductCard: React.FC<{ product: Product, onQuickView: (product: Product) 
     const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
     const { addToCart, openCart } = useCart();
     const isWishlisted = isInWishlist(product.id);
+    const isOutOfStock = product.availability === 'Out of Stock';
+
 
     const handleWishlistClick = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -46,13 +48,16 @@ const ProductCard: React.FC<{ product: Product, onQuickView: (product: Product) 
                         <HeartIcon filled={isWishlisted} className="w-5 h-5" />
                     </button>
                     <button onClick={(e) => { e.stopPropagation(); onQuickView(product); }} className="bg-white p-2.5 rounded-full shadow-md hover:bg-black hover:text-white transition-colors"><EyeIcon className="w-5 h-5" /></button>
-                    <button onClick={handleAddToCartClick} className="bg-white p-2.5 rounded-full shadow-md hover:bg-black hover:text-white transition-colors"><CartIcon className="w-5 h-5" /></button>
+                    <button onClick={handleAddToCartClick} disabled={isOutOfStock} className="bg-white p-2.5 rounded-full shadow-md hover:bg-black hover:text-white transition-colors disabled:bg-gray-200 disabled:cursor-not-allowed disabled:text-gray-400">
+                        <CartIcon className="w-5 h-5" />
+                    </button>
                 </div>
 
                 {/* Labels */}
                 <div className="absolute top-4 left-4 flex flex-col space-y-2">
                     {isSale && <span className="bg-red-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full">SALE</span>}
                     {isNew && <span className="bg-cyan-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full">NEW</span>}
+                    {isOutOfStock && <span className="bg-gray-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full">OUT OF STOCK</span>}
                 </div>
             </div>
 

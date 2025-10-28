@@ -22,7 +22,8 @@ const OrderTrackingPage: React.FC = () => {
     
     const trackingSteps = ['Processing', 'Shipped', 'Delivered'];
     const currentStepIndex = trackingSteps.indexOf(order.status);
-    const orderPlacedDate = new Date(order.date);
+    // FIX: Property 'date' does not exist on type 'Order'.
+    const orderPlacedDate = new Date(order.created_at);
 
     const getStepDate = (index: number) => {
         if (index > currentStepIndex) return "";
@@ -60,7 +61,8 @@ const OrderTrackingPage: React.FC = () => {
             <div className="flex justify-between items-center mb-6 border-b pb-4">
                 <div>
                     <h2 className="text-xl font-semibold text-gray-800">Order Details</h2>
-                    <p className="text-sm text-gray-500">Order #{order.id} &bull; Placed on {order.date}</p>
+                    {/* FIX: Property 'date' does not exist on type 'Order'. */}
+                    <p className="text-sm text-gray-500">Order #{order.order_number} &bull; Placed on {new Date(order.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
                 </div>
                 <Link to="/account/orders" className="text-sm font-medium text-blue-600 hover:underline">&larr; Back to Orders</Link>
             </div>

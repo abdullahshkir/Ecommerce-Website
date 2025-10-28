@@ -13,7 +13,7 @@ interface UserContextType {
   updateAddress: (updatedAddress: Address) => void;
   removeAddress: (addressId: string) => void;
   setDefaultAddress: (addressId: string) => void;
-  addOrder: (newOrder: Omit<Order, 'id' | 'date' | 'status'>) => void;
+  addOrder: (newOrder: Pick<Order, 'items' | 'total' | 'shipping_address'>) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -46,17 +46,18 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }, [isLoggedIn, user, addresses, orders]);
     
     const login = (userData: User) => {
+        // FIX: Use snake_case for address properties to match the type definition.
         const defaultAddress: Address = {
             id: Date.now().toString(),
-            firstName: userData.firstName,
-            lastName: userData.lastName,
+            first_name: userData.first_name,
+            last_name: userData.last_name,
             address: 'D Ground',
             apartment: 'Apt 123',
             city: 'Faisalabad',
             state: 'Punjab',
             zip: '38000',
             country: 'Pakistan',
-            isDefault: true,
+            is_default: true,
         };
         setUser(userData);
         setAddresses([defaultAddress]);
@@ -81,7 +82,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     
     const addAddress = (newAddressData: Omit<Address, 'id'>) => {
         setAddresses(prev => {
-            const newAddresses = newAddressData.isDefault ? prev.map(a => ({...a, isDefault: false})) : [...prev];
+            // FIX: Property 'isDefault' does not exist on type 'Omit<Address, "id">'. Did you mean 'is_default'?
+            const newAddresses = newAddressData.is_default ? prev.map(a => ({...a, is_default: false})) : [...prev];
             const newAddress: Address = { ...newAddressData, id: Date.now().toString() };
             return [...newAddresses, newAddress];
         });
@@ -90,8 +92,9 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const updateAddress = (updatedAddress: Address) => {
         setAddresses(prev => {
             const newAddresses = prev.map(a => (a.id === updatedAddress.id ? updatedAddress : a));
-            if (updatedAddress.isDefault) {
-                return newAddresses.map(a => a.id === updatedAddress.id ? a : {...a, isDefault: false});
+            // FIX: Property 'isDefault' does not exist on type 'Address'. Did you mean 'is_default'?
+            if (updatedAddress.is_default) {
+                return newAddresses.map(a => a.id === updatedAddress.id ? a : {...a, is_default: false});
             }
             return newAddresses;
         });
@@ -102,14 +105,17 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
 
     const setDefaultAddress = (addressId: string) => {
-        setAddresses(prev => prev.map(a => ({...a, isDefault: a.id === addressId})));
+        setAddresses(prev => prev.map(a => ({...a, is_default: a.id === addressId})));
     };
 
-    const addOrder = (newOrderData: Omit<Order, 'id' | 'date' | 'status'>) => {
+    const addOrder = (newOrderData: Pick<Order, 'items' | 'total' | 'shipping_address'>) => {
+        // FIX: 'date' property does not exist on type 'Order'. Use 'created_at'.
         const newOrder: Order = {
             ...newOrderData,
-            id: `MX${Math.floor(Math.random() * 90000) + 10000}`,
-            date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+            id: `ORD-${Date.now()}`,
+            user_id: user?.id,
+            order_number: `MX${Math.floor(Math.random() * 90000) + 10000}`,
+            created_at: new Date().toISOString(),
             status: 'Processing',
         };
         setOrders(prev => [newOrder, ...prev]);
