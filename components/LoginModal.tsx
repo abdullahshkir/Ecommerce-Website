@@ -1,18 +1,20 @@
 import React, { useEffect, FC, useState } from 'react';
 import { CloseIcon, EnvelopeIcon, EyeIcon, EyeOffIcon } from './icons';
-import { User } from '../types';
+import { useUser } from '../contexts/UserContext';
 
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onLoginSuccess: (user: User) => void;
 }
 
-const LoginModal: FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
+const LoginModal: FC<LoginModalProps> = ({ isOpen, onClose }) => {
+    const { login, signup } = useUser();
     const [showPassword, setShowPassword] = useState(false);
     const [formType, setFormType] = useState<'login' | 'register'>('login');
     const [isMounted, setIsMounted] = useState(isOpen);
     const [isActive, setIsActive] = useState(isOpen);
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -63,15 +65,31 @@ const LoginModal: FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess }) =>
         }
     }, [isOpen]);
     
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const user: User = {
-            firstName: formData.firstName || 'Customer',
-            lastName: formData.lastName || '',
-            displayName: formData.firstName || 'Customer',
-            email: formData.email
-        };
-        onLoginSuccess(user);
+        setError('');
+        setLoading(true);
+
+        try {
+            if (formType === 'login') {
+                await login(formData.email, formData.password);
+            } else {
+                const displayName = `${formData.firstName} ${formData.lastName}`.trim();
+                await signup(
+                    formData.email,
+                    formData.password,
+                    formData.firstName,
+                    formData.lastName,
+                    displayName
+                );
+            }
+            onClose();
+            setFormData({ firstName: '', lastName: '', email: '', password: '' });
+        } catch (err: any) {
+            setError(err.message || 'An error occurred. Please try again.');
+        } finally {
+            setLoading(false);
+        }
     };
 
 
@@ -108,6 +126,11 @@ const LoginModal: FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess }) =>
 
             {/* Form Container */}
             <div className="flex-grow p-8 overflow-y-auto">
+                {error && (
+                    <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-md text-sm">
+                        {error}
+                    </div>
+                )}
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {formType === 'register' && (
                         <>
@@ -202,9 +225,10 @@ const LoginModal: FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess }) =>
                     <div>
                         <button
                             type="submit"
-                            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                            disabled={loading}
+                            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            {formType === 'login' ? 'Sign In' : 'Create Account'}
+                            {loading ? 'Please wait...' : (formType === 'login' ? 'Sign In' : 'Create Account')}
                         </button>
                     </div>
                 </form>
