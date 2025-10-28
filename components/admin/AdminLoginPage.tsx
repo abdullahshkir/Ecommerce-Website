@@ -15,11 +15,10 @@ const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ onLoginSuccess }) => {
             <p className="mt-2 text-gray-600">Admin Panel Login</p>
         </div>
         <div className="mt-8">
-            {/* SupabaseAuth handles the actual login process */}
+            {/* SupabaseAuth handles the actual login process and redirect */}
             <SupabaseAuth 
-                onSuccess={onLoginSuccess} 
-                // We need to ensure the Auth component redirects to the admin dashboard 
-                // and only allows sign_in view for admin login page.
+                // We rely on Supabase's built-in redirect to /adminpanel/dashboard
+                // onSuccess is not needed here as it's a full-page view.
                 view="sign_in"
                 redirectTo={window.location.origin + '/#/adminpanel/dashboard'}
             />

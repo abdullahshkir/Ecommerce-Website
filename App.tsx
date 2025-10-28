@@ -92,12 +92,6 @@ const App: React.FC = () => {
     }
   };
   
-  const handleAdminLoginSuccess = () => {
-    // This function is no longer needed as SupabaseAuth handles success and redirects
-    // We rely on the useUser hook to update the state and AdminRouteGuard to handle access.
-    navigate('/adminpanel/dashboard');
-  };
-
   const handleAdminLogout = () => {
     // Logout logic is handled by useUser/SessionContext
     navigate('/adminpanel');
@@ -121,7 +115,7 @@ const App: React.FC = () => {
             element={
                 isAdmin 
                     ? <Navigate to="/adminpanel/dashboard" /> 
-                    : <AdminLoginPage onLoginSuccess={handleAdminLoginSuccess} />
+                    : <AdminLoginPage />
             } 
           />
           
