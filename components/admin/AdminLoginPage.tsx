@@ -36,13 +36,14 @@ const AdminLoginPage: React.FC = () => {
 
     if (!email || !password) return;
 
-    // 1. Sign up the user
+    // 1. Sign up the user, passing 'pending_admin' role hint via metadata
+    // The database trigger will override this if the email matches the super admin email.
     const { data: { user: newUser }, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
             data: {
-                initial_role: 'pending_admin' // Pass metadata to trigger function
+                initial_role: 'pending_admin' 
             }
         }
     });
@@ -56,7 +57,7 @@ const AdminLoginPage: React.FC = () => {
         // We will show a success message and switch to sign in view.
         setMessage({ 
             type: 'success', 
-            text: 'Account created! Please check your email for verification. Your admin access is pending approval.' 
+            text: 'Account created! Please check your email for verification. Your admin access is pending approval (unless you are the Super Admin).' 
         });
         setView('sign_in');
     }
