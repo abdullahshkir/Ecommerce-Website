@@ -6,9 +6,11 @@ import { useSession } from '../contexts/SessionContext';
 
 interface SupabaseAuthProps {
     onSuccess: () => void;
+    view?: 'sign_in' | 'sign_up' | 'forgotten_password' | 'update_password';
+    redirectTo?: string;
 }
 
-const SupabaseAuth: React.FC<SupabaseAuthProps> = ({ onSuccess }) => {
+const SupabaseAuth: React.FC<SupabaseAuthProps> = ({ onSuccess, view = 'sign_in', redirectTo }) => {
     const { user } = useSession();
 
     useEffect(() => {
@@ -47,8 +49,8 @@ const SupabaseAuth: React.FC<SupabaseAuthProps> = ({ onSuccess }) => {
                 }}
                 providers={[]}
                 theme="light"
-                view="sign_in"
-                redirectTo={window.location.origin + '/#/account'}
+                view={view}
+                redirectTo={redirectTo || window.location.origin + '/#/account'}
                 localization={{
                     variables: {
                         sign_in: {

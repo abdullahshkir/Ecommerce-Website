@@ -53,6 +53,7 @@ export interface User {
   last_name: string;
   display_name: string;
   email: string;
+  role: 'user' | 'admin'; // Added role
 }
 
 export interface Order {

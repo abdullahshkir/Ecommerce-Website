@@ -7,7 +7,7 @@ import { User, Address, Order } from '../../types';
 export const getProfile = async (supabaseUser: SupabaseUser): Promise<User | null> => {
     const { data, error } = await supabase
         .from('profiles')
-        .select('first_name, last_name, avatar_url')
+        .select('first_name, last_name, avatar_url, role')
         .eq('id', supabaseUser.id)
         .single();
 
@@ -25,11 +25,12 @@ export const getProfile = async (supabaseUser: SupabaseUser): Promise<User | nul
         last_name: profileData.last_name || '',
         display_name: `${profileData.first_name || supabaseUser.email?.split('@')[0] || 'Guest'} ${profileData.last_name || ''}`.trim(),
         email: supabaseUser.email || '',
+        role: profileData.role || 'user', // Fetch role, default to 'user'
         // avatar_url: profileData.avatar_url, // Not used yet, but good practice
     };
 };
 
-export const updateProfile = async (userId: string, updates: Partial<Omit<User, 'id' | 'email' | 'display_name'>>) => {
+export const updateProfile = async (userId: string, updates: Partial<Omit<User, 'id' | 'email' | 'display_name' | 'role'>>) => {
     const { error } = await supabase
         .from('profiles')
         .update(updates)

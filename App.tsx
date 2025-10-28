@@ -44,6 +44,7 @@ import AdminOrderDetailPage from './components/admin/AdminOrderDetailPage';
 import AdminUserDetailPage from './components/admin/AdminUserDetailPage';
 import AuthModal from './components/AuthModal';
 import { useSession } from './contexts/SessionContext';
+import AdminRouteGuard from './components/admin/AdminRouteGuard';
 
 
 const HomePage = ({ onProductQuickView, onProductClick }: { onProductQuickView: (product: Product) => void, onProductClick: (id: number) => void }) => (
@@ -63,10 +64,11 @@ const App: React.FC = () => {
   const [isLoginOpen, setLoginOpen] = useState(false);
   const navigate = useNavigate();
   const { isCartOpen, closeCart } = useCart();
-  const { isLoggedIn, logout, isLoadingUser } = useUser();
+  const { isLoggedIn, isLoadingUser, user } = useUser();
   const { isLoading: isLoadingSession } = useSession();
-  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
-
+  
+  // Check if the current user is an admin
+  const isAdmin = user?.role === 'admin';
 
   const handleOpenQuickView = (product: Product) => {
     setQuickViewProduct(product);
@@ -82,17 +84,22 @@ const App: React.FC = () => {
 
   const handleLoginSuccess = () => {
     setLoginOpen(false);
-    // Supabase handles redirect internally, but we can navigate to account if needed
-    navigate('/account');
+    // If the user logs in via the main site modal, check if they are an admin
+    if (user?.role === 'admin') {
+        navigate('/adminpanel/dashboard');
+    } else {
+        navigate('/account');
+    }
   };
   
   const handleAdminLoginSuccess = () => {
-    setIsAdminLoggedIn(true);
+    // This function is no longer needed as SupabaseAuth handles success and redirects
+    // We rely on the useUser hook to update the state and AdminRouteGuard to handle access.
     navigate('/adminpanel/dashboard');
   };
 
   const handleAdminLogout = () => {
-    setIsAdminLoggedIn(false);
+    // Logout logic is handled by useUser/SessionContext
     navigate('/adminpanel');
   };
   
@@ -108,10 +115,19 @@ const App: React.FC = () => {
   return (
     <>
         <Routes>
-          <Route path="/adminpanel" element={!isAdminLoggedIn ? <AdminLoginPage onLoginSuccess={handleAdminLoginSuccess} /> : <Navigate to="/adminpanel/dashboard" />} />
+          {/* Admin Login Page - Uses AuthModal logic but tailored for admin view */}
+          <Route 
+            path="/adminpanel" 
+            element={
+                isAdmin 
+                    ? <Navigate to="/adminpanel/dashboard" /> 
+                    : <AdminLoginPage onLoginSuccess={handleAdminLoginSuccess} />
+            } 
+          />
           
-          {isAdminLoggedIn ? (
-            <Route path="/adminpanel" element={<AdminLayout onLogout={handleAdminLogout} />}>
+          {/* Admin Protected Routes */}
+          <Route path="/adminpanel" element={<AdminRouteGuard />}>
+            <Route element={<AdminLayout onLogout={handleAdminLogout} />}>
               <Route path="dashboard" element={<AdminDashboardPage />} />
               <Route path="products" element={<AdminProductsPage />} />
               <Route path="products/new" element={<AdminProductFormPage />} />
@@ -119,9 +135,9 @@ const App: React.FC = () => {
               <Route path="orders" element={<AdminOrdersPage />} />
               <Route path="orders/:orderId" element={<AdminOrderDetailPage />} />
               <Route path="users" element={<AdminUsersPage />} />
-               <Route path="users/:userId" element={<AdminUserDetailPage />} />
+              <Route path="users/:userId" element={<AdminUserDetailPage />} />
             </Route>
-          ) : null}
+          </Route>
 
           <Route path="/*" element={<MainApp />} />
         </Routes>
