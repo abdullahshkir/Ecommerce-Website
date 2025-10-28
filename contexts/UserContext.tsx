@@ -1,125 +1,146 @@
-import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useEffect, useCallback } from 'react';
 import { User, Address, Order } from '../types';
+import { useSession } from './SessionContext';
+import { 
+    getProfile, 
+    updateProfile, 
+    fetchAddresses, 
+    saveAddress, 
+    deleteAddress, 
+    setDefaultAddressDB,
+    fetchOrders,
+    createOrder
+} from '../integrations/supabase/api';
+import { supabase } from '../integrations/supabase/client';
 
 interface UserContextType {
   isLoggedIn: boolean;
   user: User | null;
   addresses: Address[];
   orders: Order[];
-  login: (userData: User) => void;
-  logout: () => void;
-  updateUserDetails: (newDetails: Partial<User>) => void;
-  addAddress: (newAddress: Omit<Address, 'id'>) => void;
-  updateAddress: (updatedAddress: Address) => void;
-  removeAddress: (addressId: string) => void;
-  setDefaultAddress: (addressId: string) => void;
-  addOrder: (newOrder: Pick<Order, 'items' | 'total' | 'shipping_address'>) => void;
+  isLoadingUser: boolean;
+  logout: () => Promise<void>;
+  updateUserDetails: (newDetails: Partial<Omit<User, 'id' | 'email' | 'display_name'>>) => Promise<void>;
+  addAddress: (newAddress: Omit<Address, 'id' | 'user_id'>) => Promise<void>;
+  updateAddress: (updatedAddress: Address) => Promise<void>;
+  removeAddress: (addressId: string) => Promise<void>;
+  setDefaultAddress: (addressId: string) => Promise<void>;
+  addOrder: (newOrder: Pick<Order, 'items' | 'total' | 'shipping_address'>) => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
-const getInitialState = <T,>(key: string, defaultValue: T): T => {
-    try {
-        const item = window.localStorage.getItem(key);
-        return item ? JSON.parse(item) : defaultValue;
-    } catch (error) {
-        console.error(`Error reading ${key} from localStorage`, error);
-        return defaultValue;
-    }
-};
-
 export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => getInitialState('isLoggedIn', false));
-    const [user, setUser] = useState<User | null>(() => getInitialState('user', null));
-    const [addresses, setAddresses] = useState<Address[]>(() => getInitialState('addresses', []));
-    const [orders, setOrders] = useState<Order[]>(() => getInitialState('orders', []));
+    const { user: supabaseUser, isLoading: isLoadingSession } = useSession();
+    const [user, setUser] = useState<User | null>(null);
+    const [addresses, setAddresses] = useState<Address[]>([]);
+    const [orders, setOrders] = useState<Order[]>([]);
+    const [isLoadingUser, setIsLoadingUser] = useState(true);
+
+    const isLoggedIn = !!user;
+
+    const loadUserData = useCallback(async (sUser: SupabaseUser) => {
+        setIsLoadingUser(true);
+        try {
+            const profile = await getProfile(sUser);
+            setUser(profile);
+            
+            const userAddresses = await fetchAddresses(sUser.id);
+            setAddresses(userAddresses);
+            
+            const userOrders = await fetchOrders(sUser.id);
+            setOrders(userOrders);
+        } catch (error) {
+            console.error('Failed to load user data:', error);
+            setUser(null);
+            setAddresses([]);
+            setOrders([]);
+        } finally {
+            setIsLoadingUser(false);
+        }
+    }, []);
 
     useEffect(() => {
-        try {
-            window.localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
-            window.localStorage.setItem('user', JSON.stringify(user));
-            window.localStorage.setItem('addresses', JSON.stringify(addresses));
-            window.localStorage.setItem('orders', JSON.stringify(orders));
-        } catch (error) {
-            console.error('Error saving to localStorage', error);
+        if (isLoadingSession) {
+            setIsLoadingUser(true);
+            return;
         }
-    }, [isLoggedIn, user, addresses, orders]);
+
+        if (supabaseUser) {
+            loadUserData(supabaseUser);
+        } else {
+            // Logged out state
+            setUser(null);
+            setAddresses([]);
+            setOrders([]);
+            setIsLoadingUser(false);
+        }
+    }, [supabaseUser, isLoadingSession, loadUserData]);
     
-    const login = (userData: User) => {
-        const defaultAddress: Address = {
-            id: Date.now().toString(),
-            first_name: userData.first_name,
-            last_name: userData.last_name,
-            address: 'D Ground',
-            apartment: 'Apt 123',
-            city: 'Faisalabad',
-            state: 'Punjab',
-            zip: '38000',
-            country: 'Pakistan',
-            is_default: true,
+    const logout = async () => {
+        await supabase.auth.signOut();
+        // State cleanup handled by useEffect listening to supabaseUser change
+    };
+
+    const updateUserDetails = async (newDetails: Partial<Omit<User, 'id' | 'email' | 'display_name'>>) => {
+        if (!user) return;
+        await updateProfile(user.id, newDetails);
+        
+        // Recalculate display name locally for immediate feedback
+        const updatedUser: User = {
+            ...user,
+            ...newDetails,
+            display_name: `${newDetails.first_name || user.first_name} ${newDetails.last_name || user.last_name}`.trim()
         };
-        setUser(userData);
-        setAddresses([defaultAddress]);
-        setOrders([]);
-        setIsLoggedIn(true);
-    };
-
-    const logout = () => {
-        setIsLoggedIn(false);
-        setUser(null);
-        setAddresses([]);
-        setOrders([]);
-        window.localStorage.removeItem('isLoggedIn');
-        window.localStorage.removeItem('user');
-        window.localStorage.removeItem('addresses');
-        window.localStorage.removeItem('orders');
-    };
-
-    const updateUserDetails = (newDetails: Partial<User>) => {
-        setUser(prevUser => prevUser ? { ...prevUser, ...newDetails } : null);
+        setUser(updatedUser);
     };
     
-    const addAddress = (newAddressData: Omit<Address, 'id'>) => {
-        setAddresses(prev => {
-            const newAddresses = newAddressData.is_default ? prev.map(a => ({...a, is_default: false})) : [...prev];
-            const newAddress: Address = { ...newAddressData, id: Date.now().toString() };
-            return [...newAddresses, newAddress];
-        });
+    const addAddress = async (newAddressData: Omit<Address, 'id' | 'user_id'>) => {
+        if (!user) return;
+        const savedAddress = await saveAddress(user.id, newAddressData);
+        if (savedAddress) {
+            // Reload all addresses to ensure default status is correct
+            const updatedAddresses = await fetchAddresses(user.id);
+            setAddresses(updatedAddresses);
+        }
     };
 
-    const updateAddress = (updatedAddress: Address) => {
-        setAddresses(prev => {
-            const newAddresses = prev.map(a => (a.id === updatedAddress.id ? updatedAddress : a));
-            if (updatedAddress.is_default) {
-                return newAddresses.map(a => a.id === updatedAddress.id ? a : {...a, is_default: false});
-            }
-            return newAddresses;
-        });
+    const updateAddress = async (updatedAddress: Address) => {
+        if (!user) return;
+        const savedAddress = await saveAddress(user.id, updatedAddress, updatedAddress.id);
+        if (savedAddress) {
+            // Reload all addresses to ensure default status is correct
+            const updatedAddresses = await fetchAddresses(user.id);
+            setAddresses(updatedAddresses);
+        }
     };
 
-    const removeAddress = (addressId: string) => {
+    const removeAddress = async (addressId: string) => {
+        if (!user) return;
+        await deleteAddress(addressId);
         setAddresses(prev => prev.filter(a => a.id !== addressId));
     };
 
-    const setDefaultAddress = (addressId: string) => {
-        setAddresses(prev => prev.map(a => ({...a, is_default: a.id === addressId})));
+    const setDefaultAddress = async (addressId: string) => {
+        if (!user) return;
+        await setDefaultAddressDB(user.id, addressId);
+        // Reload all addresses to ensure default status is correct
+        const updatedAddresses = await fetchAddresses(user.id);
+        setAddresses(updatedAddresses);
     };
 
-    const addOrder = (newOrderData: Pick<Order, 'items' | 'total' | 'shipping_address'>) => {
-        const newOrder: Order = {
-            ...newOrderData,
-            id: `ORD-${Date.now()}`,
-            user_id: user?.id,
-            order_number: `MX${Math.floor(Math.random() * 90000) + 10000}`,
-            created_at: new Date().toISOString(),
-            status: 'Processing',
-        };
-        setOrders(prev => [newOrder, ...prev]);
+    const addOrder = async (newOrderData: Pick<Order, 'items' | 'total' | 'shipping_address'>) => {
+        if (!user) return;
+        const newOrder = await createOrder({ ...newOrderData, user_id: user.id });
+        if (newOrder) {
+            setOrders(prev => [newOrder, ...prev]);
+        }
     };
 
     const value = {
         isLoggedIn, user, addresses, orders,
-        login, logout, updateUserDetails,
+        isLoadingUser,
+        logout, updateUserDetails,
         addAddress, updateAddress, removeAddress, setDefaultAddress,
         addOrder
     };
@@ -134,7 +155,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 export const useUser = (): UserContextType => {
     const context = useContext(UserContext);
     if (context === undefined) {
-        throw new Error('useUser must be used within a UserProvider');
+        throw new Error('useUser must be used within a UserProvider or SessionProvider');
     }
     return context;
 };

@@ -18,7 +18,6 @@ import CartPage from './components/CartPage';
 import CheckoutPage from './components/CheckoutPage';
 import ThankYouPage from './components/ThankYouPage';
 import SearchOverlay from './components/SearchOverlay';
-import LoginModal from './components/LoginModal';
 import MobileBottomNav from './components/MobileBottomNav';
 import { SEO } from './components/SEO';
 import ShopPage from './components/ShopPage';
@@ -43,6 +42,8 @@ import AdminUsersPage from './components/admin/AdminUsersPage';
 import AdminProductFormPage from './components/admin/AdminProductFormPage';
 import AdminOrderDetailPage from './components/admin/AdminOrderDetailPage';
 import AdminUserDetailPage from './components/admin/AdminUserDetailPage';
+import AuthModal from './components/AuthModal';
+import { useSession } from './contexts/SessionContext';
 
 
 const HomePage = ({ onProductQuickView, onProductClick }: { onProductQuickView: (product: Product) => void, onProductClick: (id: number) => void }) => (
@@ -62,7 +63,8 @@ const App: React.FC = () => {
   const [isLoginOpen, setLoginOpen] = useState(false);
   const navigate = useNavigate();
   const { isCartOpen, closeCart } = useCart();
-  const { isLoggedIn, logout } = useUser();
+  const { isLoggedIn, logout, isLoadingUser } = useUser();
+  const { isLoading: isLoadingSession } = useSession();
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
 
 
@@ -80,6 +82,7 @@ const App: React.FC = () => {
 
   const handleLoginSuccess = () => {
     setLoginOpen(false);
+    // Supabase handles redirect internally, but we can navigate to account if needed
     navigate('/account');
   };
   
@@ -92,6 +95,15 @@ const App: React.FC = () => {
     setIsAdminLoggedIn(false);
     navigate('/adminpanel');
   };
+  
+  // Show a simple loading screen while session/user data is being fetched
+  if (isLoadingSession || isLoadingUser) {
+      return (
+          <div className="flex items-center justify-center min-h-screen bg-gray-50">
+              <div className="text-2xl font-bold text-gray-800">Loading...</div>
+          </div>
+      );
+  }
 
   return (
     <>
@@ -259,7 +271,7 @@ const App: React.FC = () => {
                 </>
               }
             />
-             {isLoggedIn && (
+             {isLoggedIn ? (
               <Route path="/account" element={<DashboardLayout />}>
                   <Route index element={<DashboardPage />} />
                   <Route path="orders" element={<OrdersPage />} />
@@ -267,6 +279,9 @@ const App: React.FC = () => {
                   <Route path="addresses" element={<AddressesPage />} />
                   <Route path="details" element={<AccountDetailsPage />} />
               </Route>
+             ) : (
+                // Redirect unauthenticated users trying to access /account
+                <Route path="/account/*" element={<Navigate to="/" replace />} />
              )}
           </Routes>
         </main>
@@ -274,7 +289,7 @@ const App: React.FC = () => {
         <QuickViewModal product={quickViewProduct} onClose={handleCloseQuickView} />
         <CartModal isOpen={isCartOpen} onClose={closeCart} onProductClick={handleProductClick} />
         <SearchOverlay isOpen={isSearchOpen} onClose={() => setSearchOpen(false)} onProductClick={handleProductClick} />
-        <LoginModal isOpen={isLoginOpen} onClose={() => setLoginOpen(false)} onLoginSuccess={handleLoginSuccess} />
+        <AuthModal isOpen={isLoginOpen} onClose={() => setLoginOpen(false)} onLoginSuccess={handleLoginSuccess} />
         <MobileBottomNav 
           onSearchClick={() => setSearchOpen(true)} 
           onAccountClick={() => isLoggedIn ? navigate('/account') : setLoginOpen(true)} 

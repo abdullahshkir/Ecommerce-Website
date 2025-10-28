@@ -6,6 +6,7 @@ import { CurrencyProvider } from './contexts/CurrencyContext';
 import { WishlistProvider } from './contexts/WishlistContext';
 import { CartProvider } from './contexts/CartContext';
 import { UserProvider } from './contexts/UserContext';
+import { SessionProvider } from './contexts/SessionContext';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -17,13 +18,15 @@ root.render(
   <React.StrictMode>
     <HashRouter>
       <CurrencyProvider>
-        <UserProvider>
-          <WishlistProvider>
-            <CartProvider>
-              <App />
-            </CartProvider>
-          </WishlistProvider>
-        </UserProvider>
+        <SessionProvider>
+          <UserProvider>
+            <WishlistProvider>
+              <CartProvider>
+                <App />
+              </CartProvider>
+            </WishlistProvider>
+          </UserProvider>
+        </SessionProvider>
       </CurrencyProvider>
     </HashRouter>
   </React.StrictMode>
