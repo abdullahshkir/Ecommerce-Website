@@ -14,12 +14,13 @@ const AdminRouteGuard: React.FC = () => {
         );
     }
 
+    // Check if the user is logged in AND has the 'admin' role.
     if (user?.role === 'admin') {
         return <Outlet />;
     }
     
-    // If user is logged in but not admin (e.g., 'user' or 'pending_admin'), redirect to admin login page.
-    // The AdminLoginPage will handle displaying the appropriate message if the user is pending.
+    // If the user is logged in but not an admin (role is 'user' or 'pending_admin'), 
+    // or if the user is not logged in, redirect to the admin login page.
     return <Navigate to="/adminpanel" replace />;
 };
 

@@ -1,23 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SupabaseAuth from '../SupabaseAuth';
 import { supabase } from '../../src/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../../contexts/UserContext';
 
 const AdminLoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const { user, isLoggedIn } = useUser();
   const [view, setView] = useState<'sign_in' | 'sign_up'>('sign_in');
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  
+  // Check if the user is logged in but not an admin (e.g., pending_admin)
+  useEffect(() => {
+      if (isLoggedIn && user?.role !== 'admin') {
+          setMessage({
+              type: 'error',
+              text: user?.role === 'pending_admin' 
+                  ? 'Your admin access request is pending approval. Please wait for the Super Admin to approve your account.'
+                  : 'You do not have administrative privileges.'
+          });
+      }
+  }, [isLoggedIn, user]);
 
   const handleAuthSuccess = () => {
     // This is handled by App.tsx, which checks the role and redirects to dashboard if 'admin'
     // If the user is 'pending_admin', App.tsx will redirect them back here, 
-    // but we need to handle the case where a pending admin tries to sign in.
-    
-    // We rely on AdminRouteGuard to check the role.
-    // If the user is logged in but not 'admin', AdminRouteGuard redirects to /adminpanel (this page).
-    // We need to check the role here if the user is already logged in.
-    
-    // Since SupabaseAuth handles the session, we just let the router handle the rest.
+    // and the useEffect above will display the message.
   };
   
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -29,7 +37,7 @@ const AdminLoginPage: React.FC = () => {
     if (!email || !password) return;
 
     // 1. Sign up the user
-    const { data: { user }, error: signUpError } = await supabase.auth.signUp({
+    const { data: { user: newUser }, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -44,11 +52,7 @@ const AdminLoginPage: React.FC = () => {
         return;
     }
     
-    if (user) {
-        // 2. Update the profile role manually if the trigger failed or for immediate feedback
-        // Note: We rely on the trigger to set the initial role to 'pending_admin'.
-        // If the trigger fails, the role will be 'user'.
-        
+    if (newUser) {
         // We will show a success message and switch to sign in view.
         setMessage({ 
             type: 'success', 
