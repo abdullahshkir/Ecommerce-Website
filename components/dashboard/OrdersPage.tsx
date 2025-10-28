@@ -45,7 +45,6 @@ const OrdersPage: React.FC = () => {
                             {orders.map(order => (
                                 <tr key={order.id} className="hover:bg-gray-50">
                                     <td className="px-6 py-4 font-semibold text-gray-800">#{order.order_number}</td>
-                                    {/* FIX: Property 'date' does not exist on type 'Order'. */}
                                     <td className="px-6 py-4 text-gray-600">{new Date(order.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</td>
                                     <td className="px-6 py-4">
                                         <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusClass(order.status)}`}>

@@ -19,7 +19,6 @@ const FormInput: React.FC<{ id: string, name: string, label: string, type?: stri
 
 const AccountDetailsPage: React.FC = () => {
     const { user, updateUserDetails } = useUser();
-    // FIX: Use snake_case for form data state to align with type definitions.
     const [formData, setFormData] = useState({
         first_name: '',
         last_name: '',
@@ -34,7 +33,6 @@ const AccountDetailsPage: React.FC = () => {
 
     useEffect(() => {
         if (user) {
-            // FIX: Property 'firstName'/'lastName'/'displayName' does not exist on type 'User'.
             setFormData({
                 first_name: user.first_name,
                 last_name: user.last_name,

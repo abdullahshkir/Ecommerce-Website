@@ -6,9 +6,7 @@ import { Address } from '../../types';
 const AddressCard: React.FC<{ address: Address; onEdit: (address: Address) => void; onRemove: (id: string) => void; onSetDefault: (id: string) => void; }> = ({ address, onEdit, onRemove, onSetDefault }) => (
     <div className="border rounded-lg p-4 flex flex-col">
         <div className="flex justify-between items-start">
-            {/* FIX: Property 'firstName'/'lastName' does not exist on type 'Address'. */}
             <h4 className="font-semibold text-gray-800">{address.first_name} {address.last_name}</h4>
-            {/* FIX: Property 'isDefault' does not exist on type 'Address'. */}
             {address.is_default && <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full font-medium">Default</span>}
         </div>
         <address className="text-sm text-gray-600 mt-2 not-italic flex-grow">
@@ -19,7 +17,6 @@ const AddressCard: React.FC<{ address: Address; onEdit: (address: Address) => vo
         <div className="mt-4 space-x-4 text-sm pt-2">
             <button onClick={() => onEdit(address)} className="font-medium text-blue-600 hover:underline">Edit</button>
             <button onClick={() => onRemove(address.id)} className="font-medium text-red-500 hover:underline">Remove</button>
-            {/* FIX: Property 'isDefault' does not exist on type 'Address'. */}
             {!address.is_default && <button onClick={() => onSetDefault(address.id)} className="font-medium text-gray-600 hover:underline">Set as Default</button>}
         </div>
     </div>
@@ -27,7 +24,6 @@ const AddressCard: React.FC<{ address: Address; onEdit: (address: Address) => vo
 
 const AddressForm: React.FC<{ onCancel: () => void; editingAddress: Address | null }> = ({ onCancel, editingAddress }) => {
     const { addAddress, updateAddress } = useUser();
-    // FIX: Use snake_case for form data state to align with type definitions.
     const [formData, setFormData] = useState({
         first_name: '', last_name: '', address: '', apartment: '',
         city: '', state: '', zip: '', country: 'Pakistan', is_default: false
@@ -35,7 +31,6 @@ const AddressForm: React.FC<{ onCancel: () => void; editingAddress: Address | nu
 
     useEffect(() => {
         if (editingAddress) {
-            // FIX: Type 'Address' is not assignable to state type.
             setFormData({
                 first_name: editingAddress.first_name,
                 last_name: editingAddress.last_name,
@@ -66,7 +61,6 @@ const AddressForm: React.FC<{ onCancel: () => void; editingAddress: Address | nu
         if (editingAddress) {
             updateAddress({ ...editingAddress, ...formData });
         } else {
-            // FIX: Argument is not assignable to parameter of type 'Omit<Address, "id">'.
             addAddress(formData);
         }
         onCancel();

@@ -67,7 +67,6 @@ const LoginModal: FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess }) =>
     
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        // FIX: Object literal may only specify known properties, but 'firstName' does not exist in type 'User'. Did you mean to write 'first_name'?
         const user: User = {
             id: Date.now().toString(),
             first_name: formData.firstName || 'Customer',

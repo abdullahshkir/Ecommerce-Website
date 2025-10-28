@@ -18,7 +18,6 @@ const mockUser = {
     }
 };
 
-// FIX: Object literal may only specify known properties, and 'date' does not exist in type 'Order'.
 const mockUserOrders: Omit<Order, 'items' | 'shipping_address' | 'user_id'>[] = [
     { id: 'MX54322', order_number: 'MX54322', created_at: '2025-07-29T11:00:00Z', status: 'Processing', total: 450.00 },
     { id: 'MX51109', order_number: 'MX51109', created_at: '2025-06-15T10:00:00Z', status: 'Delivered', total: 85.00 },
@@ -102,7 +101,6 @@ const AdminUserDetailPage: React.FC = () => {
                             {mockUserOrders.map(order => (
                                 <tr key={order.id} onClick={() => navigate(`/adminpanel/orders/${order.id}`)} className="hover:bg-gray-50 cursor-pointer">
                                     <td className="px-4 py-3 font-semibold text-blue-600">#{order.order_number}</td>
-                                    {/* FIX: Property 'date' does not exist on type 'Order'. */}
                                     <td className="px-4 py-3 text-gray-600">{new Date(order.created_at).toLocaleDateString()}</td>
                                     <td className="px-4 py-3 text-gray-600">{formatPrice(order.total)}</td>
                                     <td className="px-4 py-3">

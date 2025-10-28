@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { DollarSignIcon, CartIcon, UsersIcon, ProductsIcon } from '../icons';
 import { Order } from '../../types';
 
-// FIX: Object literal may only specify known properties, and 'date' does not exist in type 'Order'.
 const mockRecentOrders: Omit<Order, 'items' | 'shipping_address' | 'user_id'>[] = [
     { id: 'MX54321', order_number: 'MX54321', created_at: '2025-07-29T10:00:00Z', status: 'Delivered', total: 180.00 },
     { id: 'MX54322', order_number: 'MX54322', created_at: '2025-07-29T11:00:00Z', status: 'Processing', total: 450.00 },
@@ -104,7 +103,6 @@ const AdminDashboardPage: React.FC = () => {
                             {mockRecentOrders.map(order => (
                                 <tr key={order.id} className="border-b last:border-0 hover:bg-gray-50">
                                     <td className="p-3 font-medium text-gray-800">{order.order_number}</td>
-                                    {/* FIX: Property 'date' does not exist on type 'Order'. */}
                                     <td className="p-3">{new Date(order.created_at).toLocaleDateString()}</td>
                                     <td className="p-3">${order.total.toFixed(2)}</td>
                                     <td className="p-3">

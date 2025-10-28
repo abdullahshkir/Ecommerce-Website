@@ -46,7 +46,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }, [isLoggedIn, user, addresses, orders]);
     
     const login = (userData: User) => {
-        // FIX: Use snake_case for address properties to match the type definition.
         const defaultAddress: Address = {
             id: Date.now().toString(),
             first_name: userData.first_name,
@@ -82,7 +81,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     
     const addAddress = (newAddressData: Omit<Address, 'id'>) => {
         setAddresses(prev => {
-            // FIX: Property 'isDefault' does not exist on type 'Omit<Address, "id">'. Did you mean 'is_default'?
             const newAddresses = newAddressData.is_default ? prev.map(a => ({...a, is_default: false})) : [...prev];
             const newAddress: Address = { ...newAddressData, id: Date.now().toString() };
             return [...newAddresses, newAddress];
@@ -92,7 +90,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const updateAddress = (updatedAddress: Address) => {
         setAddresses(prev => {
             const newAddresses = prev.map(a => (a.id === updatedAddress.id ? updatedAddress : a));
-            // FIX: Property 'isDefault' does not exist on type 'Address'. Did you mean 'is_default'?
             if (updatedAddress.is_default) {
                 return newAddresses.map(a => a.id === updatedAddress.id ? a : {...a, is_default: false});
             }
@@ -109,7 +106,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
 
     const addOrder = (newOrderData: Pick<Order, 'items' | 'total' | 'shipping_address'>) => {
-        // FIX: 'date' property does not exist on type 'Order'. Use 'created_at'.
         const newOrder: Order = {
             ...newOrderData,
             id: `ORD-${Date.now()}`,

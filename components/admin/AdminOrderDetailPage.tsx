@@ -5,7 +5,6 @@ import { Order } from '../../types';
 import { products } from '../../data/products';
 import { UserIcon, MapPinIcon, TruckIcon } from '../icons';
 
-// FIX: Object literal may only specify known properties, and 'date' does not exist in type 'Order'.
 const mockOrder: (Order & { customer: { name: string; email: string; phone: string } }) = {
     id: 'MX54322', 
     order_number: 'MX54322',
@@ -50,7 +49,6 @@ const AdminOrderDetailPage: React.FC = () => {
             <div className="flex justify-between items-center">
                 <div>
                     <h2 className="text-2xl font-bold text-gray-800">Order #{orderId}</h2>
-                    {/* FIX: Property 'date' does not exist. */}
                     <p className="text-sm text-gray-500">{new Date(mockOrder.created_at).toLocaleDateString()}</p>
                 </div>
                 <Link to="/adminpanel/orders" className="text-sm font-medium text-blue-600 hover:underline">&larr; Back to Orders</Link>
@@ -94,7 +92,6 @@ const AdminOrderDetailPage: React.FC = () => {
                     </InfoCard>
 
                     <InfoCard title="Shipping Address" icon={<MapPinIcon className="w-5 h-5 text-gray-500"/>}>
-                        {/* FIX: Property 'shippingAddress' does not exist. Did you mean 'shipping_address'? */}
                         <address className="not-italic">
                             {mockOrder.shipping_address.first_name} {mockOrder.shipping_address.last_name}<br/>
                             {mockOrder.shipping_address.address}<br/>

@@ -51,7 +51,6 @@ const CheckoutPage: React.FC = () => {
     const itemsToDisplay = buyNowItem ? [buyNowItem] : contextCartItems;
     const subtotalToDisplay = buyNowItem ? buyNowItem.price * buyNowItem.quantity : contextSubtotal;
     
-    // FIX: Use snake_case for form data state to align with type definitions.
     const [formData, setFormData] = useState({
         email: user?.email || '',
         country: 'Pakistan',
@@ -65,12 +64,10 @@ const CheckoutPage: React.FC = () => {
     });
 
     useEffect(() => {
-        // FIX: Property 'isDefault' does not exist on type 'Address'. Did you mean 'is_default'?
         const defaultAddress = addresses.find(a => a.is_default);
         if (defaultAddress) {
             setFormData(prev => ({
                 ...prev,
-                // FIX: Property 'firstName'/'lastName' does not exist on type 'Address'.
                 first_name: defaultAddress.first_name,
                 last_name: defaultAddress.last_name,
                 address: defaultAddress.address,
@@ -83,7 +80,6 @@ const CheckoutPage: React.FC = () => {
         } else if (user) {
             setFormData(prev => ({
                 ...prev,
-                // FIX: Property 'firstName'/'lastName' does not exist on type 'User'.
                 first_name: user.first_name,
                 last_name: user.last_name,
             }));
@@ -118,7 +114,6 @@ const CheckoutPage: React.FC = () => {
             total: totalToDisplay
         };
 
-        // FIX: Object literal may only specify known properties, but 'shippingAddress' does not exist in type 'Omit<Order, "id" | "status" | "date">'. Did you mean to write 'shipping_address'?
         addOrder({
             items: itemsToDisplay,
             total: totalToDisplay,

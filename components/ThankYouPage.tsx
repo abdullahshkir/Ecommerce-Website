@@ -38,7 +38,6 @@ const ThankYouPage: React.FC = () => {
                              <CheckCircleIcon className="w-12 h-12 text-green-500" />
                             <div>
                                 <p className="text-sm text-gray-600">Order #{orderNumber}</p>
-                                {/* FIX: Property 'firstName' does not exist on type 'Omit<Address, "id" | "isDefault">'. Did you mean 'first_name'? */}
                                 <h1 className="text-3xl font-bold text-gray-900">Thank you, {shippingAddress.first_name}!</h1>
                             </div>
                         </div>
@@ -51,7 +50,6 @@ const ThankYouPage: React.FC = () => {
 
                         <div className="border border-gray-200 rounded-lg bg-white p-6 mt-6 space-y-3 text-sm">
                            <h3 className="text-lg font-semibold text-gray-800 mb-2">Shipping to</h3>
-                            {/* FIX: Property 'firstName'/'lastName' does not exist. Did you mean 'first_name'/'last_name'? */}
                             <p className="text-gray-600">{shippingAddress.first_name} {shippingAddress.last_name}</p>
                             <p className="text-gray-600">{shippingAddress.address}</p>
                             <p className="text-gray-600">{shippingAddress.city}, {shippingAddress.state} {shippingAddress.zip}</p>

@@ -33,8 +33,6 @@ const setLinkTag = (rel: string, href: string) => {
 
 const setSchemaLd = (schema: object | object[] | null) => {
     const scriptId = 'schema-ld-script';
-    // FIX: Use a separate variable for the old script to avoid type inference issues.
-    // The original code reused `script` which was inferred as HTMLElement, causing a type error on line 46.
     const oldScript = document.getElementById(scriptId);
     // Remove old schema if it exists
     if (oldScript) {
