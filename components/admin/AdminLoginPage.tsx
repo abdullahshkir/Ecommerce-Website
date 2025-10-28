@@ -1,23 +1,116 @@
-import React from 'react';
+import React, { useState } from 'react';
 import SupabaseAuth from '../SupabaseAuth';
+import { supabase } from '../../src/integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
 
 const AdminLoginPage: React.FC = () => {
+  const navigate = useNavigate();
+  const [view, setView] = useState<'sign_in' | 'sign_up'>('sign_in');
+  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+
+  const handleAuthSuccess = () => {
+    // This is handled by App.tsx, which checks the role and redirects to dashboard if 'admin'
+    // If the user is 'pending_admin', App.tsx will redirect them back here, 
+    // but we need to handle the case where a pending admin tries to sign in.
+    
+    // We rely on AdminRouteGuard to check the role.
+    // If the user is logged in but not 'admin', AdminRouteGuard redirects to /adminpanel (this page).
+    // We need to check the role here if the user is already logged in.
+    
+    // Since SupabaseAuth handles the session, we just let the router handle the rest.
+  };
   
+  const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const email = (form.elements.namedItem('email') as HTMLInputElement)?.value;
+    const password = (form.elements.namedItem('password') as HTMLInputElement)?.value;
+
+    if (!email || !password) return;
+
+    // 1. Sign up the user
+    const { data: { user }, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+            data: {
+                initial_role: 'pending_admin' // Pass metadata to trigger function
+            }
+        }
+    });
+
+    if (signUpError) {
+        setMessage({ type: 'error', text: signUpError.message });
+        return;
+    }
+    
+    if (user) {
+        // 2. Update the profile role manually if the trigger failed or for immediate feedback
+        // Note: We rely on the trigger to set the initial role to 'pending_admin'.
+        // If the trigger fails, the role will be 'user'.
+        
+        // We will show a success message and switch to sign in view.
+        setMessage({ 
+            type: 'success', 
+            text: 'Account created! Please check your email for verification. Your admin access is pending approval.' 
+        });
+        setView('sign_in');
+    }
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 font-sans">
       <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-xl shadow-sm">
         <div className="text-center">
             <h1 className="text-4xl font-extrabold tracking-wide text-black font-orbitron">Mobixo</h1>
-            <p className="mt-2 text-gray-600">Admin Panel Login</p>
+            <p className="mt-2 text-gray-600">Admin Panel {view === 'sign_in' ? 'Login' : 'Sign Up'}</p>
         </div>
+        
+        {message && (
+            <div className={`p-3 rounded-md text-sm ${message.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                {message.text}
+            </div>
+        )}
+
         <div className="mt-8">
-            {/* SupabaseAuth handles the actual login process and redirect */}
-            <SupabaseAuth 
-                // Redirect to the dashboard after successful login/signup
-                onSuccess={() => { /* Handled by App.tsx logic */ }}
-                view="sign_in"
-                redirectTo={window.location.origin + '/#/adminpanel/dashboard'}
-            />
+            {/* We use a custom form for sign up to pass metadata, but rely on SupabaseAuth for sign in */}
+            {view === 'sign_in' ? (
+                <>
+                    <SupabaseAuth 
+                        onSuccess={handleAuthSuccess}
+                        view="sign_in"
+                        redirectTo={window.location.origin + '/#/adminpanel/dashboard'}
+                    />
+                    <button 
+                        onClick={() => setView('sign_up')}
+                        className="w-full mt-4 text-sm text-blue-600 hover:underline"
+                    >
+                        Request Admin Access (Sign Up)
+                    </button>
+                </>
+            ) : (
+                <>
+                    <form onSubmit={handleSignUp} className="space-y-4">
+                        <div>
+                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email address</label>
+                            <input type="email" id="email" name="email" required className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition" placeholder="Your email address" />
+                        </div>
+                        <div>
+                            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                            <input type="password" id="password" name="password" required className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition" placeholder="Create a password" />
+                        </div>
+                        <button type="submit" className="w-full bg-black text-white py-3 rounded-full font-bold hover:bg-gray-800 transition-colors">
+                            Request Admin Access
+                        </button>
+                    </form>
+                    <button 
+                        onClick={() => setView('sign_in')}
+                        className="w-full mt-4 text-sm text-gray-600 hover:underline"
+                    >
+                        Already requested? Sign In
+                    </button>
+                </>
+            )}
         </div>
       </div>
     </div>

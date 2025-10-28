@@ -42,7 +42,8 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ onLogout, isOpen, onClose }
                 <NavItem to="/adminpanel/dashboard" icon={<DashboardIcon className="w-5 h-5"/>}>Dashboard</NavItem>
                 <NavItem to="/adminpanel/products" icon={<ProductsIcon className="w-5 h-5"/>}>Products</NavItem>
                 <NavItem to="/adminpanel/orders" icon={<ClipboardIcon className="w-5 h-5"/>}>Orders</NavItem>
-                <NavItem to="/adminpanel/users" icon={<UsersIcon className="w-5 h-5"/>}>Users</NavItem>
+                <NavItem to="/adminpanel/users" icon={<UsersIcon className="w-5 h-5"/>}>Customers</NavItem>
+                <NavItem to="/adminpanel/pending-admins" icon={<UsersIcon className="w-5 h-5"/>}>Pending Admins</NavItem>
             </nav>
         </div>
         <div className="p-4 border-t border-gray-200">

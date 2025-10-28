@@ -45,6 +45,7 @@ import AdminUserDetailPage from './components/admin/AdminUserDetailPage';
 import AuthModal from './components/AuthModal';
 import { useSession } from './contexts/SessionContext';
 import AdminRouteGuard from './components/admin/AdminRouteGuard';
+import AdminPendingUsersPage from './components/admin/AdminPendingUsersPage';
 
 
 const HomePage = ({ onProductQuickView, onProductClick }: { onProductQuickView: (product: Product) => void, onProductClick: (id: number) => void }) => (
@@ -130,6 +131,7 @@ const App: React.FC = () => {
               <Route path="orders/:orderId" element={<AdminOrderDetailPage />} />
               <Route path="users" element={<AdminUsersPage />} />
               <Route path="users/:userId" element={<AdminUserDetailPage />} />
+              <Route path="pending-admins" element={<AdminPendingUsersPage />} />
             </Route>
           </Route>
 
