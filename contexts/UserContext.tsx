@@ -10,8 +10,8 @@ import {
     setDefaultAddressDB,
     fetchOrders,
     createOrder
-} from '../integrations/supabase/api';
-import { supabase } from '../integrations/supabase/client';
+} from '../src/integrations/supabase/api';
+import { supabase } from '../src/integrations/supabase/client';
 
 interface UserContextType {
   isLoggedIn: boolean;
