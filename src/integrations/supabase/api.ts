@@ -1,6 +1,6 @@
 import { supabase } from './client';
 import { User as SupabaseUser } from '@supabase/supabase-js';
-import { User, Address, Order } from '../../types';
+import { User, Address, Order, Product } from '../../types';
 
 // --- Profile Management ---
 
@@ -124,7 +124,7 @@ export const setDefaultAddressDB = async (userId: string, addressId: string) => 
     }
 };
 
-// --- Order Management ---
+// --- Order Management (User) ---
 
 export const fetchOrders = async (userId: string): Promise<Order[]> => {
     const { data, error } = await supabase
@@ -157,4 +157,50 @@ export const createOrder = async (orderData: Pick<Order, 'items' | 'total' | 'sh
         throw error;
     }
     return data as Order;
+};
+
+// --- Admin Management ---
+
+export const fetchAllOrders = async (): Promise<Order[]> => {
+    const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error('Error fetching all orders:', error);
+        throw error;
+    }
+    return data as Order[];
+};
+
+export const fetchAllUsers = async (): Promise<User[]> => {
+    // Note: Supabase RLS usually prevents fetching all users from 'auth.users'.
+    // We fetch from 'profiles' and join with 'auth.users' data if needed, 
+    // but for simplicity, we fetch profiles and assume email is available via auth.
+    const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, first_name, last_name, role, auth_user:auth.users(email, created_at)');
+
+    if (profilesError) {
+        console.error('Error fetching all users:', profilesError);
+        throw profilesError;
+    }
+    
+    return profilesData.map((profile: any) => ({
+        id: profile.id,
+        first_name: profile.first_name || '',
+        last_name: profile.last_name || '',
+        display_name: `${profile.first_name || ''} ${profile.last_name || ''}`.trim(),
+        email: profile.auth_user?.email || 'N/A',
+        role: profile.role || 'user',
+        created_at: profile.auth_user?.created_at, // Adding created_at for AdminUsersPage
+    })) as User[];
+};
+
+export const fetchAllProducts = async (): Promise<Product[]> => {
+    // Since products are currently mocked in data/products.ts, 
+    // we will return the mock data for now until a products table is created.
+    // For a real admin panel, this would fetch from a 'products' table.
+    return []; 
 };

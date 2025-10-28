@@ -1,15 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { DollarSignIcon, CartIcon, UsersIcon, ProductsIcon } from '../icons';
-import { Order } from '../../types';
-
-const mockRecentOrders: Omit<Order, 'items' | 'shipping_address' | 'user_id'>[] = [
-    { id: 'MX54321', order_number: 'MX54321', created_at: '2025-07-29T10:00:00Z', status: 'Delivered', total: 180.00 },
-    { id: 'MX54322', order_number: 'MX54322', created_at: '2025-07-29T11:00:00Z', status: 'Processing', total: 450.00 },
-    { id: 'MX54323', order_number: 'MX54323', created_at: '2025-07-28T14:30:00Z', status: 'Shipped', total: 250.00 },
-    { id: 'MX54324', order_number: 'MX54324', created_at: '2025-07-28T09:00:00Z', status: 'Cancelled', total: 40.00 },
-    { id: 'MX54325', order_number: 'MX54325', created_at: '2025-07-27T18:00:00Z', status: 'Delivered', total: 1200.00 },
-];
+import { Order, User } from '../../types';
+import { fetchAllOrders, fetchAllUsers } from '../../src/integrations/supabase/api';
+import { products } from '../../data/products';
 
 const StatCard: React.FC<{ title: string; value: string; icon: React.ReactNode; change: string; changeType: 'increase' | 'decrease' }> = 
 ({ title, value, icon, change, changeType }) => (
@@ -38,14 +32,46 @@ const getStatusClass = (status: Order['status']) => {
 };
 
 const AdminDashboardPage: React.FC = () => {
+    const [orders, setOrders] = useState<Order[]>([]);
+    const [users, setUsers] = useState<User[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const [fetchedOrders, fetchedUsers] = await Promise.all([
+                    fetchAllOrders(),
+                    fetchAllUsers()
+                ]);
+                setOrders(fetchedOrders);
+                setUsers(fetchedUsers);
+            } catch (error) {
+                console.error("Failed to load admin dashboard data:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        loadData();
+    }, []);
+    
+    const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
+    const totalOrders = orders.length;
+    const totalCustomers = users.length;
+    const productsInStock = products.filter(p => p.availability === 'In Stock').length;
+    const recentOrders = orders.slice(0, 5);
+    
+    if (isLoading) {
+        return <div className="text-center py-10 text-gray-600">Loading Dashboard Data...</div>;
+    }
+
     return (
         <div className="space-y-6">
             {/* Stat Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <StatCard title="Total Revenue" value="$45,231.89" icon={<DollarSignIcon />} change="+20.1%" changeType="increase" />
-                <StatCard title="Total Orders" value="2,350" icon={<CartIcon />} change="+15.5%" changeType="increase" />
-                <StatCard title="Total Customers" value="1,210" icon={<UsersIcon />} change="+5.2%" changeType="increase" />
-                <StatCard title="Products in Stock" value="532" icon={<ProductsIcon />} change="-1.8%" changeType="decrease" />
+                <StatCard title="Total Revenue" value={`$${totalRevenue.toFixed(2)}`} icon={<DollarSignIcon />} change="+20.1%" changeType="increase" />
+                <StatCard title="Total Orders" value={totalOrders.toLocaleString()} icon={<CartIcon />} change="+15.5%" changeType="increase" />
+                <StatCard title="Total Customers" value={totalCustomers.toLocaleString()} icon={<UsersIcon />} change="+5.2%" changeType="increase" />
+                <StatCard title="Products in Stock" value={productsInStock.toLocaleString()} icon={<ProductsIcon />} change="-1.8%" changeType="decrease" />
             </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -61,6 +87,7 @@ const AdminDashboardPage: React.FC = () => {
                 <div className="bg-white p-6 rounded-lg shadow-sm">
                     <h3 className="font-semibold text-lg mb-4">Recent Activity</h3>
                     <div className="space-y-4">
+                        {/* Mock recent activity for now */}
                         <div className="flex items-start">
                             <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm mr-3">JD</div>
                             <div>
@@ -100,7 +127,7 @@ const AdminDashboardPage: React.FC = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {mockRecentOrders.map(order => (
+                            {recentOrders.map(order => (
                                 <tr key={order.id} className="border-b last:border-0 hover:bg-gray-50">
                                     <td className="p-3 font-medium text-gray-800">{order.order_number}</td>
                                     <td className="p-3">{new Date(order.created_at).toLocaleDateString()}</td>
@@ -114,6 +141,9 @@ const AdminDashboardPage: React.FC = () => {
                             ))}
                         </tbody>
                     </table>
+                    {recentOrders.length === 0 && (
+                        <div className="text-center py-4 text-gray-500">No recent orders found.</div>
+                    )}
                 </div>
             </div>
         </div>
