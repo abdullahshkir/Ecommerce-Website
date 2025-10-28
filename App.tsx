@@ -109,12 +109,12 @@ const App: React.FC = () => {
   return (
     <>
         <Routes>
-          {/* Admin Login Page - Uses AuthModal logic but tailored for admin view */}
+          {/* Admin Login/Entry Point */}
           <Route 
             path="/adminpanel" 
             element={
                 isAdmin 
-                    ? <Navigate to="/adminpanel/dashboard" /> 
+                    ? <Navigate to="/adminpanel/dashboard" replace /> 
                     : <AdminLoginPage />
             } 
           />

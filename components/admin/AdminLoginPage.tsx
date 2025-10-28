@@ -1,11 +1,7 @@
 import React from 'react';
 import SupabaseAuth from '../SupabaseAuth';
 
-interface AdminLoginPageProps {
-  onLoginSuccess: () => void;
-}
-
-const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ onLoginSuccess }) => {
+const AdminLoginPage: React.FC = () => {
   
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 font-sans">
@@ -17,8 +13,8 @@ const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ onLoginSuccess }) => {
         <div className="mt-8">
             {/* SupabaseAuth handles the actual login process and redirect */}
             <SupabaseAuth 
-                // We rely on Supabase's built-in redirect to /adminpanel/dashboard
-                // onSuccess is not needed here as it's a full-page view.
+                // Redirect to the dashboard after successful login/signup
+                onSuccess={() => { /* Handled by App.tsx logic */ }}
                 view="sign_in"
                 redirectTo={window.location.origin + '/#/adminpanel/dashboard'}
             />
