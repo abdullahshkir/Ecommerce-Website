@@ -145,15 +145,17 @@ const ProductPage: React.FC<{onProductClick: (id: number) => void}> = ({ onProdu
     };
 
     useEffect(() => {
-        const productId = parseInt(id || '', 10);
-        const foundProduct = products.find(p => p.id === productId);
-        if (foundProduct) {
-            setProduct(foundProduct);
-            setActiveImageIndex(0);
-            setQuantity(1);
-            window.scrollTo(0, 0);
-        } else {
-            setProduct(null);
+        if (id && products.length > 0) {
+            const productId = parseInt(id, 10);
+            const foundProduct = products.find(p => p.id === productId);
+            if (foundProduct) {
+                setProduct(foundProduct);
+                setActiveImageIndex(0);
+                setQuantity(1);
+                window.scrollTo(0, 0);
+            } else {
+                setProduct(null);
+            }
         }
     }, [id, products]);
 
