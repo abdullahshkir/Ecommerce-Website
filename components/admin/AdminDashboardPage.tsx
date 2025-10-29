@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { DollarSignIcon, CartIcon, UsersIcon, ProductsIcon } from '../icons';
-import { Order, User } from '../../types';
 import { fetchAllOrders, fetchAllUsers } from '../../src/integrations/supabase/api';
 import { useProducts } from '../../contexts/ProductContext';
+import { Order, User } from '../../types'; // Import Order and User types
 
 const StatCard: React.FC<{ title: string; value: string; icon: React.ReactNode; change: string; changeType: 'increase' | 'decrease' }> = 
 ({ title, value, icon, change, changeType }) => (
@@ -40,11 +40,25 @@ const AdminDashboardPage: React.FC = () => {
     useEffect(() => {
         const loadData = async () => {
             try {
-                const [fetchedOrders, fetchedUsers] = await Promise.all([
+                const [fetchedOrdersData, fetchedUsers] = await Promise.all([
                     fetchAllOrders(),
                     fetchAllUsers()
                 ]);
-                setOrders(fetchedOrders);
+                
+                // fetchedOrdersData contains joined profile data, but we only need Order fields for stats
+                // We map it to ensure it conforms to the Order type for calculations
+                const ordersList: Order[] = fetchedOrdersData.map((order: any) => ({
+                    id: order.id,
+                    order_number: order.order_number,
+                    created_at: order.created_at,
+                    status: order.status,
+                    total: order.total,
+                    items: order.items,
+                    shipping_address: order.shipping_address,
+                    user_id: order.user_id,
+                }));
+                
+                setOrders(ordersList);
                 setUsers(fetchedUsers);
             } catch (error) {
                 console.error("Failed to load admin dashboard data:", error);
@@ -57,7 +71,8 @@ const AdminDashboardPage: React.FC = () => {
     
     const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
     const totalOrders = orders.length;
-    const totalCustomers = users.length;
+    // Filter out admins and pending admins for customer count
+    const totalCustomers = users.filter(u => u.role === 'user').length; 
     const productsInStock = products.filter(p => p.availability === 'In Stock').length;
     const recentOrders = orders.slice(0, 5);
     
@@ -88,25 +103,34 @@ const AdminDashboardPage: React.FC = () => {
                 <div className="bg-white p-6 rounded-lg shadow-sm">
                     <h3 className="font-semibold text-lg mb-4">Recent Activity</h3>
                     <div className="space-y-4">
-                        {/* Mock recent activity for now */}
-                        <div className="flex items-start">
-                            <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm mr-3">JD</div>
-                            <div>
-                                <p className="text-sm">
-                                    <span className="font-semibold">John Doe</span> placed an order <span className="font-semibold">#MX54322</span>.
-                                </p>
-                                <p className="text-xs text-gray-500">2 hours ago</p>
+                        {/* Display recent user registrations */}
+                        {users.slice(0, 2).map(user => (
+                            <div key={user.id} className="flex items-start">
+                                <div className="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center font-bold text-sm mr-3">
+                                    {user.display_name.charAt(0) || user.email.charAt(0)}
+                                </div>
+                                <div>
+                                    <p className="text-sm">
+                                        A new user <span className="font-semibold">{user.display_name || user.email}</span> has registered.
+                                    </p>
+                                    <p className="text-xs text-gray-500">{new Date(user.created_at || '').toLocaleDateString()}</p>
+                                </div>
                             </div>
-                        </div>
-                         <div className="flex items-start">
-                            <div className="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center font-bold text-sm mr-3">AS</div>
-                            <div>
-                                <p className="text-sm">
-                                    A new user <span className="font-semibold">Abdullah Shakir</span> has registered.
-                                </p>
-                                <p className="text-xs text-gray-500">5 hours ago</p>
+                        ))}
+                        {/* Display recent orders */}
+                        {recentOrders.map(order => (
+                            <div key={order.id} className="flex items-start">
+                                <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm mr-3">
+                                    {order.order_number.slice(-2)}
+                                </div>
+                                <div>
+                                    <p className="text-sm">
+                                        Order <span className="font-semibold">#{order.order_number}</span> placed.
+                                    </p>
+                                    <p className="text-xs text-gray-500">{new Date(order.created_at).toLocaleDateString()}</p>
+                                </div>
                             </div>
-                        </div>
+                        ))}
                     </div>
                 </div>
             </div>
