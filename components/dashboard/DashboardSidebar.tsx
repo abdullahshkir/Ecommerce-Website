@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { ClipboardIcon, MapPinIcon, UserIcon, LogOutIcon, ShopIcon } from '../icons';
+import { ClipboardIcon, MapPinIcon, UserIcon, LogOutIcon, ShopIcon, StarIcon } from '../icons';
 
 interface DashboardSidebarProps {
     onLogout: () => void;
@@ -32,6 +32,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ onLogout }) => {
                 <nav className="space-y-1">
                     <SidebarLink to="/account" icon={<ShopIcon className="w-5 h-5"/>} end={true}>Dashboard</SidebarLink>
                     <SidebarLink to="/account/orders" icon={<ClipboardIcon className="w-5 h-5"/>}>Orders</SidebarLink>
+                    <SidebarLink to="/account/reviews" icon={<StarIcon className="w-5 h-5"/>}>Reviews</SidebarLink>
                     <SidebarLink to="/account/addresses" icon={<MapPinIcon className="w-5 h-5"/>}>Addresses</SidebarLink>
                     <SidebarLink to="/account/details" icon={<UserIcon className="w-5 h-5"/>}>Account Details</SidebarLink>
                     <button

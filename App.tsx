@@ -32,6 +32,7 @@ import OrdersPage from './components/dashboard/OrdersPage';
 import OrderTrackingPage from './components/dashboard/OrderTrackingPage';
 import AddressesPage from './components/dashboard/AddressesPage';
 import AccountDetailsPage from './components/dashboard/AccountDetailsPage';
+import UserReviewsPage from './components/dashboard/UserReviewsPage'; // Import UserReviewsPage
 import { useUser } from './contexts/UserContext';
 import AdminLoginPage from './components/admin/AdminLoginPage';
 import AdminLayout from './components/admin/AdminLayout';
@@ -42,6 +43,7 @@ import AdminUsersPage from './components/admin/AdminUsersPage';
 import AdminProductFormPage from './components/admin/AdminProductFormPage';
 import AdminOrderDetailPage from './components/admin/AdminOrderDetailPage';
 import AdminUserDetailPage from './components/admin/AdminUserDetailPage';
+import AdminReviewsPage from './components/admin/AdminReviewsPage'; // Import AdminReviewsPage
 import AuthModal from './components/AuthModal';
 import { useSession } from './contexts/SessionContext';
 import AdminRouteGuard from './components/admin/AdminRouteGuard';
@@ -49,7 +51,7 @@ import AdminPendingUsersPage from './components/admin/AdminPendingUsersPage';
 import { ProductProvider } from './contexts/ProductContext'; // Import ProductProvider
 
 
-const HomePage = ({ onProductQuickView, onProductClick }: { onProductQuickView: (product: Product) => void, onProductClick: (id: number) => void }) => (
+const HomePage = ({ onProductQuickView, onProductClick }: { onProductQuickView: (product: Product) => void, onProductClick: (id: string) => void }) => (
   <>
     <Hero />
     <Features />
@@ -80,7 +82,7 @@ const App: React.FC = () => {
     setQuickViewProduct(null);
   };
 
-  const handleProductClick = (id: number) => {
+  const handleProductClick = (id: string) => {
     navigate(`/product/${id}`);
   };
 
@@ -131,6 +133,7 @@ const App: React.FC = () => {
               <Route path="products/edit/:productId" element={<AdminProductFormPage />} />
               <Route path="orders" element={<AdminOrdersPage />} />
               <Route path="orders/:orderId" element={<AdminOrderDetailPage />} />
+              <Route path="reviews" element={<AdminReviewsPage />} /> {/* New Admin Route */}
               <Route path="users" element={<AdminUsersPage />} />
               <Route path="users/:userId" element={<AdminUserDetailPage />} />
               <Route path="pending-admins" element={<AdminPendingUsersPage />} />
@@ -291,6 +294,7 @@ const App: React.FC = () => {
                   <Route index element={<DashboardPage />} />
                   <Route path="orders" element={<OrdersPage />} />
                   <Route path="orders/:orderId" element={<OrderTrackingPage />} />
+                  <Route path="reviews" element={<UserReviewsPage />} /> {/* New User Route */}
                   <Route path="addresses" element={<AddressesPage />} />
                   <Route path="details" element={<AccountDetailsPage />} />
               </Route>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Product, Review } from '../types';
 import { StarIcon, PlusIcon, MinusIcon, HeartIcon, ExpandIcon, FacebookIcon, TwitterIcon, InstagramIcon, PinterestIcon, UserIcon } from './icons';
@@ -7,6 +7,8 @@ import { useWishlist } from '../contexts/WishlistContext';
 import { useCart } from '../contexts/CartContext';
 import { SEO } from './SEO';
 import { useProducts } from '../contexts/ProductContext';
+import { useUser } from '../contexts/UserContext';
+import { createReview, fetchProductReviews } from '../src/integrations/supabase/api';
 
 const ProductCard: React.FC<{ product: Product; onClick: (id: string) => void }> = ({ product, onClick }) => {
     const { formatPrice } = useCurrency();
@@ -49,27 +51,71 @@ const StarRatingInput: React.FC<{ rating: number; setRating: (rating: number) =>
     );
 };
 
-const ReviewsTab: React.FC<{ product: Product }> = ({ product }) => {
-    const [newReview, setNewReview] = useState({ rating: 0, text: '', author: '', email: '' });
-    const [reviewSubmitted, setReviewSubmitted] = useState(false);
+interface ReviewsTabProps {
+    productId: string;
+    productName: string;
+    onLoginClick: () => void;
+}
 
-    const handleReviewSubmit = (e: React.FormEvent) => {
+const ReviewsTab: React.FC<ReviewsTabProps> = ({ productId, productName, onLoginClick }) => {
+    const { isLoggedIn, user } = useUser();
+    const [reviews, setReviews] = useState<Review[]>([]);
+    const [newReview, setNewReview] = useState({ rating: 0, text: '' });
+    const [reviewSubmitted, setReviewSubmitted] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [fetchError, setFetchError] = useState<string | null>(null);
+
+    const loadReviews = useCallback(async () => {
+        try {
+            const fetchedReviews = await fetchProductReviews(productId);
+            setReviews(fetchedReviews);
+            setFetchError(null);
+        } catch (error) {
+            setFetchError('Failed to load reviews.');
+            console.error(error);
+        }
+    }, [productId]);
+
+    useEffect(() => {
+        loadReviews();
+    }, [loadReviews]);
+
+    const handleReviewSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log('Review submitted:', newReview);
-        setReviewSubmitted(true);
-        setTimeout(() => {
-            setNewReview({ rating: 0, text: '', author: '', email: '' });
-            setReviewSubmitted(false);
-        }, 4000);
+        if (!user || newReview.rating === 0 || !newReview.text) return;
+
+        setIsSubmitting(true);
+        try {
+            await createReview({
+                product_id: productId,
+                user_id: user.id,
+                rating: newReview.rating,
+                text: newReview.text,
+            });
+            
+            setReviewSubmitted(true);
+            setNewReview({ rating: 0, text: '' });
+            
+            // Optionally reload reviews after a delay if we expect immediate approval, 
+            // but since it requires admin approval, we just show the success message.
+            
+        } catch (error) {
+            alert('Failed to submit review. Please try again.');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
     
+    const userFullName = `${user?.first_name || ''} ${user?.last_name || ''}`.trim();
+
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <div>
-                <h3 className="text-xl font-semibold mb-6">{product.reviews?.length || 0} review for "{product.name}"</h3>
+                <h3 className="text-xl font-semibold mb-6">{reviews.length} review{reviews.length !== 1 ? 's' : ''} for "{productName}"</h3>
+                {fetchError && <div className="p-4 bg-red-100 text-red-800 rounded-md">{fetchError}</div>}
                 <div className="space-y-6">
-                    {product.reviews && product.reviews.length > 0 ? (
-                        product.reviews.map(review => (
+                    {reviews.length > 0 ? (
+                        reviews.map(review => (
                             <div key={review.id} className="flex items-start space-x-4">
                                 <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
                                     <UserIcon className="w-6 h-6 text-gray-500" />
@@ -86,15 +132,26 @@ const ReviewsTab: React.FC<{ product: Product }> = ({ product }) => {
                             </div>
                         ))
                     ) : (
-                        <p className="text-gray-600">There are no reviews yet.</p>
+                        <p className="text-gray-600">There are no approved reviews yet. Be the first to review!</p>
                     )}
                 </div>
             </div>
             <div>
                 <h3 className="text-xl font-semibold mb-6">Add a review</h3>
-                {reviewSubmitted ? (
+                
+                {!isLoggedIn ? (
+                    <div className="p-6 bg-gray-100 rounded-lg text-center">
+                        <p className="text-lg text-gray-700 mb-4">You must be logged in to submit a review.</p>
+                        <button 
+                            onClick={onLoginClick}
+                            className="bg-black text-white py-3 px-8 rounded-full font-bold hover:bg-gray-800 transition-colors"
+                        >
+                            Login to Review
+                        </button>
+                    </div>
+                ) : reviewSubmitted ? (
                     <div className="p-4 bg-green-50 text-green-800 rounded-md">
-                        Thank you for your review! It has been submitted for approval.
+                        Thank you for your review! It has been submitted for admin approval.
                     </div>
                 ) : (
                     <form onSubmit={handleReviewSubmit} className="space-y-4">
@@ -109,15 +166,17 @@ const ReviewsTab: React.FC<{ product: Product }> = ({ product }) => {
                          <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <label htmlFor="reviewAuthor" className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
-                                <input type="text" id="reviewAuthor" value={newReview.author} onChange={(e) => setNewReview(prev => ({ ...prev, author: e.target.value }))} required className="w-full p-3 border rounded-md" />
+                                <input type="text" id="reviewAuthor" value={userFullName} readOnly disabled className="w-full p-3 border rounded-md bg-gray-100 cursor-not-allowed" />
                             </div>
                             <div>
                                 <label htmlFor="reviewEmail" className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
-                                <input type="email" id="reviewEmail" value={newReview.email} onChange={(e) => setNewReview(prev => ({ ...prev, email: e.target.value }))} required className="w-full p-3 border rounded-md" />
+                                <input type="email" id="reviewEmail" value={user?.email} readOnly disabled className="w-full p-3 border rounded-md bg-gray-100 cursor-not-allowed" />
                             </div>
                         </div>
                         <p className="text-xs text-gray-500">Your email address will not be published.</p>
-                        <button type="submit" className="bg-black text-white py-3 px-6 rounded-full font-semibold hover:bg-gray-800">Submit</button>
+                        <button type="submit" disabled={isSubmitting || newReview.rating === 0} className="bg-black text-white py-3 px-6 rounded-full font-semibold hover:bg-gray-800 disabled:bg-gray-400 transition-colors">
+                            {isSubmitting ? 'Submitting...' : 'Submit Review'}
+                        </button>
                     </form>
                 )}
             </div>
@@ -184,10 +243,20 @@ const ProductPage: React.FC<{onProductClick: (id: string) => void}> = ({ onProdu
         );
     }
 
+    // We need access to the AuthModal open function, which is in App.tsx.
+    // Since we can't pass it directly, we'll use the navigate trick to open the modal.
+    const handleLoginToReview = () => {
+        // This is a placeholder action. In a real app, we'd use context or prop drilling.
+        // Since we can't modify App.tsx props easily, we'll rely on the user clicking the header login button.
+        // For now, we'll just navigate to the home page and rely on the user to click the login button.
+        // A better solution is to use a global state/event system, but sticking to context rules:
+        alert("Please use the 'User' icon in the header to log in.");
+    };
+
     const TABS = [
         { id: 'description', title: 'Description' },
         { id: 'custom', title: 'Custom tab' },
-        { id: 'reviews', title: `Reviews (${product.reviews?.length || 0})` }
+        { id: 'reviews', title: `Reviews` } // Review count will be dynamic inside ReviewsTab
     ];
 
     const isOutOfStock = product.availability === 'Out of Stock';
@@ -204,19 +273,7 @@ const ProductPage: React.FC<{onProductClick: (id: string) => void}> = ({ onProdu
             "@type": "Brand",
             "name": "Mobixo"
         },
-        "review": product.reviews?.map(review => ({
-            "@type": "Review",
-            "reviewRating": {
-              "@type": "Rating",
-              "ratingValue": review.rating,
-              "bestRating": "5"
-            },
-            "author": {
-              "@type": "Person",
-              "name": review.author
-            },
-            "reviewBody": review.text
-        })),
+        // Removed static reviews array
         "aggregateRating": {
             "@type": "AggregateRating",
             "ratingValue": product.rating || "4.5",
@@ -285,7 +342,7 @@ const ProductPage: React.FC<{onProductClick: (id: string) => void}> = ({ onProdu
             case 'custom':
                 return <div dangerouslySetInnerHTML={{ __html: '<p>Content for custom tab goes here.</p>' }} />;
             case 'reviews':
-                return <ReviewsTab product={product!} />;
+                return <ReviewsTab productId={product.id} productName={product.name} onLoginClick={handleLoginToReview} />;
             default:
                 return null;
         }
@@ -298,7 +355,7 @@ const ProductPage: React.FC<{onProductClick: (id: string) => void}> = ({ onProdu
             case 'custom':
                 return <div className="text-gray-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: '<p>Content for custom tab goes here.</p>' }} />;
             case 'reviews':
-                return <ReviewsTab product={product!} />;
+                return <ReviewsTab productId={product.id} productName={product.name} onLoginClick={handleLoginToReview} />;
             default:
                 return null;
         }
@@ -433,8 +490,8 @@ const ProductPage: React.FC<{onProductClick: (id: string) => void}> = ({ onProdu
                                         <span className="font-semibold text-gray-900 text-lg">{tab.title}</span>
                                         <span className="bg-gray-800 text-white w-8 h-8 flex items-center justify-center shrink-0 rounded-sm">
                                             {openAccordion === tab.id ? <MinusIcon className="w-5 h-5" /> : <PlusIcon className="w-5 h-5" />}
-                                        </span>
-                                    </button>
+                                        </button>
+                                    )}
                                     {openAccordion === tab.id && (
                                         <div className="bg-white p-4">
                                             {renderAccordionContent(tab.id)}

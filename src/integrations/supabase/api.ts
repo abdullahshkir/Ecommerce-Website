@@ -1,6 +1,6 @@
 import { supabase } from './client';
 import { User as SupabaseUser } from '@supabase/supabase-js';
-import { User, Address, Order, Product } from '../../types';
+import { User, Address, Order, Product, Review } from '../../types';
 
 // --- Profile Management ---
 
@@ -380,4 +380,105 @@ export const fetchAllUsers = async (): Promise<User[]> => {
         role: profile.role || 'user',
         created_at: profile.auth_user?.created_at, // Adding created_at for AdminUsersPage
     })) as User[];
+};
+
+// --- Review Management ---
+
+interface ReviewData {
+    product_id: string;
+    user_id: string;
+    rating: number;
+    text: string;
+}
+
+export const createReview = async (reviewData: ReviewData) => {
+    const { error } = await supabase
+        .from('reviews')
+        .insert(reviewData);
+
+    if (error) {
+        console.error('Error creating review:', error);
+        throw error;
+    }
+};
+
+export const fetchProductReviews = async (productId: string): Promise<Review[]> => {
+    // Fetch approved reviews and join with profile data for author name
+    const { data, error } = await supabase
+        .from('reviews')
+        .select(`
+            id,
+            rating,
+            text,
+            created_at,
+            user_id,
+            profiles (first_name, last_name)
+        `)
+        .eq('product_id', productId)
+        .eq('is_approved', true)
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error('Error fetching product reviews:', error);
+        return [];
+    }
+
+    return data.map((r: any) => {
+        const authorName = `${r.profiles?.first_name || ''} ${r.profiles?.last_name || ''}`.trim() || 'Anonymous';
+        return {
+            id: r.id,
+            author: authorName,
+            rating: r.rating,
+            date: new Date(r.created_at).toLocaleDateString(),
+            text: r.text,
+        };
+    });
+};
+
+export const fetchAllReviews = async (): Promise<any[]> => {
+    // Fetch all reviews (pending and approved) for admin panel
+    const { data, error } = await supabase
+        .from('reviews')
+        .select(`
+            id,
+            rating,
+            text,
+            is_approved,
+            created_at,
+            product_id,
+            user_id,
+            profiles (first_name, last_name),
+            products (name)
+        `)
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error('Error fetching all reviews:', error);
+        throw error;
+    }
+    return data;
+};
+
+export const updateReviewStatus = async (reviewId: string, isApproved: boolean) => {
+    const { error } = await supabase
+        .from('reviews')
+        .update({ is_approved: isApproved })
+        .eq('id', reviewId);
+
+    if (error) {
+        console.error('Error updating review status:', error);
+        throw error;
+    }
+};
+
+export const deleteReview = async (reviewId: string) => {
+    const { error } = await supabase
+        .from('reviews')
+        .delete()
+        .eq('id', reviewId);
+
+    if (error) {
+        console.error('Error deleting review:', error);
+        throw error;
+    }
 };

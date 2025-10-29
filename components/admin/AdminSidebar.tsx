@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
-import { DashboardIcon, ProductsIcon, ClipboardIcon, UsersIcon, LogOutIcon, SettingsIcon } from '../icons';
+import { DashboardIcon, ProductsIcon, ClipboardIcon, UsersIcon, LogOutIcon, SettingsIcon, StarIcon } from '../icons';
 
 interface AdminSidebarProps {
   onLogout: () => void;
@@ -42,6 +42,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ onLogout, isOpen, onClose }
                 <NavItem to="/adminpanel/dashboard" icon={<DashboardIcon className="w-5 h-5"/>}>Dashboard</NavItem>
                 <NavItem to="/adminpanel/products" icon={<ProductsIcon className="w-5 h-5"/>}>Products</NavItem>
                 <NavItem to="/adminpanel/orders" icon={<ClipboardIcon className="w-5 h-5"/>}>Orders</NavItem>
+                <NavItem to="/adminpanel/reviews" icon={<StarIcon className="w-5 h-5"/>}>Reviews</NavItem>
                 <NavItem to="/adminpanel/users" icon={<UsersIcon className="w-5 h-5"/>}>Customers</NavItem>
                 <NavItem to="/adminpanel/pending-admins" icon={<UsersIcon className="w-5 h-5"/>}>Pending Admins</NavItem>
             </nav>
