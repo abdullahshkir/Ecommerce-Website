@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Product } from '../types';
 import ProductCard from './ProductCard';
-import { useProducts } from '../contexts/ProductContext'; // Import useProducts
+import { useProducts } from '../contexts/ProductContext';
 
 const BestSellers: React.FC<{ onProductQuickView: (product: Product) => void, onProductClick: (id: number) => void }> = ({ onProductQuickView, onProductClick }) => {
-    const { products, isLoading } = useProducts(); // Use products from context
+    const { products, isLoading } = useProducts();
     const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
