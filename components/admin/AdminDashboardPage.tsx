@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { DollarSignIcon, CartIcon, UsersIcon, ProductsIcon } from '../icons';
 import { Order, User } from '../../types';
 import { fetchAllOrders, fetchAllUsers } from '../../src/integrations/supabase/api';
-import { products } from '../../data/products';
+import { useProducts } from '../../contexts/ProductContext';
 
 const StatCard: React.FC<{ title: string; value: string; icon: React.ReactNode; change: string; changeType: 'increase' | 'decrease' }> = 
 ({ title, value, icon, change, changeType }) => (
@@ -35,6 +35,7 @@ const AdminDashboardPage: React.FC = () => {
     const [orders, setOrders] = useState<Order[]>([]);
     const [users, setUsers] = useState<User[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const { products } = useProducts();
 
     useEffect(() => {
         const loadData = async () => {
