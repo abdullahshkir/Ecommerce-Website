@@ -490,8 +490,8 @@ const ProductPage: React.FC<{onProductClick: (id: string) => void}> = ({ onProdu
                                         <span className="font-semibold text-gray-900 text-lg">{tab.title}</span>
                                         <span className="bg-gray-800 text-white w-8 h-8 flex items-center justify-center shrink-0 rounded-sm">
                                             {openAccordion === tab.id ? <MinusIcon className="w-5 h-5" /> : <PlusIcon className="w-5 h-5" />}
-                                        </button>
-                                    )}
+                                        </span>
+                                    </button>
                                     {openAccordion === tab.id && (
                                         <div className="bg-white p-4">
                                             {renderAccordionContent(tab.id)}
