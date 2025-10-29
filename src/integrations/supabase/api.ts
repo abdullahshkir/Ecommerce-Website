@@ -364,7 +364,8 @@ export const fetchAllUsers = async (): Promise<User[]> => {
     // but for simplicity, we fetch profiles and assume email is available via auth.
     const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
-        .select('id, first_name, last_name, role, auth_user:auth.users(email, created_at)');
+        .select('id, first_name, last_name, role, auth_user:auth.users(email, created_at, phone)') // Added phone
+        .order('auth_user(created_at)', { ascending: false }); // Order by registration date
 
     if (profilesError) {
         console.error('Error fetching all users:', profilesError);
@@ -378,9 +379,54 @@ export const fetchAllUsers = async (): Promise<User[]> => {
         display_name: `${profile.first_name || ''} ${profile.last_name || ''}`.trim(),
         email: profile.auth_user?.email || 'N/A',
         role: profile.role || 'user',
-        created_at: profile.auth_user?.created_at, // Adding created_at for AdminUsersPage
+        created_at: profile.auth_user?.created_at,
+        phone: profile.auth_user?.phone || 'N/A', // Added phone
     })) as User[];
 };
+
+export interface UserDetail {
+    profile: User | null;
+    addresses: Address[];
+    orders: Order[];
+}
+
+export const fetchUserDetail = async (userId: string): Promise<UserDetail> => {
+    // 1. Fetch Profile and Auth Data
+    const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('*, auth_user:auth.users(email, created_at, phone)')
+        .eq('id', userId)
+        .single();
+
+    if (profileError) {
+        console.error('Error fetching user profile for detail:', profileError);
+        throw profileError;
+    }
+    
+    const userProfile: User = {
+        id: profileData.id,
+        first_name: profileData.first_name || '',
+        last_name: profileData.last_name || '',
+        display_name: `${profileData.first_name || ''} ${profileData.last_name || ''}`.trim(),
+        email: profileData.auth_user?.email || 'N/A',
+        role: profileData.role || 'user',
+        created_at: profileData.auth_user?.created_at,
+        phone: profileData.auth_user?.phone || 'N/A',
+    } as User;
+
+    // 2. Fetch Addresses
+    const addresses = await fetchAddresses(userId);
+    
+    // 3. Fetch Orders
+    const orders = await fetchOrders(userId);
+
+    return {
+        profile: userProfile,
+        addresses: addresses,
+        orders: orders,
+    };
+};
+
 
 // --- Review Management ---
 
