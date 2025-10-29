@@ -9,7 +9,7 @@ import { useProducts } from '../contexts/ProductContext'; // Import useProducts
 
 interface ShopPageProps {
     onProductQuickView: (product: Product) => void;
-    onProductClick: (id: number) => void;
+    onProductClick: (id: string) => void;
 }
 
 const ShopPage: React.FC<ShopPageProps> = ({ onProductQuickView, onProductClick }) => {

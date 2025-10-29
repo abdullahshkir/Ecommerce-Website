@@ -3,7 +3,7 @@ import { Product } from '../types';
 import ProductCard from './ProductCard';
 import { useProducts } from '../contexts/ProductContext';
 
-const FeaturedCollection: React.FC<{ onProductQuickView: (product: Product) => void, onProductClick: (id: number) => void }> = ({ onProductQuickView, onProductClick }) => {
+const FeaturedCollection: React.FC<{ onProductQuickView: (product: Product) => void, onProductClick: (id: string) => void }> = ({ onProductQuickView, onProductClick }) => {
     const { products, isLoading } = useProducts();
     const categories = [...new Set(products.map(p => p.collection).filter(Boolean))] as string[];
     const [activeCategory, setActiveCategory] = useState<string | null>(null);

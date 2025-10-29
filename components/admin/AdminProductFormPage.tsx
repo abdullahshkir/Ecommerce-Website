@@ -43,7 +43,8 @@ const AdminProductFormPage: React.FC = () => {
                 setIsLoading(true);
                 try {
                     const allProducts = await fetchAllProducts();
-                    const existingProduct = allProducts.find(p => p.id === parseInt(productId!));
+                    // Match by string ID
+                    const existingProduct = allProducts.find(p => p.id === productId);
                     if (existingProduct) {
                         setProduct(existingProduct);
                     }
@@ -81,7 +82,7 @@ const AdminProductFormPage: React.FC = () => {
         try {
             if (isEditing) {
                 // Update existing product
-                await updateProduct(parseInt(productId!), product);
+                await updateProduct(productId!, product);
             } else {
                 // Create new product
                 // Ensure required fields are present for type safety

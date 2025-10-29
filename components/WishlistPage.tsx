@@ -5,7 +5,7 @@ import { useCurrency } from '../contexts/CurrencyContext';
 import { useWishlist } from '../contexts/WishlistContext';
 import { Product } from '../types';
 
-const WishlistProductCard: React.FC<{ product: Product; onRemove: (id: number) => void; onProductClick: (id: number) => void; }> = ({ product, onRemove, onProductClick }) => {
+const WishlistProductCard: React.FC<{ product: Product; onRemove: (id: string) => void; onProductClick: (id: string) => void; }> = ({ product, onRemove, onProductClick }) => {
     const salePercentage = product.oldPrice && product.price < product.oldPrice ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100) : 0;
     const { formatPrice } = useCurrency();
 
@@ -63,11 +63,11 @@ const WishlistPage: React.FC = () => {
         return () => clearTimeout(timer);
     }, []);
 
-    const handleRemoveItem = (id: number) => {
+    const handleRemoveItem = (id: string) => {
         removeFromWishlist(id);
     };
 
-    const handleProductClick = (id: number) => {
+    const handleProductClick = (id: string) => {
         navigate(`/product/${id}`);
     };
     

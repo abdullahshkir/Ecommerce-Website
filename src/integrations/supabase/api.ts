@@ -175,7 +175,7 @@ export const fetchAllProducts = async (): Promise<Product[]> => {
     
     // Map Supabase data to our Product type
     return data.map((p: any) => ({
-        id: p.id,
+        id: p.id, // ID is now a string (UUID)
         name: p.name,
         price: p.price,
         oldPrice: p.old_price,
@@ -239,7 +239,7 @@ export const createProduct = async (productData: Omit<Product, 'id'>): Promise<P
     
     // Map back to our Product type
     const newProduct: Product = {
-        id: data.id,
+        id: data.id, // ID is now a string (UUID)
         name: data.name,
         price: data.price,
         oldPrice: data.old_price,
@@ -266,7 +266,7 @@ export const createProduct = async (productData: Omit<Product, 'id'>): Promise<P
 };
 
 // Update an existing product (admin only)
-export const updateProduct = async (productId: number, productData: Partial<Product>): Promise<Product | null> => {
+export const updateProduct = async (productId: string, productData: Partial<Product>): Promise<Product | null> => {
     // Map our Product type to Supabase table structure for update
     const supabaseProductData: any = {};
     if (productData.name !== undefined) supabaseProductData.name = productData.name;
@@ -304,7 +304,7 @@ export const updateProduct = async (productId: number, productData: Partial<Prod
     
     // Map back to our Product type
     const updatedProduct: Product = {
-        id: data.id,
+        id: data.id, // ID is now a string (UUID)
         name: data.name,
         price: data.price,
         oldPrice: data.old_price,
@@ -331,7 +331,7 @@ export const updateProduct = async (productId: number, productData: Partial<Prod
 };
 
 // Delete a product (admin only)
-export const deleteProduct = async (productId: number) => {
+export const deleteProduct = async (productId: string) => {
     const { error } = await supabase
         .from('products')
         .delete()

@@ -38,6 +38,7 @@ const AdminProductsPage: React.FC = () => {
     const handleDelete = async (product: Product) => {
         if (window.confirm(`Are you sure you want to delete "${product.name}"?`)) {
             try {
+                // ID is now a string (UUID)
                 await deleteProduct(product.id);
                 // Refresh the product list after deletion
                 loadProducts();

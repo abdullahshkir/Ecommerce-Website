@@ -5,7 +5,7 @@ import { Product } from '../types';
 import { useWishlist } from '../contexts/WishlistContext';
 import { useCart } from '../contexts/CartContext';
 
-const ProductCard: React.FC<{ product: Product, onQuickView: (product: Product) => void, onProductClick: (id: number) => void }> = ({ product, onQuickView, onProductClick }) => {
+const ProductCard: React.FC<{ product: Product, onQuickView: (product: Product) => void, onProductClick: (id: string) => void }> = ({ product, onQuickView, onProductClick }) => {
     const { imageUrl, imageUrl2, category, name, price, oldPrice, isSale, isNew, rating = 0 } = product;
     const { formatPrice } = useCurrency();
     const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();

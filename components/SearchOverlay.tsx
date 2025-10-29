@@ -8,7 +8,7 @@ import { useProducts } from '../contexts/ProductContext'; // Import useProducts
 interface SearchOverlayProps {
   isOpen: boolean;
   onClose: () => void;
-  onProductClick: (id: number) => void;
+  onProductClick: (id: string) => void;
 }
 
 const SearchOverlay: FC<SearchOverlayProps> = ({ isOpen, onClose, onProductClick }) => {

@@ -44,7 +44,7 @@ const CountdownTimer: React.FC<{ endDate: string }> = ({ endDate }) => {
     );
 };
 
-const SmallProductCard: React.FC<{ product: Product; onProductClick: (id: number) => void }> = ({ product, onProductClick }) => {
+const SmallProductCard: React.FC<{ product: Product; onProductClick: (id: string) => void }> = ({ product, onProductClick }) => {
     const { formatPrice } = useCurrency();
     return (
         <div onClick={() => onProductClick(product.id)} className="group relative flex items-center space-x-4 bg-gray-50 p-4 rounded-lg overflow-hidden cursor-pointer">
@@ -65,7 +65,7 @@ const SmallProductCard: React.FC<{ product: Product; onProductClick: (id: number
 };
 
 
-const DealsOfTheDay: React.FC<{ onProductClick: (id: number) => void }> = ({ onProductClick }) => {
+const DealsOfTheDay: React.FC<{ onProductClick: (id: string) => void }> = ({ onProductClick }) => {
     const { products, isLoading } = useProducts();
     const { formatPrice } = useCurrency();
     const { addToCart, openCart } = useCart();

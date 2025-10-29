@@ -8,7 +8,7 @@ import { useCart } from '../contexts/CartContext';
 import { SEO } from './SEO';
 import { useProducts } from '../contexts/ProductContext';
 
-const ProductCard: React.FC<{ product: Product; onClick: (id: number) => void }> = ({ product, onClick }) => {
+const ProductCard: React.FC<{ product: Product; onClick: (id: string) => void }> = ({ product, onClick }) => {
     const { formatPrice } = useCurrency();
     return (
         <div className="group relative text-center cursor-pointer" onClick={() => onClick(product.id)}>
@@ -126,7 +126,7 @@ const ReviewsTab: React.FC<{ product: Product }> = ({ product }) => {
 };
 
 
-const ProductPage: React.FC<{onProductClick: (id: number) => void}> = ({ onProductClick }) => {
+const ProductPage: React.FC<{onProductClick: (id: string) => void}> = ({ onProductClick }) => {
     const { id } = useParams<{ id: string }>();
     const { products, isLoading } = useProducts();
     const [product, setProduct] = useState<Product | null>(null);
@@ -146,9 +146,8 @@ const ProductPage: React.FC<{onProductClick: (id: number) => void}> = ({ onProdu
 
     useEffect(() => {
         if (id && products.length > 0) {
-            // Convert the string ID from URL to number for comparison
-            const productId = parseInt(id, 10);
-            const foundProduct = products.find(p => p.id === productId);
+            // Match the string ID directly
+            const foundProduct = products.find(p => p.id === id);
             if (foundProduct) {
                 setProduct(foundProduct);
                 setActiveImageIndex(0);
