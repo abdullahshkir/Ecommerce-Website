@@ -13,6 +13,9 @@ import {
 } from '../src/integrations/supabase/api';
 import { supabase } from '../src/integrations/supabase/client';
 
+// Define SupabaseUser type locally for convenience
+type SupabaseUser = Awaited<ReturnType<typeof supabase.auth.getUser>>['data']['user'];
+
 interface UserContextType {
   isLoggedIn: boolean;
   user: User | null;
@@ -42,6 +45,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const loadUserData = useCallback(async (sUser: SupabaseUser) => {
         setIsLoadingUser(true);
         try {
+            // Always fetch the latest profile data from the database
             const profile = await getProfile(sUser);
             setUser(profile);
             
@@ -67,6 +71,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
 
         if (supabaseUser) {
+            // When a user signs in or session changes, reload all data
             loadUserData(supabaseUser);
         } else {
             // Logged out state
