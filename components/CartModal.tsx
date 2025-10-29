@@ -1,9 +1,9 @@
-import React, { FC, useEffect, useState, useContext } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { CloseIcon, EmptyCartIcon, TrashIcon, PlusIcon, MinusIcon, EyeIcon } from './icons';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { useCart } from '../contexts/CartContext';
-import { ProductContext } from '../contexts/ProductContext';
+import { useProducts } from '../contexts/ProductContext';
 
 interface CartModalProps {
   isOpen: boolean;
@@ -12,7 +12,7 @@ interface CartModalProps {
 }
 
 const CartModal: FC<CartModalProps> = ({ isOpen, onClose, onProductClick }) => {
-    const { products } = useContext(ProductContext);
+    const { products } = useProducts();
     const recommendedProduct = products[3];
     const { cartItems, removeFromCart, updateQuantity, subtotal } = useCart();
     const { formatPrice } = useCurrency();
