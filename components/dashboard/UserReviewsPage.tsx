@@ -24,6 +24,7 @@ const UserReviewsPage: React.FC = () => {
 
         const fetchUserReviews = async () => {
             setIsLoading(true);
+            // Fetch all reviews submitted by the current user, joining product name
             const { data, error } = await supabase
                 .from('reviews')
                 .select(`
