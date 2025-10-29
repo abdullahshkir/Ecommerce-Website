@@ -6,26 +6,35 @@ import { useUser } from '../../contexts/UserContext';
 
 const AdminLoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const { user, isLoggedIn } = useUser();
+  const { user, isLoggedIn, logout } = useUser();
   const [view, setView] = useState<'sign_in' | 'sign_up'>('sign_in');
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   
   // Check if the user is logged in but not an admin (e.g., pending_admin)
   useEffect(() => {
       if (isLoggedIn && user?.role !== 'admin') {
+          const roleMessage = user?.role === 'pending_admin' 
+              ? 'Your admin access request is pending approval. Please wait for the Super Admin to approve your account.'
+              : 'You do not have administrative privileges.';
+              
           setMessage({
               type: 'error',
-              text: user?.role === 'pending_admin' 
-                  ? 'Your admin access request is pending approval. Please wait for the Super Admin to approve your account.'
-                  : 'You do not have administrative privileges.'
+              text: roleMessage
           });
+          
+          // Force logout if they are logged in but not an admin
+          if (user) {
+              logout();
+          }
+      } else if (isLoggedIn && user?.role === 'admin') {
+          // If they are admin, navigate to dashboard immediately
+          navigate('/adminpanel/dashboard', { replace: true });
       }
-  }, [isLoggedIn, user]);
+  }, [isLoggedIn, user, logout, navigate]);
 
   const handleAuthSuccess = () => {
-    // This is handled by App.tsx, which checks the role and redirects to dashboard if 'admin'
-    // If the user is 'pending_admin', App.tsx will redirect them back here, 
-    // and the useEffect above will display the message.
+    // This function is called by SupabaseAuth on successful sign-in/sign-up.
+    // The useEffect hook above will handle the redirection or error message based on the fetched user role.
   };
   
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -43,7 +52,6 @@ const AdminLoginPage: React.FC = () => {
     }
 
     // 1. Sign up the user, passing 'pending_admin' role hint via metadata
-    // The database trigger will check if this is the first admin and assign 'admin' or 'pending_admin'.
     const { data: { user: newUser }, error: signUpError } = await supabase.auth.signUp({
         email,
         password,

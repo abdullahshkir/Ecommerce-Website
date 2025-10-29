@@ -1,6 +1,7 @@
 import React, { FC, useEffect, useState } from 'react';
 import { CloseIcon } from './icons';
 import SupabaseAuth from './SupabaseAuth';
+import { useUser } from '../contexts/UserContext'; // Import useUser
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -9,8 +10,10 @@ interface AuthModalProps {
 }
 
 const AuthModal: FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
+    const { user, isLoggedIn, logout } = useUser(); // Use user context
     const [isMounted, setIsMounted] = useState(isOpen);
     const [isActive, setIsActive] = useState(isOpen);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     useEffect(() => {
         let mountTimeout: number;
@@ -27,6 +30,7 @@ const AuthModal: FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
             activeTimeout = window.setTimeout(() => {
                 setIsMounted(false);
                 document.body.style.overflow = 'unset';
+                setErrorMessage(null); // Clear error on close
             }, 300); // Animation duration
         }
         
@@ -38,6 +42,20 @@ const AuthModal: FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
             }
         };
     }, [isOpen]);
+    
+    useEffect(() => {
+        if (isLoggedIn && user) {
+            if (user.role === 'admin') {
+                // If an admin tries to log in via the customer modal, log them out immediately
+                setErrorMessage('Admin accounts must log in via the Admin Panel.');
+                logout();
+            } else {
+                // Successful customer login
+                onLoginSuccess();
+            }
+        }
+    }, [isLoggedIn, user, onLoginSuccess, logout]);
+
 
     if (!isMounted) return null;
 
@@ -67,6 +85,11 @@ const AuthModal: FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
                         </button>
                     </div>
                     <div className="flex-grow p-8 overflow-y-auto">
+                        {errorMessage && (
+                            <div className="p-3 mb-4 rounded-md text-sm bg-red-100 text-red-800">
+                                {errorMessage}
+                            </div>
+                        )}
                         <SupabaseAuth onSuccess={onLoginSuccess} />
                     </div>
                 </div>
