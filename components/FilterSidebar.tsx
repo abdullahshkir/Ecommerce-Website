@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CloseIcon, MinusIcon, PlusIcon } from './icons';
-import { ProductContext } from '../contexts/ProductContext';
+import { useProducts } from '../contexts/ProductContext';
 
 interface FilterSidebarProps {
     isOpen: boolean;
@@ -34,7 +34,7 @@ const ColorSwatch: React.FC<{ color: string; name: string; selected?: boolean, o
 );
 
 const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose, filters, onFilterChange, onClearFilters }) => {
-    const { products } = useContext(ProductContext);
+    const { products } = useProducts();
     
     const [isMounted, setIsMounted] = useState(isOpen);
     const [isActive, setIsActive] = useState(isOpen);
