@@ -32,6 +32,7 @@ import OrdersPage from './dashboard/OrdersPage';
 import OrderTrackingPage from './dashboard/OrderTrackingPage';
 import AddressesPage from './dashboard/AddressesPage';
 import AccountDetailsPage from './dashboard/AccountDetailsPage';
+import UserReviewsPage from './dashboard/UserReviewsPage'; // Import UserReviewsPage
 import { useUser } from '../contexts/UserContext';
 import AdminLoginPage from './admin/AdminLoginPage';
 import AdminLayout from './admin/AdminLayout';
@@ -42,6 +43,7 @@ import AdminUsersPage from './admin/AdminUsersPage';
 import AdminProductFormPage from './admin/AdminProductFormPage';
 import AdminOrderDetailPage from './admin/AdminOrderDetailPage';
 import AdminUserDetailPage from './admin/AdminUserDetailPage';
+import AdminReviewsPage from './admin/AdminReviewsPage'; // Import AdminReviewsPage
 import AuthModal from './AuthModal';
 import { useSession } from '../contexts/SessionContext';
 import AdminRouteGuard from './admin/AdminRouteGuard';
@@ -99,8 +101,13 @@ const App: React.FC = () => {
     navigate('/adminpanel');
   };
   
-  // Show a simple loading screen while session/user data is being fetched
-  if (isLoadingSession || isLoadingUser) {
+  // --- Global Loading Check Refinement ---
+  // We only show the blocking loading screen if the session is initially loading OR 
+  // if the session is loaded but the user data (profile/role) is still being fetched.
+  // Once the user data is fetched once (user is null or an object), we stop blocking.
+  
+  // We rely on SessionContext's initial load to determine if we should block.
+  if (isLoadingSession || (user === null && isLoadingUser)) {
       return (
           <div className="flex items-center justify-center min-h-screen bg-gray-50">
               <div className="text-2xl font-bold text-gray-800">Loading...</div>
@@ -131,6 +138,7 @@ const App: React.FC = () => {
               <Route path="products/edit/:productId" element={<AdminProductFormPage />} />
               <Route path="orders" element={<AdminOrdersPage />} />
               <Route path="orders/:orderId" element={<AdminOrderDetailPage />} />
+              <Route path="reviews" element={<AdminReviewsPage />} /> {/* New Admin Route */}
               <Route path="users" element={<AdminUsersPage />} />
               <Route path="users/:userId" element={<AdminUserDetailPage />} />
               <Route path="pending-admins" element={<AdminPendingUsersPage />} />
@@ -291,6 +299,7 @@ const App: React.FC = () => {
                   <Route index element={<DashboardPage />} />
                   <Route path="orders" element={<OrdersPage />} />
                   <Route path="orders/:orderId" element={<OrderTrackingPage />} />
+                  <Route path="reviews" element={<UserReviewsPage />} /> {/* New User Route */}
                   <Route path="addresses" element={<AddressesPage />} />
                   <Route path="details" element={<AccountDetailsPage />} />
               </Route>
