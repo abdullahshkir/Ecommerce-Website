@@ -33,17 +33,25 @@ const AdminLoginPage: React.FC = () => {
     const form = e.currentTarget;
     const email = (form.elements.namedItem('email') as HTMLInputElement)?.value;
     const password = (form.elements.namedItem('password') as HTMLInputElement)?.value;
+    const firstName = (form.elements.namedItem('first_name') as HTMLInputElement)?.value;
+    const lastName = (form.elements.namedItem('last_name') as HTMLInputElement)?.value;
 
-    if (!email || !password) return;
+
+    if (!email || !password || !firstName || !lastName) {
+        setMessage({ type: 'error', text: 'Please fill in all required fields.' });
+        return;
+    }
 
     // 1. Sign up the user, passing 'pending_admin' role hint via metadata
-    // The database trigger will override this if the email matches the super admin email.
+    // The database trigger will check if this is the first admin and assign 'admin' or 'pending_admin'.
     const { data: { user: newUser }, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
             data: {
-                initial_role: 'pending_admin' 
+                initial_role: 'pending_admin',
+                first_name: firstName,
+                last_name: lastName,
             }
         }
     });
@@ -57,7 +65,7 @@ const AdminLoginPage: React.FC = () => {
         // We will show a success message and switch to sign in view.
         setMessage({ 
             type: 'success', 
-            text: 'Account created! Please check your email for verification. Your admin access is pending approval (unless you are the Super Admin).' 
+            text: 'Account created! Please check your email for verification. Your admin access is pending approval (unless you are the first admin).' 
         });
         setView('sign_in');
     }
@@ -87,7 +95,7 @@ const AdminLoginPage: React.FC = () => {
                         redirectTo={window.location.origin + '/#/adminpanel/dashboard'}
                     />
                     <button 
-                        onClick={() => setView('sign_up')}
+                        onClick={() => { setView('sign_up'); setMessage(null); }}
                         className="w-full mt-4 text-sm text-blue-600 hover:underline"
                     >
                         Request Admin Access (Sign Up)
@@ -96,6 +104,16 @@ const AdminLoginPage: React.FC = () => {
             ) : (
                 <>
                     <form onSubmit={handleSignUp} className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label htmlFor="first_name" className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                                <input type="text" id="first_name" name="first_name" required className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition" placeholder="First Name" />
+                            </div>
+                            <div>
+                                <label htmlFor="last_name" className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                                <input type="text" id="last_name" name="last_name" required className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition" placeholder="Last Name" />
+                            </div>
+                        </div>
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email address</label>
                             <input type="email" id="email" name="email" required className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition" placeholder="Your email address" />
@@ -109,7 +127,7 @@ const AdminLoginPage: React.FC = () => {
                         </button>
                     </form>
                     <button 
-                        onClick={() => setView('sign_in')}
+                        onClick={() => { setView('sign_in'); setMessage(null); }}
                         className="w-full mt-4 text-sm text-gray-600 hover:underline"
                     >
                         Already requested? Sign In
