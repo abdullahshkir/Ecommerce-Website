@@ -345,18 +345,70 @@ export const deleteProduct = async (productId: string) => {
 
 // --- Admin Management ---
 
-export const fetchAllOrders = async (): Promise<Order[]> => {
+export const fetchAllOrders = async (): Promise<any[]> => {
+    // Fetch orders and join with profiles to get customer name
     const { data, error } = await supabase
         .from('orders')
-        .select('*')
+        .select(`
+            *,
+            profiles (first_name, last_name)
+        `)
         .order('created_at', { ascending: false });
 
     if (error) {
         console.error('Error fetching all orders:', error);
         throw error;
     }
-    return data as Order[];
+    return data;
 };
+
+export const fetchOrderById = async (orderId: string): Promise<Order | null> => {
+    const { data, error } = await supabase
+        .from('orders')
+        .select(`
+            *,
+            profiles (first_name, last_name, email)
+        `)
+        .eq('id', orderId)
+        .single();
+
+    if (error) {
+        console.error('Error fetching order by ID:', error);
+        throw error;
+    }
+    
+    // Map data to Order type, including customer details
+    const order: Order = {
+        id: data.id,
+        user_id: data.user_id,
+        order_number: data.order_number,
+        created_at: data.created_at,
+        status: data.status,
+        total: data.total,
+        items: data.items,
+        shipping_address: data.shipping_address,
+        customer: {
+            name: `${data.profiles?.first_name || ''} ${data.profiles?.last_name || ''}`.trim() || 'N/A',
+            email: data.profiles?.email || 'N/A',
+            // Assuming we don't need full profile object here, just name/email
+        }
+    } as Order; // We cast to Order, assuming we handle the extra customer field in the component
+
+    return order;
+};
+
+export const updateOrderStatus = async (orderId: string, newStatus: Order['status']) => {
+    const { error } = await supabase
+        .from('orders')
+        .update({ status: newStatus })
+        .eq('id', orderId);
+
+    if (error) {
+        console.error('Error updating order status:', error);
+        throw error;
+    }
+};
+
 
 export const fetchAllUsers = async (): Promise<User[]> => {
     // Note: Supabase RLS usually prevents fetching all users from 'auth.users'.

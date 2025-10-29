@@ -1,17 +1,17 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCurrency } from '../../contexts/CurrencyContext';
 import { Order } from '../../types';
 import { MoreVerticalIcon } from '../icons';
+import { fetchAllOrders } from '../../src/integrations/supabase/api';
 
-const mockOrders: (Omit<Order, 'items' | 'shipping_address' | 'user_id'> & { customer: string })[] = [
-    { id: 'MX54321', customer: 'John Doe', order_number: 'MX54321', created_at: '2025-07-29T10:00:00Z', status: 'Delivered', total: 180.00 },
-    { id: 'MX54322', customer: 'Jane Smith', order_number: 'MX54322', created_at: '2025-07-29T11:00:00Z', status: 'Processing', total: 450.00 },
-    { id: 'MX54323', customer: 'Bob Johnson', order_number: 'MX54323', created_at: '2025-07-28T14:30:00Z', status: 'Shipped', total: 250.00 },
-    { id: 'MX54324', customer: 'Alice Williams', order_number: 'MX54324', created_at: '2025-07-28T09:00:00Z', status: 'Cancelled', total: 40.00 },
-    { id: 'MX54325', customer: 'Charlie Brown', order_number: 'MX54325', created_at: '2025-07-27T18:00:00Z', status: 'Delivered', total: 1200.00 },
-    { id: 'MX54326', customer: 'Diana Miller', order_number: 'MX54326', created_at: '2025-07-26T12:00:00Z', status: 'Shipped', total: 285.00 },
-];
+// Define a type for the fetched order data including joined profile info
+interface FetchedOrder extends Order {
+    profiles: {
+        first_name: string;
+        last_name: string;
+    } | null;
+}
 
 const getStatusClass = (status: Order['status']) => {
     switch (status) {
@@ -26,11 +26,33 @@ const getStatusClass = (status: Order['status']) => {
 const AdminOrdersPage: React.FC = () => {
     const { formatPrice } = useCurrency();
     const navigate = useNavigate();
+    const [orders, setOrders] = useState<FetchedOrder[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const loadOrders = async () => {
+        setIsLoading(true);
+        try {
+            const fetchedOrders = await fetchAllOrders();
+            setOrders(fetchedOrders);
+        } catch (error) {
+            console.error("Failed to load orders:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        loadOrders();
+    }, []);
 
     const handleRowClick = (orderId: string) => {
         navigate(`/adminpanel/orders/${orderId}`);
     };
     
+    if (isLoading) {
+        return <div className="text-center py-10 text-gray-600">Loading orders...</div>;
+    }
+
     return (
         <div className="bg-white p-6 rounded-lg shadow-sm">
             <div className="flex justify-between items-center mb-6">
@@ -53,26 +75,32 @@ const AdminOrdersPage: React.FC = () => {
                         </tr>
                     </thead>
                     <tbody className="divide-y">
-                        {mockOrders.map(order => (
-                            <tr key={order.id} onClick={() => handleRowClick(order.id)} className="hover:bg-gray-50 cursor-pointer">
-                                <td className="px-4 py-3 font-semibold text-blue-600">#{order.order_number}</td>
-                                <td className="px-4 py-3 text-gray-800">{order.customer}</td>
-                                <td className="px-4 py-3 text-gray-600">{new Date(order.created_at).toLocaleDateString()}</td>
-                                <td className="px-4 py-3 text-gray-600">{formatPrice(order.total)}</td>
-                                <td className="px-4 py-3">
-                                    <span className={`px-2 py-1 text-xs rounded-full font-semibold ${getStatusClass(order.status)}`}>
-                                       {order.status}
-                                    </span>
-                                </td>
-                                <td className="px-4 py-3 text-center">
-                                     <button className="p-2 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-colors" onClick={(e) => e.stopPropagation()}>
-                                        <MoreVerticalIcon className="w-5 h-5" />
-                                     </button>
-                                </td>
-                            </tr>
-                        ))}
+                        {orders.map(order => {
+                            const customerName = `${order.profiles?.first_name || ''} ${order.profiles?.last_name || ''}`.trim() || 'N/A';
+                            return (
+                                <tr key={order.id} onClick={() => handleRowClick(order.id)} className="hover:bg-gray-50 cursor-pointer">
+                                    <td className="px-4 py-3 font-semibold text-blue-600">#{order.order_number}</td>
+                                    <td className="px-4 py-3 text-gray-800">{customerName}</td>
+                                    <td className="px-4 py-3 text-gray-600">{new Date(order.created_at).toLocaleDateString()}</td>
+                                    <td className="px-4 py-3 text-gray-600">{formatPrice(order.total)}</td>
+                                    <td className="px-4 py-3">
+                                        <span className={`px-2 py-1 text-xs rounded-full font-semibold ${getStatusClass(order.status)}`}>
+                                           {order.status}
+                                        </span>
+                                    </td>
+                                    <td className="px-4 py-3 text-center">
+                                         <button className="p-2 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-colors" onClick={(e) => e.stopPropagation()}>
+                                            <MoreVerticalIcon className="w-5 h-5" />
+                                         </button>
+                                    </td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
+                {orders.length === 0 && !isLoading && (
+                    <div className="text-center py-10 text-gray-500">No orders found.</div>
+                )}
             </div>
         </div>
     );
