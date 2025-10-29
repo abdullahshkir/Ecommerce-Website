@@ -146,6 +146,7 @@ const ProductPage: React.FC<{onProductClick: (id: number) => void}> = ({ onProdu
 
     useEffect(() => {
         if (id && products.length > 0) {
+            // Convert the string ID from URL to number for comparison
             const productId = parseInt(id, 10);
             const foundProduct = products.find(p => p.id === productId);
             if (foundProduct) {
