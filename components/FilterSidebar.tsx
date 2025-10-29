@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { CloseIcon, MinusIcon, PlusIcon } from './icons';
-import { products } from '../data/products';
-
+import { ProductContext } from '../contexts/ProductContext';
 
 interface FilterSidebarProps {
     isOpen: boolean;
@@ -34,13 +33,8 @@ const ColorSwatch: React.FC<{ color: string; name: string; selected?: boolean, o
     </button>
 );
 
-const allCategories = [...new Set(products.map(p => p.category))];
-const allColors = [...new Set(products.flatMap(p => p.color || []))].map(colorName => ({ name: colorName, hex: colorName.toLowerCase() }));
-const allSizes = [...new Set(products.flatMap(p => p.size || []))];
-const allBrands = [...new Set(products.flatMap(p => p.brand || []))];
-
-
 const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose, filters, onFilterChange, onClearFilters }) => {
+    const { products } = useContext(ProductContext);
     
     const [isMounted, setIsMounted] = useState(isOpen);
     const [isActive, setIsActive] = useState(isOpen);
@@ -51,10 +45,14 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose, filters,
 
         if (isOpen) {
             setIsMounted(true);
-            mountTimeout = window.setTimeout(() => setIsActive(true), 10);
+            mountTimeout = window.setTimeout(() => {
+                 setIsActive(true);
+            }, 10);
         } else {
             setIsActive(false);
-            activeTimeout = window.setTimeout(() => setIsMounted(false), 300);
+            activeTimeout = window.setTimeout(() => {
+                setIsMounted(false);
+            }, 300);
         }
         
         return () => {
@@ -74,6 +72,12 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose, filters,
     const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         onFilterChange('price', { ...filters.price, max: Number(e.target.value) });
     };
+
+    // Extract unique values from products for filters
+    const allCategories = [...new Set(products.map(p => p.category))];
+    const allColors = [...new Set(products.flatMap(p => p.color || []))].map(colorName => ({ name: colorName, hex: colorName.toLowerCase() }));
+    const allSizes = [...new Set(products.flatMap(p => p.size || []))];
+    const allBrands = [...new Set(products.flatMap(p => p.brand || []))];
 
     const sidebarContent = (
         <div className="flex flex-col h-full">
