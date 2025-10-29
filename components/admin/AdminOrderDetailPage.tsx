@@ -2,30 +2,8 @@ import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useCurrency } from '../../contexts/CurrencyContext';
 import { Order } from '../../types';
-import { products } from '../../data/products';
 import { UserIcon, MapPinIcon, TruckIcon } from '../icons';
-
-const mockOrder: (Order & { customer: { name: string; email: string; phone: string } }) = {
-    id: 'MX54322', 
-    order_number: 'MX54322',
-    customer: { name: 'Jane Smith', email: 'jane.smith@example.com', phone: '+1 234 567 890' },
-    created_at: '2025-07-29T11:00:00Z', 
-    status: 'Processing', 
-    total: 450.00,
-    items: [
-        { ...products[2], quantity: 1 }
-    ],
-    shipping_address: {
-        first_name: 'Jane',
-        last_name: 'Smith',
-        address: '456 Oak Avenue',
-        apartment: 'Suite 200',
-        city: 'Metropolis',
-        state: 'CA',
-        zip: '90210',
-        country: 'United States',
-    }
-};
+import { useProducts } from '../../contexts/ProductContext';
 
 const InfoCard: React.FC<{ title: string; icon: React.ReactNode; children: React.ReactNode }> = ({ title, icon, children }) => (
     <div className="bg-white p-6 rounded-lg shadow-sm">
@@ -40,7 +18,30 @@ const InfoCard: React.FC<{ title: string; icon: React.ReactNode; children: React
 const AdminOrderDetailPage: React.FC = () => {
     const { orderId } = useParams<{ orderId: string }>();
     const { formatPrice } = useCurrency();
-    const [orderStatus, setOrderStatus] = useState(mockOrder.status);
+    const { products } = useProducts();
+    const [orderStatus, setOrderStatus] = useState('Processing');
+    
+    // Mock order data - in a real app this would come from an API
+    const mockOrder: Order = {
+        id: 'MX54322', 
+        order_number: 'MX54322',
+        created_at: '2025-07-29T11:00:00Z', 
+        status: 'Processing', 
+        total: 450.00,
+        items: [
+            { ...products[2], quantity: 1 }
+        ],
+        shipping_address: {
+            first_name: 'Jane',
+            last_name: 'Smith',
+            address: '456 Oak Avenue',
+            apartment: 'Suite 200',
+            city: 'Metropolis',
+            state: 'CA',
+            zip: '90210',
+            country: 'United States',
+        }
+    };
     
     const formElementStyle = "w-full text-sm py-2.5 px-4 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors duration-200";
 
@@ -86,9 +87,9 @@ const AdminOrderDetailPage: React.FC = () => {
 
                 <div className="space-y-6">
                     <InfoCard title="Customer" icon={<UserIcon className="w-5 h-5 text-gray-500"/>}>
-                        <p className="font-semibold text-gray-800">{mockOrder.customer.name}</p>
-                        <p>{mockOrder.customer.email}</p>
-                        <p>{mockOrder.customer.phone}</p>
+                        <p className="font-semibold text-gray-800">Jane Smith</p>
+                        <p>jane.smith@example.com</p>
+                        <p>+1 234 567 890</p>
                     </InfoCard>
 
                     <InfoCard title="Shipping Address" icon={<MapPinIcon className="w-5 h-5 text-gray-500"/>}>
@@ -103,7 +104,7 @@ const AdminOrderDetailPage: React.FC = () => {
                     <InfoCard title="Order Status" icon={<TruckIcon className="w-5 h-5 text-gray-500"/>}>
                         <select
                             value={orderStatus}
-                            onChange={(e) => setOrderStatus(e.target.value as Order['status'])}
+                            onChange={(e) => setOrderStatus(e.target.value)}
                             className={formElementStyle}
                         >
                             <option>Processing</option>
