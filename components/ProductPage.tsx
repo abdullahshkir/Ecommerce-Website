@@ -6,7 +6,7 @@ import { useCurrency } from '../contexts/CurrencyContext';
 import { useWishlist } from '../contexts/WishlistContext';
 import { useCart } from '../contexts/CartContext';
 import { SEO } from './SEO';
-import { useProducts } from '../contexts/ProductContext'; // Import useProducts
+import { useProducts } from '../contexts/ProductContext';
 
 const ProductCard: React.FC<{ product: Product; onClick: (id: number) => void }> = ({ product, onClick }) => {
     const { formatPrice } = useCurrency();
@@ -128,7 +128,7 @@ const ReviewsTab: React.FC<{ product: Product }> = ({ product }) => {
 
 const ProductPage: React.FC<{onProductClick: (id: number) => void}> = ({ onProductClick }) => {
     const { id } = useParams<{ id: string }>();
-    const { products, isLoading } = useProducts(); // Use products from context
+    const { products, isLoading } = useProducts();
     const [product, setProduct] = useState<Product | null>(null);
     const [quantity, setQuantity] = useState(1);
     const [activeImageIndex, setActiveImageIndex] = useState(0);
