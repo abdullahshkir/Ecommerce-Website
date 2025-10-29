@@ -3,8 +3,7 @@ import { CartIcon, StarIcon } from './icons';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { useCart } from '../contexts/CartContext';
 import { Product } from '../types';
-import { useProducts } from '../contexts/ProductContext'; // Import useProducts
-
+import { useProducts } from '../contexts/ProductContext';
 
 const CountdownTimer: React.FC<{ endDate: string }> = ({ endDate }) => {
     const calculateTimeLeft = () => {
@@ -67,7 +66,7 @@ const SmallProductCard: React.FC<{ product: Product; onProductClick: (id: number
 
 
 const DealsOfTheDay: React.FC<{ onProductClick: (id: number) => void }> = ({ onProductClick }) => {
-    const { products, isLoading } = useProducts(); // Use products from context
+    const { products, isLoading } = useProducts();
     const { formatPrice } = useCurrency();
     const { addToCart, openCart } = useCart();
     const [isLoaded, setIsLoaded] = useState(false);
