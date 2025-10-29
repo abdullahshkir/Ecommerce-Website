@@ -1,9 +1,9 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { CloseIcon, EmptyCartIcon, TrashIcon, PlusIcon, MinusIcon, EyeIcon } from './icons';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { useCart } from '../contexts/CartContext';
-import { products } from '../data/products';
+import { ProductContext } from '../contexts/ProductContext';
 
 interface CartModalProps {
   isOpen: boolean;
@@ -11,9 +11,9 @@ interface CartModalProps {
   onProductClick: (id: number) => void;
 }
 
-const recommendedProduct = products[3];
-
 const CartModal: FC<CartModalProps> = ({ isOpen, onClose, onProductClick }) => {
+    const { products } = useContext(ProductContext);
+    const recommendedProduct = products[3];
     const { cartItems, removeFromCart, updateQuantity, subtotal } = useCart();
     const { formatPrice } = useCurrency();
     const navigate = useNavigate();
@@ -125,32 +125,34 @@ const CartModal: FC<CartModalProps> = ({ isOpen, onClose, onProductClick }) => {
                                 </div>
                                 
                                 {/* You may also like */}
-                                <div>
-                                    <h4 className="font-semibold text-gray-800 mb-4">You may also like</h4>
-                                    <button
-                                        onClick={() => {
-                                            onClose();
-                                            onProductClick(recommendedProduct.id);
-                                        }}
-                                        className="w-full bg-gray-50 rounded-lg p-4 flex items-center space-x-4 text-left group"
-                                    >
-                                        <div className="w-16 h-16 flex-shrink-0">
-                                            <img src={recommendedProduct.imageUrl} alt={recommendedProduct.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform" />
-                                        </div>
-                                        <div className="flex-grow">
-                                            <p className="text-sm font-medium text-gray-800 group-hover:text-blue-600 transition-colors">{recommendedProduct.name}</p>
-                                            <div className="flex items-baseline space-x-2 mt-1">
-                                                <span className="text-sm font-bold text-red-600">{formatPrice(recommendedProduct.price)}</span>
-                                                {recommendedProduct.oldPrice && (
-                                                    <span className="text-xs text-gray-400 line-through">{formatPrice(recommendedProduct.oldPrice)}</span>
-                                                )}
+                                {recommendedProduct && (
+                                    <div>
+                                        <h4 className="font-semibold text-gray-800 mb-4">You may also like</h4>
+                                        <button
+                                            onClick={() => {
+                                                onClose();
+                                                onProductClick(recommendedProduct.id);
+                                            }}
+                                            className="w-full bg-gray-50 rounded-lg p-4 flex items-center space-x-4 text-left group"
+                                        >
+                                            <div className="w-16 h-16 flex-shrink-0">
+                                                <img src={recommendedProduct.imageUrl} alt={recommendedProduct.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform" />
                                             </div>
-                                        </div>
-                                        <div className="bg-white p-2 rounded-full shadow group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                                            <EyeIcon className="w-5 h-5" />
-                                        </div>
-                                    </button>
-                                </div>
+                                            <div className="flex-grow">
+                                                <p className="text-sm font-medium text-gray-800 group-hover:text-blue-600 transition-colors">{recommendedProduct.name}</p>
+                                                <div className="flex items-baseline space-x-2 mt-1">
+                                                    <span className="text-sm font-bold text-red-600">{formatPrice(recommendedProduct.price)}</span>
+                                                    {recommendedProduct.oldPrice && (
+                                                        <span className="text-xs text-gray-400 line-through">{formatPrice(recommendedProduct.oldPrice)}</span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <div className="bg-white p-2 rounded-full shadow group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                                                <EyeIcon className="w-5 h-5" />
+                                            </div>
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                             {/* Footer */}
                             <div className="p-6 border-t border-gray-200 mt-auto">
