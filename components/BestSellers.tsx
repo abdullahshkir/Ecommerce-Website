@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Product } from '../types';
-import { products } from '../data/products';
 import ProductCard from './ProductCard';
+import { useProducts } from '../contexts/ProductContext'; // Import useProducts
 
 const BestSellers: React.FC<{ onProductQuickView: (product: Product) => void, onProductClick: (id: number) => void }> = ({ onProductQuickView, onProductClick }) => {
+    const { products, isLoading } = useProducts(); // Use products from context
     const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
@@ -12,7 +13,12 @@ const BestSellers: React.FC<{ onProductQuickView: (product: Product) => void, on
     }, []);
     
     // Filter for products that are best sellers, or take a slice as an example
+    // For now, we'll just take the first 8 products as an example
     const bestSellerProducts = products.slice(0, 8);
+
+    if (isLoading) {
+        return <section id="best-sellers" className="py-16 sm:py-24 bg-white"><div className="container mx-auto px-4 text-center">Loading best sellers...</div></section>;
+    }
 
     return (
         <section id="best-sellers" className={`py-16 sm:py-24 bg-white transition-opacity duration-1000 ease-out ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>

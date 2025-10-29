@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { products } from '../data/products';
 import { Product } from '../types';
 import ProductCard from './ProductCard';
 import Pagination from './Pagination';
 import FilterSidebar from './FilterSidebar';
 import { GridListIcon, Grid2Icon, Grid3Icon, Grid4Icon, ChevronDownIcon, FilterIcon } from './icons';
+import { useProducts } from '../contexts/ProductContext'; // Import useProducts
 
 interface ShopPageProps {
     onProductQuickView: (product: Product) => void;
@@ -13,7 +13,7 @@ interface ShopPageProps {
 }
 
 const ShopPage: React.FC<ShopPageProps> = ({ onProductQuickView, onProductClick }) => {
-    const [allProducts] = useState<Product[]>(products);
+    const { products: allProducts, isLoading } = useProducts(); // Use products from context
     const [displayedProducts, setDisplayedProducts] = useState<Product[]>([]);
     const [gridCols, setGridCols] = useState(4);
     const [sortOption, setSortOption] = useState('default');
@@ -112,6 +112,10 @@ const ShopPage: React.FC<ShopPageProps> = ({ onProductQuickView, onProductClick 
          if (filters.brands.length > 0 && (!p.brand || !filters.brands.includes(p.brand))) return false;
          return true;
     }).length;
+
+    if (isLoading) {
+        return <div className="bg-white"><div className="container mx-auto px-4 py-20 text-center">Loading products...</div></div>;
+    }
 
 
     return (

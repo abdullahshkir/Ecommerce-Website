@@ -159,6 +159,190 @@ export const createOrder = async (orderData: Pick<Order, 'items' | 'total' | 'sh
     return data as Order;
 };
 
+// --- Product Management (Admin) ---
+
+// Fetch all products (for frontend and admin)
+export const fetchAllProducts = async (): Promise<Product[]> => {
+    const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error('Error fetching products:', error);
+        throw error;
+    }
+    
+    // Map Supabase data to our Product type
+    return data.map((p: any) => ({
+        id: p.id,
+        name: p.name,
+        price: p.price,
+        oldPrice: p.old_price,
+        category: p.category,
+        imageUrl: p.image_url,
+        imageUrl2: p.image_url2,
+        isSale: p.is_sale,
+        isNew: p.is_new,
+        collection: p.collection,
+        description: p.description,
+        longDescription: p.long_description,
+        availability: p.availability,
+        categories: p.categories,
+        tags: p.tags,
+        images: p.images,
+        color: p.color,
+        size: p.size,
+        brand: p.brand,
+        rating: p.rating ? Number(p.rating) : 0,
+        reviewCount: p.review_count ? Number(p.review_count) : 0,
+        // reviews will be handled separately if needed
+    }));
+};
+
+// Create a new product (admin only)
+export const createProduct = async (productData: Omit<Product, 'id'>): Promise<Product | null> => {
+    // Map our Product type to Supabase table structure
+    const supabaseProductData = {
+        name: productData.name,
+        price: productData.price,
+        old_price: productData.oldPrice,
+        category: productData.category,
+        image_url: productData.imageUrl,
+        image_url2: productData.imageUrl2,
+        is_sale: productData.isSale,
+        is_new: productData.isNew,
+        collection: productData.collection,
+        description: productData.description,
+        long_description: productData.longDescription,
+        availability: productData.availability,
+        categories: productData.categories,
+        tags: productData.tags,
+        images: productData.images,
+        color: productData.color,
+        size: productData.size,
+        brand: productData.brand,
+        rating: productData.rating,
+        review_count: productData.reviewCount,
+    };
+
+    const { data, error } = await supabase
+        .from('products')
+        .insert(supabaseProductData)
+        .select()
+        .single();
+
+    if (error) {
+        console.error('Error creating product:', error);
+        throw error;
+    }
+    
+    // Map back to our Product type
+    const newProduct: Product = {
+        id: data.id,
+        name: data.name,
+        price: data.price,
+        oldPrice: data.old_price,
+        category: data.category,
+        imageUrl: data.image_url,
+        imageUrl2: data.image_url2,
+        isSale: data.is_sale,
+        isNew: data.is_new,
+        collection: data.collection,
+        description: data.description,
+        longDescription: data.long_description,
+        availability: data.availability,
+        categories: data.categories,
+        tags: data.tags,
+        images: data.images,
+        color: data.color,
+        size: data.size,
+        brand: data.brand,
+        rating: data.rating ? Number(data.rating) : 0,
+        reviewCount: data.review_count ? Number(data.review_count) : 0,
+    };
+    
+    return newProduct;
+};
+
+// Update an existing product (admin only)
+export const updateProduct = async (productId: number, productData: Partial<Product>): Promise<Product | null> => {
+    // Map our Product type to Supabase table structure for update
+    const supabaseProductData: any = {};
+    if (productData.name !== undefined) supabaseProductData.name = productData.name;
+    if (productData.price !== undefined) supabaseProductData.price = productData.price;
+    if (productData.oldPrice !== undefined) supabaseProductData.old_price = productData.oldPrice;
+    if (productData.category !== undefined) supabaseProductData.category = productData.category;
+    if (productData.imageUrl !== undefined) supabaseProductData.image_url = productData.imageUrl;
+    if (productData.imageUrl2 !== undefined) supabaseProductData.image_url2 = productData.imageUrl2;
+    if (productData.isSale !== undefined) supabaseProductData.is_sale = productData.isSale;
+    if (productData.isNew !== undefined) supabaseProductData.is_new = productData.isNew;
+    if (productData.collection !== undefined) supabaseProductData.collection = productData.collection;
+    if (productData.description !== undefined) supabaseProductData.description = productData.description;
+    if (productData.longDescription !== undefined) supabaseProductData.long_description = productData.longDescription;
+    if (productData.availability !== undefined) supabaseProductData.availability = productData.availability;
+    if (productData.categories !== undefined) supabaseProductData.categories = productData.categories;
+    if (productData.tags !== undefined) supabaseProductData.tags = productData.tags;
+    if (productData.images !== undefined) supabaseProductData.images = productData.images;
+    if (productData.color !== undefined) supabaseProductData.color = productData.color;
+    if (productData.size !== undefined) supabaseProductData.size = productData.size;
+    if (productData.brand !== undefined) supabaseProductData.brand = productData.brand;
+    if (productData.rating !== undefined) supabaseProductData.rating = productData.rating;
+    if (productData.reviewCount !== undefined) supabaseProductData.review_count = productData.reviewCount;
+
+    const { data, error } = await supabase
+        .from('products')
+        .update(supabaseProductData)
+        .eq('id', productId)
+        .select()
+        .single();
+
+    if (error) {
+        console.error('Error updating product:', error);
+        throw error;
+    }
+    
+    // Map back to our Product type
+    const updatedProduct: Product = {
+        id: data.id,
+        name: data.name,
+        price: data.price,
+        oldPrice: data.old_price,
+        category: data.category,
+        imageUrl: data.image_url,
+        imageUrl2: data.image_url2,
+        isSale: data.is_sale,
+        isNew: data.is_new,
+        collection: data.collection,
+        description: data.description,
+        longDescription: data.long_description,
+        availability: data.availability,
+        categories: data.categories,
+        tags: data.tags,
+        images: data.images,
+        color: data.color,
+        size: data.size,
+        brand: data.brand,
+        rating: data.rating ? Number(data.rating) : 0,
+        reviewCount: data.review_count ? Number(data.review_count) : 0,
+    };
+    
+    return updatedProduct;
+};
+
+// Delete a product (admin only)
+export const deleteProduct = async (productId: number) => {
+    const { error } = await supabase
+        .from('products')
+        .delete()
+        .eq('id', productId);
+
+    if (error) {
+        console.error('Error deleting product:', error);
+        throw error;
+    }
+};
+
 // --- Admin Management ---
 
 export const fetchAllOrders = async (): Promise<Order[]> => {
@@ -196,11 +380,4 @@ export const fetchAllUsers = async (): Promise<User[]> => {
         role: profile.role || 'user',
         created_at: profile.auth_user?.created_at, // Adding created_at for AdminUsersPage
     })) as User[];
-};
-
-export const fetchAllProducts = async (): Promise<Product[]> => {
-    // Since products are currently mocked in data/products.ts, 
-    // we will return the mock data for now until a products table is created.
-    // For a real admin panel, this would fetch from a 'products' table.
-    return []; 
 };

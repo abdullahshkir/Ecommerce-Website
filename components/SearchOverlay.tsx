@@ -2,26 +2,27 @@ import React, { useEffect, FC, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CloseIcon, SearchIcon, ChevronDownIcon, ArrowRightIcon } from './icons';
 import { useCurrency } from '../contexts/CurrencyContext';
-import { products } from '../data/products';
 import { Product } from '../types';
+import { useProducts } from '../contexts/ProductContext'; // Import useProducts
 
 interface SearchOverlayProps {
   isOpen: boolean;
   onClose: () => void;
   onProductClick: (id: number) => void;
 }
-const suggestedProducts = products.slice(1, 4);
-const uniqueCategories = ['All Categories', ...new Set(products.map(p => p.category))];
-
 
 const SearchOverlay: FC<SearchOverlayProps> = ({ isOpen, onClose, onProductClick }) => {
     const { formatPrice } = useCurrency();
+    const { products, isLoading } = useProducts(); // Use products from context
     const [isMounted, setIsMounted] = useState(isOpen);
     const [isActive, setIsActive] = useState(isOpen);
     
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All Categories');
     const [searchResults, setSearchResults] = useState<Product[]>([]);
+    
+    // Get unique categories from products
+    const uniqueCategories = ['All Categories', ...new Set(products.map(p => p.category))];
 
     useEffect(() => {
         let mountTimeout: number;
@@ -69,13 +70,19 @@ const SearchOverlay: FC<SearchOverlayProps> = ({ isOpen, onClose, onProductClick
         });
 
         setSearchResults(filtered);
-    }, [searchQuery, selectedCategory]);
+    }, [searchQuery, selectedCategory, products]);
 
 
   if (!isMounted) return null;
 
   const renderContent = () => {
+    if (isLoading) {
+        return <div className="text-center py-10 text-gray-600">Loading products...</div>;
+    }
+    
     if (searchQuery.trim() === '') {
+        // Show top 3 products as suggestions when no search query
+        const suggestedProducts = products.slice(0, 3);
         return (
             <>
                 <h3 className="text-base font-semibold text-gray-800 mb-4">Need some inspiration?</h3>

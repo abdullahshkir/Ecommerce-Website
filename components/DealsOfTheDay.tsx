@@ -3,29 +3,7 @@ import { CartIcon, StarIcon } from './icons';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { useCart } from '../contexts/CartContext';
 import { Product } from '../types';
-import { products } from '../data/products';
-
-
-const localDealsData = [
-    {
-        id: 8,
-        description: 'Capture your adventures in stunning 4K. Waterproof, durable, and ready for anything.',
-        dealEndDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days from now
-    },
-    { id: 5 },
-    { id: 2 },
-    { id: 3 },
-    { id: 7 },
-];
-
-const dealsData = localDealsData.map(dealInfo => {
-    const productInfo = products.find(p => p.id === dealInfo.id);
-    if (!productInfo) return null;
-    return {
-        ...productInfo,
-        ...dealInfo,
-    };
-}).filter((p): p is Product & typeof localDealsData[0] => p !== null);
+import { useProducts } from '../contexts/ProductContext'; // Import useProducts
 
 
 const CountdownTimer: React.FC<{ endDate: string }> = ({ endDate }) => {
@@ -67,20 +45,20 @@ const CountdownTimer: React.FC<{ endDate: string }> = ({ endDate }) => {
     );
 };
 
-const SmallProductCard: React.FC<Omit<typeof dealsData[0], 'description' | 'dealEndDate' | 'rating'> & { onProductClick: (id: number) => void }> = ({ id, name, imageUrl, price, oldPrice, onProductClick }) => {
+const SmallProductCard: React.FC<{ product: Product; onProductClick: (id: number) => void }> = ({ product, onProductClick }) => {
     const { formatPrice } = useCurrency();
     return (
-        <div onClick={() => onProductClick(id)} className="group relative flex items-center space-x-4 bg-gray-50 p-4 rounded-lg overflow-hidden cursor-pointer">
+        <div onClick={() => onProductClick(product.id)} className="group relative flex items-center space-x-4 bg-gray-50 p-4 rounded-lg overflow-hidden cursor-pointer">
             <div className="w-1/3">
-                <img src={imageUrl} alt={name} className="w-full h-auto object-cover rounded transition-transform duration-300 group-hover:scale-110" />
+                <img src={product.imageUrl} alt={product.name} className="w-full h-auto object-cover rounded transition-transform duration-300 group-hover:scale-110" />
             </div>
             <div className="w-2/3">
                 <h4 className="text-sm font-semibold text-gray-800 mb-1">
-                    <span className="group-hover:text-black transition-colors">{name}</span>
+                    <span className="group-hover:text-black transition-colors">{product.name}</span>
                 </h4>
                 <div className="flex items-baseline space-x-2">
-                    <span className="text-base font-bold text-black">{formatPrice(price)}</span>
-                    {oldPrice && <span className="text-xs text-gray-400 line-through">{formatPrice(oldPrice)}</span>}
+                    <span className="text-base font-bold text-black">{formatPrice(product.price)}</span>
+                    {product.oldPrice && <span className="text-xs text-gray-400 line-through">{formatPrice(product.oldPrice)}</span>}
                 </div>
             </div>
         </div>
@@ -89,18 +67,26 @@ const SmallProductCard: React.FC<Omit<typeof dealsData[0], 'description' | 'deal
 
 
 const DealsOfTheDay: React.FC<{ onProductClick: (id: number) => void }> = ({ onProductClick }) => {
-    const mainDeal = dealsData[0];
-    const otherDeals = dealsData.slice(1);
+    const { products, isLoading } = useProducts(); // Use products from context
     const { formatPrice } = useCurrency();
     const { addToCart, openCart } = useCart();
     const [isLoaded, setIsLoaded] = useState(false);
-
-    const isOutOfStock = mainDeal.availability === 'Out of Stock';
 
     useEffect(() => {
         const timer = setTimeout(() => setIsLoaded(true), 100);
         return () => clearTimeout(timer);
     }, []);
+
+    // For demonstration, we'll take the first product as the main deal
+    // and next 4 as other deals
+    const mainDeal = products[0] || null;
+    const otherDeals = products.slice(1, 5);
+
+    if (isLoading || !mainDeal) {
+        return <section className="py-16 sm:py-24 bg-gray-100"><div className="container mx-auto px-4 text-center">Loading deals...</div></section>;
+    }
+
+    const isOutOfStock = mainDeal.availability === 'Out of Stock';
 
     const handleAddToCart = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -123,7 +109,7 @@ const DealsOfTheDay: React.FC<{ onProductClick: (id: number) => void }> = ({ onP
                         </div>
                         <div className="md:w-1/2 w-full text-center md:text-left">
                             <div className="flex justify-center md:justify-start mb-2">
-                                {[...Array(mainDeal.rating)].map((_, i) => (
+                                {[...Array(mainDeal.rating || 0)].map((_, i) => (
                                     <StarIcon key={i} filled className="w-5 h-5 text-yellow-400" />
                                 ))}
                             </div>
@@ -136,7 +122,8 @@ const DealsOfTheDay: React.FC<{ onProductClick: (id: number) => void }> = ({ onP
                                 {mainDeal.oldPrice && <span className="text-lg text-gray-400 line-through">{formatPrice(mainDeal.oldPrice)}</span>}
                             </div>
                             <div className="mb-6 flex justify-center md:justify-start">
-                                {mainDeal.dealEndDate && <CountdownTimer endDate={mainDeal.dealEndDate} />}
+                                {/* Mock deal end date for 3 days from now */}
+                                <CountdownTimer endDate={new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString()} />
                             </div>
                              <button 
                                 onClick={handleAddToCart} 
@@ -156,7 +143,7 @@ const DealsOfTheDay: React.FC<{ onProductClick: (id: number) => void }> = ({ onP
                     {/* Other Deals Grid */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         {otherDeals.map(deal => (
-                            <SmallProductCard key={deal.id} {...deal} onProductClick={onProductClick} />
+                            <SmallProductCard key={deal.id} product={deal} onProductClick={onProductClick} />
                         ))}
                     </div>
                 </div>

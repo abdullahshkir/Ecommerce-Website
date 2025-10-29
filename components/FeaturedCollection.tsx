@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Product } from '../types';
-import { products } from '../data/products';
 import ProductCard from './ProductCard';
+import { useProducts } from '../contexts/ProductContext'; // Import useProducts
 
 const FeaturedCollection: React.FC<{ onProductQuickView: (product: Product) => void, onProductClick: (id: number) => void }> = ({ onProductQuickView, onProductClick }) => {
-    const categories = ['Accesories', 'Smart TV', 'Camera', 'Digital'];
-    const [activeCategory, setActiveCategory] = useState('Accesories');
+    const { products, isLoading } = useProducts(); // Use products from context
+    const categories = [...new Set(products.map(p => p.collection).filter(Boolean))] as string[];
+    const [activeCategory, setActiveCategory] = useState<string | null>(null);
     const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
@@ -13,7 +14,20 @@ const FeaturedCollection: React.FC<{ onProductQuickView: (product: Product) => v
         return () => clearTimeout(timer);
     }, []);
 
-    const filteredProducts = products.filter(p => p.collection === activeCategory).slice(0, 4);
+    useEffect(() => {
+        // Set the first available category as active on initial load
+        if (categories.length > 0 && activeCategory === null) {
+            setActiveCategory(categories[0]);
+        }
+    }, [categories, activeCategory]);
+
+    const filteredProducts = activeCategory 
+        ? products.filter(p => p.collection === activeCategory).slice(0, 4)
+        : products.slice(0, 4);
+
+    if (isLoading) {
+        return <section className="py-16 sm:py-24 bg-white"><div className="container mx-auto px-4 text-center">Loading featured collection...</div></section>;
+    }
 
     return (
         <section className={`py-16 sm:py-24 bg-white transition-opacity duration-1000 ease-out ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>

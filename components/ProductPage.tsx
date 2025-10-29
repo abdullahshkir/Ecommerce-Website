@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { products } from '../data/products';
 import { Product, Review } from '../types';
 import { StarIcon, PlusIcon, MinusIcon, HeartIcon, ExpandIcon, FacebookIcon, TwitterIcon, InstagramIcon, PinterestIcon, UserIcon } from './icons';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { useWishlist } from '../contexts/WishlistContext';
 import { useCart } from '../contexts/CartContext';
 import { SEO } from './SEO';
+import { useProducts } from '../contexts/ProductContext'; // Import useProducts
 
 const ProductCard: React.FC<{ product: Product; onClick: (id: number) => void }> = ({ product, onClick }) => {
     const { formatPrice } = useCurrency();
@@ -128,6 +128,7 @@ const ReviewsTab: React.FC<{ product: Product }> = ({ product }) => {
 
 const ProductPage: React.FC<{onProductClick: (id: number) => void}> = ({ onProductClick }) => {
     const { id } = useParams<{ id: string }>();
+    const { products, isLoading } = useProducts(); // Use products from context
     const [product, setProduct] = useState<Product | null>(null);
     const [quantity, setQuantity] = useState(1);
     const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -154,7 +155,7 @@ const ProductPage: React.FC<{onProductClick: (id: number) => void}> = ({ onProdu
         } else {
             setProduct(null);
         }
-    }, [id]);
+    }, [id, products]);
 
     useEffect(() => {
         // Reset animation state on product change
@@ -162,6 +163,15 @@ const ProductPage: React.FC<{onProductClick: (id: number) => void}> = ({ onProdu
         const timer = setTimeout(() => setIsLoaded(true), 100);
         return () => clearTimeout(timer);
     }, [id]);
+
+    if (isLoading) {
+        return (
+            <>
+                <SEO title="Product | Mobixo" description="Loading product details..." />
+                <div className="container mx-auto px-4 py-20 text-center">Loading product...</div>
+            </>
+        );
+    }
 
     if (!product) {
         return (

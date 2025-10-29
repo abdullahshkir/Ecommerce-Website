@@ -46,6 +46,7 @@ import AuthModal from './components/AuthModal';
 import { useSession } from './contexts/SessionContext';
 import AdminRouteGuard from './components/admin/AdminRouteGuard';
 import AdminPendingUsersPage from './components/admin/AdminPendingUsersPage';
+import { ProductProvider } from './contexts/ProductContext'; // Import ProductProvider
 
 
 const HomePage = ({ onProductQuickView, onProductClick }: { onProductQuickView: (product: Product) => void, onProductClick: (id: number) => void }) => (
@@ -108,7 +109,8 @@ const App: React.FC = () => {
   }
 
   return (
-    <>
+    <ProductProvider> {/* Wrap the entire app with ProductProvider */}
+      <>
         <Routes>
           {/* Admin Login/Entry Point */}
           <Route 
@@ -137,7 +139,8 @@ const App: React.FC = () => {
 
           <Route path="/*" element={<MainApp />} />
         </Routes>
-    </>
+      </>
+    </ProductProvider>
   );
 
   function MainApp() {
