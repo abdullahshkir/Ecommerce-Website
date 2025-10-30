@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, ReactNode, useEffect, useCallback } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useEffect, useCallback, useRef } from 'react';
 import { User, Address, Order } from '../types';
 import { useSession } from './SessionContext';
 import { 
@@ -39,6 +39,9 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [addresses, setAddresses] = useState<Address[]>([]);
     const [orders, setOrders] = useState<Order[]>([]);
     const [isLoadingUser, setIsLoadingUser] = useState(true);
+    
+    // Use a ref to track the last loaded user ID to prevent redundant reloads on token refresh
+    const lastLoadedUserId = useRef<string | null>(null);
 
     const isLoggedIn = !!user;
 
@@ -54,6 +57,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             
             const userOrders = await fetchOrders(sUser.id);
             setOrders(userOrders);
+            
+            lastLoadedUserId.current = sUser.id;
         } catch (error) {
             console.error('Failed to load user data:', error);
             setUser(null);
@@ -71,13 +76,22 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
 
         if (supabaseUser) {
-            // When a user signs in or session changes, reload all data
+            // Check if we are already loaded for this user ID
+            if (lastLoadedUserId.current === supabaseUser.id) {
+                // If the ID hasn't changed, we assume the data is fresh enough 
+                // (e.g., token refresh event). We only need to ensure isLoadingUser is false.
+                setIsLoadingUser(false);
+                return;
+            }
+            
+            // New user ID or transition from logged out -> logged in
             loadUserData(supabaseUser);
         } else {
             // Logged out state
             setUser(null);
             setAddresses([]);
             setOrders([]);
+            lastLoadedUserId.current = null;
             setIsLoadingUser(false);
         }
     }, [supabaseUser, isLoadingSession, loadUserData]);
