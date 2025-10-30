@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import SupabaseAuth from '../SupabaseAuth';
 import { supabase } from '../../src/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../contexts/UserContext';
@@ -11,7 +10,11 @@ const AdminLoginPage: React.FC = () => {
   const [view, setView] = useState<'sign_in' | 'sign_up'>('sign_in');
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
+  // Form state for sign in
+  const [signInData, setSignInData] = useState({ email: '', password: '' });
+
   // Check if the user is logged in but not an admin (e.g., pending_admin)
   useEffect(() => {
       if (isLoadingUser) return; 
@@ -40,9 +43,26 @@ const AdminLoginPage: React.FC = () => {
       }
   }, [isLoggedIn, user, logout, navigate, isLoadingUser]);
 
-  const handleAuthSuccess = () => {
-    // This function is called by SupabaseAuth on successful sign-in/sign-up.
-    // The useEffect hook above will handle the redirection or error message based on the fetched user role.
+  const handleSignInChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSignInData({ ...signInData, [e.target.name]: e.target.value });
+  };
+
+  const handleSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setMessage(null);
+
+    const { email, password } = signInData;
+
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (error) {
+        setMessage({ type: 'error', text: error.message });
+    } else {
+        // Success: The useEffect hook will handle redirection once the user profile loads.
+        setMessage({ type: 'success', text: 'Login successful. Verifying role...' });
+    }
+    setIsSubmitting(false);
   };
   
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -101,6 +121,11 @@ const AdminLoginPage: React.FC = () => {
           </div>
       );
   }
+  
+  // If the user is already logged in and verified as admin, the useEffect handles redirection.
+  if (isLoggedIn && user?.role === 'admin') {
+      return null; 
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 font-sans">
@@ -117,15 +142,46 @@ const AdminLoginPage: React.FC = () => {
         )}
 
         <div className="mt-8">
-            {/* We use a custom form for sign up to pass metadata, but rely on SupabaseAuth for sign in */}
             {view === 'sign_in' ? (
                 <>
-                    <SupabaseAuth 
-                        onSuccess={handleAuthSuccess}
-                        view="sign_in"
-                        // Redirect to admin dashboard on successful sign-in
-                        redirectTo={window.location.origin + '/#/adminpanel/dashboard'}
-                    />
+                    <form onSubmit={handleSignIn} className="space-y-4">
+                        <div>
+                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email address</label>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                name="email" 
+                                required 
+                                value={signInData.email}
+                                onChange={handleSignInChange}
+                                className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition" 
+                                placeholder="Your email address" 
+                            />
+                        </div>
+                        <div className="relative">
+                            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                            <input 
+                                type={showPassword ? 'text' : 'password'} 
+                                id="password" 
+                                name="password" 
+                                required 
+                                value={signInData.password}
+                                onChange={handleSignInChange}
+                                className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition pr-10" 
+                                placeholder="Your password" 
+                            />
+                            <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 mt-1.5 text-gray-500 hover:text-gray-700">
+                                {showPassword ? <EyeOffIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+                            </button>
+                        </div>
+                        <button 
+                            type="submit" 
+                            disabled={isSubmitting}
+                            className="w-full bg-black text-white py-3 rounded-full font-bold hover:bg-gray-800 transition-colors disabled:bg-gray-400"
+                        >
+                            {isSubmitting ? 'Signing In...' : 'Sign In'}
+                        </button>
+                    </form>
                     <button 
                         onClick={() => { setView('sign_up'); setMessage(null); }}
                         className="w-full mt-4 text-sm text-blue-600 hover:underline"
