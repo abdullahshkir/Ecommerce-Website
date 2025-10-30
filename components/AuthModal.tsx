@@ -60,13 +60,13 @@ const AuthModal: FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
                 // If an admin logs in via the customer modal, log them out immediately
                 setErrorMessage('Admin accounts must log in via the Admin Panel.');
                 logout();
-            } else if (user?.role === 'user') {
-                // Successful customer login: navigate away and close modal
-                onLoginSuccess();
             } else if (user?.role === 'pending_admin') {
                  // If a pending admin logs in via the customer modal, log them out immediately
                 setErrorMessage('Your admin access request is pending approval. Please use the Admin Panel login page.');
                 logout();
+            } else {
+                // Successful customer login (role is 'user' or profile was missing but basic user loaded): navigate away and close modal
+                onLoginSuccess();
             }
         }
         
