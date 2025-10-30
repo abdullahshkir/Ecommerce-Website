@@ -4,7 +4,7 @@ import ProductCard from './ProductCard';
 import { useProducts } from '../contexts/ProductContext';
 
 const FeaturedCollection: React.FC<{ onProductQuickView: (product: Product) => void, onProductClick: (id: string) => void }> = ({ onProductQuickView, onProductClick }) => {
-    const { products, isLoading } = useProducts();
+    const { products, isLoading, error } = useProducts();
     const categories = [...new Set(products.map(p => p.collection).filter(Boolean))] as string[];
     const [activeCategory, setActiveCategory] = useState<string | null>(null);
     const [isLoaded, setIsLoaded] = useState(false);
@@ -27,6 +27,14 @@ const FeaturedCollection: React.FC<{ onProductQuickView: (product: Product) => v
 
     if (isLoading) {
         return <section className="py-16 sm:py-24 bg-white"><div className="container mx-auto px-4 text-center">Loading featured collection...</div></section>;
+    }
+    
+    if (error) {
+        return <section className="py-16 sm:py-24 bg-white"><div className="container mx-auto px-4 text-center text-red-600">{error}</div></section>;
+    }
+    
+    if (products.length === 0) {
+        return <section className="py-16 sm:py-24 bg-white"><div className="container mx-auto px-4 text-center text-gray-600">No products available to feature.</div></section>;
     }
 
     return (
