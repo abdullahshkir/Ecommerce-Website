@@ -48,7 +48,7 @@ import AuthModal from './AuthModal';
 import { useSession } from '../contexts/SessionContext';
 import AdminRouteGuard from './admin/AdminRouteGuard';
 import AdminPendingUsersPage from './admin/AdminPendingUsersPage';
-import { ProductProvider } from '../contexts/ProductContext'; // Import ProductProvider
+// import { ProductProvider } from '../contexts/ProductContext'; // Removed import
 
 
 const HomePage = ({ onProductQuickView, onProductClick }: { onProductQuickView: (product: Product) => void, onProductClick: (id: string) => void }) => (
@@ -102,12 +102,8 @@ const App: React.FC = () => {
   };
   
   // --- Global Loading Check Refinement ---
-  // We only show the blocking loading screen if the session is initially loading OR 
-  // if the session is loaded but the user data (profile/role) is still being fetched.
-  // Once the user data is fetched once (user is null or an object), we stop blocking.
-  
-  // We rely on SessionContext's initial load to determine if we should block.
-  if (isLoadingSession || (user === null && isLoadingUser)) {
+  // Block rendering the main app until both session and user profile data are resolved.
+  if (isLoadingSession || isLoadingUser) { 
       return (
           <div className="flex items-center justify-center min-h-screen bg-gray-50">
               <div className="text-2xl font-bold text-gray-800">Loading...</div>
@@ -116,39 +112,37 @@ const App: React.FC = () => {
   }
 
   return (
-    <ProductProvider> {/* Wrap the entire app with ProductProvider */}
-      <>
-        <Routes>
-          {/* Admin Login/Entry Point */}
-          <Route 
-            path="/adminpanel" 
-            element={
-                isAdmin 
-                    ? <Navigate to="/adminpanel/dashboard" replace /> 
-                    : <AdminLoginPage />
-            } 
-          />
-          
-          {/* Admin Protected Routes */}
-          <Route path="/adminpanel" element={<AdminRouteGuard />}>
-            <Route element={<AdminLayout onLogout={handleAdminLogout} />}>
-              <Route path="dashboard" element={<AdminDashboardPage />} />
-              <Route path="products" element={<AdminProductsPage />} />
-              <Route path="products/new" element={<AdminProductFormPage />} />
-              <Route path="products/edit/:productId" element={<AdminProductFormPage />} />
-              <Route path="orders" element={<AdminOrdersPage />} />
-              <Route path="orders/:orderId" element={<AdminOrderDetailPage />} />
-              <Route path="reviews" element={<AdminReviewsPage />} /> {/* New Admin Route */}
-              <Route path="users" element={<AdminUsersPage />} />
-              <Route path="users/:userId" element={<AdminUserDetailPage />} />
-              <Route path="pending-admins" element={<AdminPendingUsersPage />} />
-            </Route>
+    <> {/* Removed ProductProvider wrapper */}
+      <Routes>
+        {/* Admin Login/Entry Point */}
+        <Route 
+          path="/adminpanel" 
+          element={
+              isAdmin 
+                  ? <Navigate to="/adminpanel/dashboard" replace /> 
+                  : <AdminLoginPage />
+          } 
+        />
+        
+        {/* Admin Protected Routes */}
+        <Route path="/adminpanel" element={<AdminRouteGuard />}>
+          <Route element={<AdminLayout onLogout={handleAdminLogout} />}>
+            <Route path="dashboard" element={<AdminDashboardPage />} />
+            <Route path="products" element={<AdminProductsPage />} />
+            <Route path="products/new" element={<AdminProductFormPage />} />
+            <Route path="products/edit/:productId" element={<AdminProductFormPage />} />
+            <Route path="orders" element={<AdminOrdersPage />} />
+            <Route path="orders/:orderId" element={<AdminOrderDetailPage />} />
+            <Route path="reviews" element={<AdminReviewsPage />} /> {/* New Admin Route */}
+            <Route path="users" element={<AdminUsersPage />} />
+            <Route path="users/:userId" element={<AdminUserDetailPage />} />
+            <Route path="pending-admins" element={<AdminPendingUsersPage />} />
           </Route>
+        </Route>
 
-          <Route path="/*" element={<MainApp />} />
-        </Routes>
-      </>
-    </ProductProvider>
+        <Route path="/*" element={<MainApp />} />
+      </Routes>
+    </>
   );
 
   function MainApp() {
@@ -295,7 +289,12 @@ const App: React.FC = () => {
               }
             />
              {isLoggedIn ? (
-              <Route path="/account" element={<DashboardLayout />}>
+              <Route path="/account" element={
+                  <>
+                    <SEO title="My Account | Mobixo" description="Manage your Mobixo account, view orders, and update your details." />
+                    <DashboardLayout />
+                  </>
+              }>
                   <Route index element={<DashboardPage />} />
                   <Route path="orders" element={<OrdersPage />} />
                   <Route path="orders/:orderId" element={<OrderTrackingPage />} />

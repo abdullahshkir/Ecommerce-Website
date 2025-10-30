@@ -7,6 +7,7 @@ import { WishlistProvider } from './contexts/WishlistContext';
 import { CartProvider } from './contexts/CartContext';
 import { UserProvider } from './contexts/UserContext';
 import { SessionProvider } from './contexts/SessionContext';
+import { ProductProvider } from './contexts/ProductContext';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -22,7 +23,9 @@ root.render(
           <UserProvider>
             <WishlistProvider>
               <CartProvider>
-                <App />
+                <ProductProvider>
+                  <App />
+                </ProductProvider>
               </CartProvider>
             </WishlistProvider>
           </UserProvider>
