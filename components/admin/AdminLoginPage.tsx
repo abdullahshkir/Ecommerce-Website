@@ -16,26 +16,27 @@ const AdminLoginPage: React.FC = () => {
   useEffect(() => {
       if (isLoadingUser) return; 
       
-      if (isLoggedIn && user?.role !== 'admin') {
-          const roleMessage = user?.role === 'pending_admin' 
-              ? 'Your admin access request is pending approval. Please wait for the Super Admin to approve your account.'
-              : 'You do not have administrative privileges.';
+      if (isLoggedIn) {
+          if (user?.role === 'admin') {
+              // If they are admin, navigate to dashboard immediately
+              navigate('/adminpanel/dashboard', { replace: true });
+          } else {
+              // User is logged in, but role is not admin (user or pending_admin)
+              const roleMessage = user?.role === 'pending_admin' 
+                  ? 'Your admin access request is pending approval. Please wait for the Super Admin to approve your account.'
+                  : 'You do not have administrative privileges.';
+                  
+              setMessage({
+                  type: 'error',
+                  text: roleMessage
+              });
               
-          setMessage({
-              type: 'error',
-              text: roleMessage
-          });
-          
-          // Force logout after a short delay so the user can read the message
-          if (user) {
+              // Force logout after a short delay so the user can read the message
               const timer = setTimeout(() => {
                   logout();
               }, 3000); // 3 second delay
               return () => clearTimeout(timer);
           }
-      } else if (isLoggedIn && user?.role === 'admin') {
-          // If they are admin, navigate to dashboard immediately
-          navigate('/adminpanel/dashboard', { replace: true });
       }
   }, [isLoggedIn, user, logout, navigate, isLoadingUser]);
 
