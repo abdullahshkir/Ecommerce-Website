@@ -11,22 +11,25 @@ export const getProfile = async (supabaseUser: SupabaseUser): Promise<User | nul
         .eq('id', supabaseUser.id)
         .single();
 
-    if (error && error.code !== 'PGRST116') { // PGRST116 means no rows found (new user)
+    // Check for error, excluding the 'No rows found' error (PGRST116)
+    if (error && error.code !== 'PGRST116') { 
         console.error('Error fetching profile:', error);
-        return null;
+        // If a critical error occurs, we still return a basic user to prevent logout loop
+        // but log the error.
     }
     
-    // Combine auth user data with profile data
     const profileData = data || {};
+    const defaultFirstName = supabaseUser.email?.split('@')[0] || 'Guest';
 
+    // Always return a User object if supabaseUser exists, even if profile data is missing.
     return {
         id: supabaseUser.id,
-        first_name: profileData.first_name || supabaseUser.email?.split('@')[0] || 'Guest',
+        first_name: profileData.first_name || defaultFirstName,
         last_name: profileData.last_name || '',
-        display_name: `${profileData.first_name || supabaseUser.email?.split('@')[0] || 'Guest'} ${profileData.last_name || ''}`.trim(),
+        display_name: `${profileData.first_name || defaultFirstName} ${profileData.last_name || ''}`.trim(),
         email: supabaseUser.email || '',
-        role: profileData.role || 'user', // Fetch role, default to 'user'
-        // avatar_url: profileData.avatar_url, // Not used yet, but good practice
+        role: profileData.role || 'user', // Default to 'user' if role is missing
+        // avatar_url: profileData.avatar_url,
     };
 };
 
