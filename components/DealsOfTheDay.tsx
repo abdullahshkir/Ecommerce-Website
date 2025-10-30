@@ -116,8 +116,8 @@ const DealsOfTheDay: React.FC<{ onProductClick: (id: string) => void }> = ({ onP
                         </div>
                         <div className="md:w-1/2 w-full text-center md:text-left">
                             <div className="flex justify-center md:justify-start mb-2">
-                                {[...Array(mainDeal.rating || 0)].map((_, i) => (
-                                    <StarIcon key={i} filled className="w-5 h-5 text-yellow-400" />
+                                {[...Array(5)].map((_, i) => (
+                                    <StarIcon key={i} filled={i < (mainDeal.rating || 0)} className="w-5 h-5 text-yellow-400" />
                                 ))}
                             </div>
                             <h3 className="text-2xl font-bold text-gray-900 mb-2">
