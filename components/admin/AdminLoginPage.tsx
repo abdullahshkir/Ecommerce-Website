@@ -7,14 +7,13 @@ import { EyeIcon, EyeOffIcon } from '../icons';
 
 const AdminLoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const { user, isLoggedIn, logout, isLoadingUser } = useUser(); // <-- Destructure isLoadingUser
+  const { user, isLoggedIn, logout, isLoadingUser } = useUser();
   const [view, setView] = useState<'sign_in' | 'sign_up'>('sign_in');
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   
   // Check if the user is logged in but not an admin (e.g., pending_admin)
   useEffect(() => {
-      // Wait until user data is loaded
       if (isLoadingUser) return; 
       
       if (isLoggedIn && user?.role !== 'admin') {
@@ -27,15 +26,18 @@ const AdminLoginPage: React.FC = () => {
               text: roleMessage
           });
           
-          // Force logout if they are logged in but not an admin
+          // Force logout after a short delay so the user can read the message
           if (user) {
-              logout();
+              const timer = setTimeout(() => {
+                  logout();
+              }, 3000); // 3 second delay
+              return () => clearTimeout(timer);
           }
       } else if (isLoggedIn && user?.role === 'admin') {
           // If they are admin, navigate to dashboard immediately
           navigate('/adminpanel/dashboard', { replace: true });
       }
-  }, [isLoggedIn, user, logout, navigate, isLoadingUser]); // <-- Add isLoadingUser dependency
+  }, [isLoggedIn, user, logout, navigate, isLoadingUser]);
 
   const handleAuthSuccess = () => {
     // This function is called by SupabaseAuth on successful sign-in/sign-up.
