@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, ReactNode, useEffect, useCallback, useRef } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useEffect, useRef } from 'react';
 import { User, Address, Order } from '../types';
 import { useSession } from './SessionContext';
 import { 
@@ -45,45 +45,48 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const isLoggedIn = !!user;
 
-    const loadUserData = useCallback(async (sUser: SupabaseUser) => {
-        try {
-            // 1. Fetch the latest profile data from the database
-            const profile = await getProfile(sUser);
-            setUser(profile);
-            
-            // 2. Fetch addresses
-            const userAddresses = await fetchAddresses(sUser.id);
-            setAddresses(userAddresses);
-            
-            // 3. Fetch orders
-            const userOrders = await fetchOrders(sUser.id);
-            setOrders(userOrders);
-            
-            lastLoadedUserId.current = sUser.id;
-        } catch (error) {
-            console.error('Failed to load user data:', error);
-            setUser(null);
-            setAddresses([]);
-            setOrders([]);
-        }
-    }, []);
-
     useEffect(() => {
         if (isLoadingSession) {
+            // Wait for session to load
             setIsLoadingUser(true);
             return;
         }
 
+        const loadUserData = async (sUser: SupabaseUser) => {
+            try {
+                // 1. Fetch the latest profile data from the database
+                const profile = await getProfile(sUser);
+                setUser(profile);
+                
+                // 2. Fetch addresses
+                const userAddresses = await fetchAddresses(sUser.id);
+                setAddresses(userAddresses);
+                
+                // 3. Fetch orders
+                const userOrders = await fetchOrders(sUser.id);
+                setOrders(userOrders);
+                
+                lastLoadedUserId.current = sUser.id;
+            } catch (error) {
+                console.error('Failed to load user data:', error);
+                setUser(null);
+                setAddresses([]);
+                setOrders([]);
+            } finally {
+                // Crucially, ensure loading is set to false after the attempt
+                setIsLoadingUser(false);
+            }
+        };
+
+
         if (supabaseUser) {
-            // If we are transitioning from logged out or a new user ID
+            // User is logged in or session is available
             if (lastLoadedUserId.current !== supabaseUser.id) {
-                setIsLoadingUser(true); // Start loading
-                loadUserData(supabaseUser).finally(() => {
-                    // Ensure loading is false after data load completes
-                    setIsLoadingUser(false);
-                });
+                // New user ID detected (fresh login or initial load)
+                setIsLoadingUser(true); 
+                loadUserData(supabaseUser);
             } else {
-                // User ID is the same (e.g., token refresh). Data is already loaded.
+                // Same user ID (e.g., token refresh). Data is already loaded.
                 setIsLoadingUser(false);
             }
         } else {
@@ -94,7 +97,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             lastLoadedUserId.current = null;
             setIsLoadingUser(false);
         }
-    }, [supabaseUser, isLoadingSession, loadUserData]);
+    }, [supabaseUser, isLoadingSession]); // Dependencies are now clean
+
     
     const logout = async () => {
         await supabase.auth.signOut();
