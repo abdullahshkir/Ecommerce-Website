@@ -7,13 +7,16 @@ import { EyeIcon, EyeOffIcon } from '../icons';
 
 const AdminLoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const { user, isLoggedIn, logout } = useUser();
+  const { user, isLoggedIn, logout, isLoadingUser } = useUser(); // <-- Destructure isLoadingUser
   const [view, setView] = useState<'sign_in' | 'sign_up'>('sign_in');
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   
   // Check if the user is logged in but not an admin (e.g., pending_admin)
   useEffect(() => {
+      // Wait until user data is loaded
+      if (isLoadingUser) return; 
+      
       if (isLoggedIn && user?.role !== 'admin') {
           const roleMessage = user?.role === 'pending_admin' 
               ? 'Your admin access request is pending approval. Please wait for the Super Admin to approve your account.'
@@ -32,7 +35,7 @@ const AdminLoginPage: React.FC = () => {
           // If they are admin, navigate to dashboard immediately
           navigate('/adminpanel/dashboard', { replace: true });
       }
-  }, [isLoggedIn, user, logout, navigate]);
+  }, [isLoggedIn, user, logout, navigate, isLoadingUser]); // <-- Add isLoadingUser dependency
 
   const handleAuthSuccess = () => {
     // This function is called by SupabaseAuth on successful sign-in/sign-up.
@@ -86,6 +89,15 @@ const AdminLoginPage: React.FC = () => {
         setView('sign_in');
     }
   };
+
+  // Show a loading state while the user profile is being fetched after a successful session login
+  if (isLoggedIn && isLoadingUser) {
+      return (
+          <div className="flex items-center justify-center min-h-screen bg-gray-50">
+              <div className="text-2xl font-bold text-gray-800">Verifying Admin Role...</div>
+          </div>
+      );
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 font-sans">
