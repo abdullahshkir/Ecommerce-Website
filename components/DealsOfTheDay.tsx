@@ -66,7 +66,7 @@ const SmallProductCard: React.FC<{ product: Product; onProductClick: (id: string
 
 
 const DealsOfTheDay: React.FC<{ onProductClick: (id: string) => void }> = ({ onProductClick }) => {
-    const { products, isLoading } = useProducts();
+    const { products, isLoading, error } = useProducts();
     const { formatPrice } = useCurrency();
     const { addToCart, openCart } = useCart();
     const [isLoaded, setIsLoaded] = useState(false);
@@ -81,8 +81,16 @@ const DealsOfTheDay: React.FC<{ onProductClick: (id: string) => void }> = ({ onP
     const mainDeal = products[0] || null;
     const otherDeals = products.slice(1, 5);
 
-    if (isLoading || !mainDeal) {
+    if (isLoading) {
         return <section className="py-16 sm:py-24 bg-gray-100"><div className="container mx-auto px-4 text-center">Loading deals...</div></section>;
+    }
+    
+    if (error) {
+        return <section className="py-16 sm:py-24 bg-gray-100"><div className="container mx-auto px-4 text-center text-red-600">{error}</div></section>;
+    }
+
+    if (!mainDeal) {
+        return <section className="py-16 sm:py-24 bg-gray-100"><div className="container mx-auto px-4 text-center text-gray-600">No deals available today.</div></section>;
     }
 
     const isOutOfStock = mainDeal.availability === 'Out of Stock';
