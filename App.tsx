@@ -101,8 +101,13 @@ const App: React.FC = () => {
     navigate('/adminpanel');
   };
   
-  // Show a simple loading screen while session/user data is being fetched
-  if (isLoadingSession || isLoadingUser) {
+  // --- Global Loading Check Refinement ---
+  // We only show the blocking loading screen if the session is initially loading OR 
+  // if the session is loaded but the user data (profile/role) is still being fetched.
+  // Once the user data is fetched once (user is null or an object), we stop blocking.
+  
+  // We rely on SessionContext's initial load to determine if we should block.
+  if (isLoadingSession || (user === null && isLoadingUser)) {
       return (
           <div className="flex items-center justify-center min-h-screen bg-gray-50">
               <div className="text-2xl font-bold text-gray-800">Loading...</div>
@@ -290,7 +295,12 @@ const App: React.FC = () => {
               }
             />
              {isLoggedIn ? (
-              <Route path="/account" element={<DashboardLayout />}>
+              <Route path="/account" element={
+                  <>
+                    <SEO title="My Account | Mobixo" description="Manage your Mobixo account, view orders, and update your details." />
+                    <DashboardLayout />
+                  </>
+              }>
                   <Route index element={<DashboardPage />} />
                   <Route path="orders" element={<OrdersPage />} />
                   <Route path="orders/:orderId" element={<OrderTrackingPage />} />

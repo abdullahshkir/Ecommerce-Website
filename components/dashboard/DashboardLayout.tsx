@@ -1,7 +1,6 @@
 import React from 'react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import DashboardSidebar from './DashboardSidebar';
-import { SEO } from '../SEO';
 import { useUser } from '../../contexts/UserContext';
 
 const DashboardLayout: React.FC = () => {
@@ -15,7 +14,6 @@ const DashboardLayout: React.FC = () => {
 
     return (
         <>
-        <SEO title="My Account | Mobixo" description="Manage your Mobixo account, view orders, and update your details." />
         <div className="bg-white">
              <div className="bg-gray-100 py-8">
                 <div className="container mx-auto px-4 text-center">
