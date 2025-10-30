@@ -22,9 +22,10 @@ export const ProductProvider: React.FC<{ children: ReactNode }> = ({ children })
     try {
       const fetchedProducts = await fetchAllProducts();
       setProducts(fetchedProducts);
-    } catch (err) {
+    } catch (err: any) {
+      const errorMessage = err.message || 'Failed to load products. Please check your network connection.';
       console.error('Failed to fetch products:', err);
-      setError('Failed to load products. Please try again later.');
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
