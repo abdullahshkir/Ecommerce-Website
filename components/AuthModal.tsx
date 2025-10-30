@@ -1,8 +1,8 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState, useRef } from 'react';
 import { CloseIcon } from './icons';
 import SupabaseAuth from './SupabaseAuth';
-import { useUser } from '../contexts/UserContext'; // Import useUser
-import { useLocation } from 'react-router-dom'; // Import useLocation
+import { useUser } from '../contexts/UserContext';
+import { useLocation } from 'react-router-dom';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -11,11 +11,14 @@ interface AuthModalProps {
 }
 
 const AuthModal: FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
-    const { user, isLoggedIn, logout } = useUser(); // Use user context
-    const location = useLocation(); // Get current location
+    const { user, isLoggedIn, logout } = useUser();
+    const location = useLocation();
     const [isMounted, setIsMounted] = useState(isOpen);
     const [isActive, setIsActive] = useState(isOpen);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    
+    // Ref to track if the user was logged in before this render cycle
+    const wasLoggedInRef = useRef(isLoggedIn);
 
     useEffect(() => {
         let mountTimeout: number;
@@ -32,8 +35,8 @@ const AuthModal: FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
             activeTimeout = window.setTimeout(() => {
                 setIsMounted(false);
                 document.body.style.overflow = 'unset';
-                setErrorMessage(null); // Clear error on close
-            }, 300); // Animation duration
+                setErrorMessage(null);
+            }, 300);
         }
         
         return () => {
@@ -46,23 +49,31 @@ const AuthModal: FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
     }, [isOpen]);
     
     useEffect(() => {
-        if (isLoggedIn && user) {
-            if (user.role === 'admin') {
-                // If an admin tries to log in via the customer modal, log them out immediately
+        const justLoggedIn = isLoggedIn && !wasLoggedInRef.current;
+        
+        if (justLoggedIn) {
+            if (user?.role === 'admin') {
+                // If an admin logs in via the customer modal, log them out immediately
                 setErrorMessage('Admin accounts must log in via the Admin Panel.');
                 logout();
             } else {
-                // Successful customer login
-                // Check if we are already on the account page (HashRouter uses #/account)
-                if (location.pathname !== '/account') {
-                    onLoginSuccess();
-                } else {
-                    // If already on /account, just close the modal to prevent unnecessary navigation calls
-                    onClose();
-                }
+                // Successful customer login: navigate away and close modal
+                // We only navigate if we are not already on the target page, 
+                // but since this is a fresh login, we usually want to navigate to the dashboard.
+                onLoginSuccess();
             }
         }
-    }, [isLoggedIn, user, onLoginSuccess, logout, onClose, location.pathname]);
+        
+        // If the user is logged in and the modal is open, but they are an admin, handle the error message
+        if (isLoggedIn && user?.role === 'admin' && isOpen) {
+             setErrorMessage('Admin accounts must log in via the Admin Panel.');
+             logout();
+        }
+
+        // Update ref for next render cycle
+        wasLoggedInRef.current = isLoggedIn;
+
+    }, [isLoggedIn, user, onLoginSuccess, logout, isOpen]);
 
 
     if (!isMounted) return null;
@@ -98,6 +109,7 @@ const AuthModal: FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
                                 {errorMessage}
                             </div>
                         )}
+                        {/* SupabaseAuth no longer calls onSuccess automatically */}
                         <SupabaseAuth onSuccess={onLoginSuccess} />
                     </div>
                 </div>
