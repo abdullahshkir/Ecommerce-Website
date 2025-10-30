@@ -46,58 +46,71 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const isLoggedIn = !!user;
 
     useEffect(() => {
+        let isMounted = true;
+        
         if (isLoadingSession) {
-            // Wait for session to load
-            setIsLoadingUser(true);
+            if (isMounted) setIsLoadingUser(true);
             return;
         }
 
-        const loadUserData = async (sUser: SupabaseUser) => {
-            try {
-                // 1. Fetch the latest profile data from the database
-                const profile = await getProfile(sUser);
-                setUser(profile);
-                
-                // 2. Fetch addresses
-                const userAddresses = await fetchAddresses(sUser.id);
-                setAddresses(userAddresses);
-                
-                // 3. Fetch orders
-                const userOrders = await fetchOrders(sUser.id);
-                setOrders(userOrders);
-                
-                lastLoadedUserId.current = sUser.id;
-            } catch (error) {
-                console.error('Failed to load user data:', error);
+        if (!supabaseUser) {
+            // Logged out state
+            if (isMounted) {
                 setUser(null);
                 setAddresses([]);
                 setOrders([]);
-            } finally {
-                // Crucially, ensure loading is set to false after the attempt
+                lastLoadedUserId.current = null;
                 setIsLoadingUser(false);
+            }
+            return;
+        }
+        
+        // User is present. Check if we already loaded this user.
+        if (lastLoadedUserId.current === supabaseUser.id) {
+            if (isMounted) setIsLoadingUser(false);
+            return;
+        }
+
+        // Start loading new user data
+        if (isMounted) setIsLoadingUser(true);
+
+        const loadUserData = async () => {
+            try {
+                // 1. Fetch the latest profile data from the database
+                const profile = await getProfile(supabaseUser);
+                
+                // 2. Fetch addresses
+                const userAddresses = await fetchAddresses(supabaseUser.id);
+                
+                // 3. Fetch orders
+                const userOrders = await fetchOrders(supabaseUser.id);
+                
+                if (isMounted) {
+                    setUser(profile);
+                    setAddresses(userAddresses);
+                    setOrders(userOrders);
+                    lastLoadedUserId.current = supabaseUser.id;
+                }
+            } catch (error) {
+                console.error('Failed to load user data:', error);
+                if (isMounted) {
+                    setUser(null);
+                    setAddresses([]);
+                    setOrders([]);
+                }
+            } finally {
+                if (isMounted) {
+                    setIsLoadingUser(false);
+                }
             }
         };
 
+        loadUserData();
 
-        if (supabaseUser) {
-            // User is logged in or session is available
-            if (lastLoadedUserId.current !== supabaseUser.id) {
-                // New user ID detected (fresh login or initial load)
-                setIsLoadingUser(true); 
-                loadUserData(supabaseUser);
-            } else {
-                // Same user ID (e.g., token refresh). Data is already loaded.
-                setIsLoadingUser(false);
-            }
-        } else {
-            // Logged out state
-            setUser(null);
-            setAddresses([]);
-            setOrders([]);
-            lastLoadedUserId.current = null;
-            setIsLoadingUser(false);
-        }
-    }, [supabaseUser, isLoadingSession]); // Dependencies are now clean
+        return () => {
+            isMounted = false;
+        };
+    }, [supabaseUser, isLoadingSession]);
 
     
     const logout = async () => {
