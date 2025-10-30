@@ -46,15 +46,16 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const isLoggedIn = !!user;
 
     const loadUserData = useCallback(async (sUser: SupabaseUser) => {
-        setIsLoadingUser(true);
         try {
-            // Always fetch the latest profile data from the database
+            // 1. Fetch the latest profile data from the database
             const profile = await getProfile(sUser);
             setUser(profile);
             
+            // 2. Fetch addresses
             const userAddresses = await fetchAddresses(sUser.id);
             setAddresses(userAddresses);
             
+            // 3. Fetch orders
             const userOrders = await fetchOrders(sUser.id);
             setOrders(userOrders);
             
@@ -64,8 +65,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             setUser(null);
             setAddresses([]);
             setOrders([]);
-        } finally {
-            setIsLoadingUser(false);
         }
     }, []);
 
@@ -76,16 +75,17 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
 
         if (supabaseUser) {
-            // Check if we are already loaded for this user ID
-            if (lastLoadedUserId.current === supabaseUser.id) {
-                // If the ID hasn't changed, we assume the data is fresh enough 
-                // (e.g., token refresh event). We only need to ensure isLoadingUser is false.
+            // If we are transitioning from logged out or a new user ID
+            if (lastLoadedUserId.current !== supabaseUser.id) {
+                setIsLoadingUser(true); // Start loading
+                loadUserData(supabaseUser).finally(() => {
+                    // Ensure loading is false after data load completes
+                    setIsLoadingUser(false);
+                });
+            } else {
+                // User ID is the same (e.g., token refresh). Data is already loaded.
                 setIsLoadingUser(false);
-                return;
             }
-            
-            // New user ID or transition from logged out -> logged in
-            loadUserData(supabaseUser);
         } else {
             // Logged out state
             setUser(null);
