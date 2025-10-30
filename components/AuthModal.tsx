@@ -2,6 +2,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { CloseIcon } from './icons';
 import SupabaseAuth from './SupabaseAuth';
 import { useUser } from '../contexts/UserContext'; // Import useUser
+import { useLocation } from 'react-router-dom'; // Import useLocation
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -11,6 +12,7 @@ interface AuthModalProps {
 
 const AuthModal: FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
     const { user, isLoggedIn, logout } = useUser(); // Use user context
+    const location = useLocation(); // Get current location
     const [isMounted, setIsMounted] = useState(isOpen);
     const [isActive, setIsActive] = useState(isOpen);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -51,10 +53,16 @@ const AuthModal: FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
                 logout();
             } else {
                 // Successful customer login
-                onLoginSuccess();
+                // Check if we are already on the account page (HashRouter uses #/account)
+                if (location.pathname !== '/account') {
+                    onLoginSuccess();
+                } else {
+                    // If already on /account, just close the modal to prevent unnecessary navigation calls
+                    onClose();
+                }
             }
         }
-    }, [isLoggedIn, user, onLoginSuccess, logout]);
+    }, [isLoggedIn, user, onLoginSuccess, logout, onClose, location.pathname]);
 
 
     if (!isMounted) return null;
