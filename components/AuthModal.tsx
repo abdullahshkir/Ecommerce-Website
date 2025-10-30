@@ -11,7 +11,7 @@ interface AuthModalProps {
 }
 
 const AuthModal: FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
-    const { user, isLoggedIn, logout } = useUser();
+    const { user, isLoggedIn, logout, isLoadingUser } = useUser();
     const location = useLocation();
     const [isMounted, setIsMounted] = useState(isOpen);
     const [isActive, setIsActive] = useState(isOpen);
@@ -49,31 +49,31 @@ const AuthModal: FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
     }, [isOpen]);
     
     useEffect(() => {
+        // Check if the user just transitioned to logged in state
         const justLoggedIn = isLoggedIn && !wasLoggedInRef.current;
         
         if (justLoggedIn) {
+            // Wait for user profile data to load before checking role
+            if (isLoadingUser) return; 
+            
             if (user?.role === 'admin') {
                 // If an admin logs in via the customer modal, log them out immediately
                 setErrorMessage('Admin accounts must log in via the Admin Panel.');
                 logout();
-            } else {
+            } else if (user?.role === 'user') {
                 // Successful customer login: navigate away and close modal
-                // We only navigate if we are not already on the target page, 
-                // but since this is a fresh login, we usually want to navigate to the dashboard.
                 onLoginSuccess();
+            } else if (user?.role === 'pending_admin') {
+                 // If a pending admin logs in via the customer modal, log them out immediately
+                setErrorMessage('Your admin access request is pending approval. Please use the Admin Panel login page.');
+                logout();
             }
         }
         
-        // If the user is logged in and the modal is open, but they are an admin, handle the error message
-        if (isLoggedIn && user?.role === 'admin' && isOpen) {
-             setErrorMessage('Admin accounts must log in via the Admin Panel.');
-             logout();
-        }
-
         // Update ref for next render cycle
         wasLoggedInRef.current = isLoggedIn;
 
-    }, [isLoggedIn, user, onLoginSuccess, logout, isOpen]);
+    }, [isLoggedIn, user, onLoginSuccess, logout, isLoadingUser]);
 
 
     if (!isMounted) return null;
@@ -109,7 +109,6 @@ const AuthModal: FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
                                 {errorMessage}
                             </div>
                         )}
-                        {/* SupabaseAuth no longer calls onSuccess automatically */}
                         <SupabaseAuth onSuccess={onLoginSuccess} />
                     </div>
                 </div>
