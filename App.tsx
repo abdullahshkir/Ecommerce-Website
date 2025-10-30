@@ -102,12 +102,8 @@ const App: React.FC = () => {
   };
   
   // --- Global Loading Check Refinement ---
-  // We only show the blocking loading screen if the session is initially loading OR 
-  // if the session is loaded but the user data (profile/role) is still being fetched.
-  // Once the user data is fetched once (user is null or an object), we stop blocking.
-  
-  // We rely on SessionContext's initial load to determine if we should block.
-  if (isLoadingSession || (user === null && isLoadingUser)) {
+  // Block rendering the main app until both session and user profile data are resolved.
+  if (isLoadingSession || isLoadingUser) { 
       return (
           <div className="flex items-center justify-center min-h-screen bg-gray-50">
               <div className="text-2xl font-bold text-gray-800">Loading...</div>
