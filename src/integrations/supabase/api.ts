@@ -170,15 +170,16 @@ export const fetchAllProducts = async (): Promise<Product[]> => {
 
     if (error) {
         console.error('Error fetching products:', error);
-        throw error;
+        // Throw a more descriptive error
+        throw new Error(`Supabase API Error (products): ${error.message}`);
     }
     
-    // Map Supabase data to our Product type
+    // Map Supabase data to our Product type, ensuring safe number conversion
     return data.map((p: any) => ({
         id: p.id, // ID is now a string (UUID)
         name: p.name,
-        price: p.price,
-        oldPrice: p.old_price,
+        price: p.price ? Number(p.price) : 0, // Ensure price is safely converted
+        oldPrice: p.old_price ? Number(p.old_price) : null,
         category: p.category,
         imageUrl: p.image_url,
         imageUrl2: p.image_url2,
@@ -241,8 +242,8 @@ export const createProduct = async (productData: Omit<Product, 'id'>): Promise<P
     const newProduct: Product = {
         id: data.id, // ID is now a string (UUID)
         name: data.name,
-        price: data.price,
-        oldPrice: data.old_price,
+        price: data.price ? Number(data.price) : 0,
+        oldPrice: data.old_price ? Number(data.old_price) : null,
         category: data.category,
         imageUrl: data.image_url,
         imageUrl2: data.image_url2,
@@ -306,8 +307,8 @@ export const updateProduct = async (productId: string, productData: Partial<Prod
     const updatedProduct: Product = {
         id: data.id, // ID is now a string (UUID)
         name: data.name,
-        price: data.price,
-        oldPrice: data.old_price,
+        price: data.price ? Number(data.price) : 0,
+        oldPrice: data.old_price ? Number(data.old_price) : null,
         category: data.category,
         imageUrl: data.image_url,
         imageUrl2: data.image_url2,
