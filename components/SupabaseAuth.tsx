@@ -52,6 +52,7 @@ const SupabaseAuth: React.FC<SupabaseAuthProps> = ({ onSuccess, view = 'sign_in'
                 providers={[]}
                 theme="light"
                 view={view}
+                // Set default customer redirect to /#/account
                 redirectTo={redirectTo || window.location.origin + '/#/account'}
                 localization={{
                     variables: {

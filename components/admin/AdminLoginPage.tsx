@@ -3,12 +3,14 @@ import SupabaseAuth from '../SupabaseAuth';
 import { supabase } from '../../src/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../contexts/UserContext';
+import { EyeIcon, EyeOffIcon } from '../icons';
 
 const AdminLoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { user, isLoggedIn, logout } = useUser();
   const [view, setView] = useState<'sign_in' | 'sign_up'>('sign_in');
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   
   // Check if the user is logged in but not an admin (e.g., pending_admin)
   useEffect(() => {
@@ -42,12 +44,18 @@ const AdminLoginPage: React.FC = () => {
     const form = e.currentTarget;
     const email = (form.elements.namedItem('email') as HTMLInputElement)?.value;
     const password = (form.elements.namedItem('password') as HTMLInputElement)?.value;
+    const confirmPassword = (form.elements.namedItem('confirm_password') as HTMLInputElement)?.value;
     const firstName = (form.elements.namedItem('first_name') as HTMLInputElement)?.value;
     const lastName = (form.elements.namedItem('last_name') as HTMLInputElement)?.value;
 
 
-    if (!email || !password || !firstName || !lastName) {
+    if (!email || !password || !firstName || !lastName || !confirmPassword) {
         setMessage({ type: 'error', text: 'Please fill in all required fields.' });
+        return;
+    }
+    
+    if (password !== confirmPassword) {
+        setMessage({ type: 'error', text: 'Password and Confirm Password do not match.' });
         return;
     }
 
@@ -100,6 +108,7 @@ const AdminLoginPage: React.FC = () => {
                     <SupabaseAuth 
                         onSuccess={handleAuthSuccess}
                         view="sign_in"
+                        // Redirect to admin dashboard on successful sign-in
                         redirectTo={window.location.origin + '/#/adminpanel/dashboard'}
                     />
                     <button 
@@ -126,9 +135,19 @@ const AdminLoginPage: React.FC = () => {
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email address</label>
                             <input type="email" id="email" name="email" required className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition" placeholder="Your email address" />
                         </div>
-                        <div>
+                        <div className="relative">
                             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                            <input type="password" id="password" name="password" required className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition" placeholder="Create a password" />
+                            <input type={showPassword ? 'text' : 'password'} id="password" name="password" required className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition pr-10" placeholder="Create a password" />
+                            <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 mt-1.5 text-gray-500 hover:text-gray-700">
+                                {showPassword ? <EyeOffIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+                            </button>
+                        </div>
+                        <div className="relative">
+                            <label htmlFor="confirm_password" className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                            <input type={showPassword ? 'text' : 'password'} id="confirm_password" name="confirm_password" required className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition pr-10" placeholder="Confirm your password" />
+                            <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 mt-1.5 text-gray-500 hover:text-gray-700">
+                                {showPassword ? <EyeOffIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+                            </button>
                         </div>
                         <button type="submit" className="w-full bg-black text-white py-3 rounded-full font-bold hover:bg-gray-800 transition-colors">
                             Request Admin Access
