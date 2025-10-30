@@ -79,11 +79,11 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 // 1. Fetch the latest profile data from the database
                 const profile = await getProfile(supabaseUser);
                 
-                // 2. Fetch addresses
-                const userAddresses = await fetchAddresses(supabaseUser.id);
+                // 2. Fetch addresses (only if profile exists, though RLS should handle this)
+                const userAddresses = profile ? await fetchAddresses(supabaseUser.id) : [];
                 
-                // 3. Fetch orders
-                const userOrders = await fetchOrders(supabaseUser.id);
+                // 3. Fetch orders (only if profile exists)
+                const userOrders = profile ? await fetchOrders(supabaseUser.id) : [];
                 
                 if (isMounted) {
                     setUser(profile);
@@ -94,7 +94,15 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             } catch (error) {
                 console.error('Failed to load user data:', error);
                 if (isMounted) {
-                    setUser(null);
+                    // If fetching fails, set user to a basic object to prevent infinite loading/logout loop
+                    setUser({
+                        id: supabaseUser.id,
+                        first_name: supabaseUser.email?.split('@')[0] || 'Guest',
+                        last_name: '',
+                        display_name: supabaseUser.email?.split('@')[0] || 'Guest',
+                        email: supabaseUser.email || '',
+                        role: 'user', // Default to 'user' on failure
+                    });
                     setAddresses([]);
                     setOrders([]);
                 }
@@ -126,6 +134,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const updatedUser: User = {
             ...user,
             ...newDetails,
+            first_name: newDetails.first_name || user.first_name,
+            last_name: newDetails.last_name || user.last_name,
             display_name: `${newDetails.first_name || user.first_name} ${newDetails.last_name || user.last_name}`.trim()
         };
         setUser(updatedUser);
