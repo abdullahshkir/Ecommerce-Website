@@ -16,7 +16,7 @@ const ProductCard: React.FC<{ product: Product; onClick: (id: string) => void }>
         <div className="group relative text-center cursor-pointer" onClick={() => onClick(product.id)}>
             <div className="relative overflow-hidden">
                  <div className="relative h-[220px] sm:h-[300px]">
-                    <img src={product.imageUrl} alt={product.name} className="absolute inset-0 w-full h-full object-cover" />
+                    <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
                 </div>
             </div>
             <div className="pt-4">
@@ -186,7 +186,7 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ productId, productName, onLogin
 };
 
 
-const ProductPage: React.FC<{onProductClick: (id: string) => void}> = ({ onProductClick }) => {
+const ProductPage: React.FC<{onProductClick: (id: string) => void, onLoginClick: () => void}> = ({ onProductClick, onLoginClick }) => {
     const { id } = useParams<{ id: string }>();
     const { products, isLoading } = useProducts();
     const [product, setProduct] = useState<Product | null>(null);
@@ -244,16 +244,6 @@ const ProductPage: React.FC<{onProductClick: (id: string) => void}> = ({ onProdu
             </>
         );
     }
-
-    // We need access to the AuthModal open function, which is in App.tsx.
-    // Since we can't pass it directly, we'll use the navigate trick to open the modal.
-    const handleLoginToReview = () => {
-        // This is a placeholder action. In a real app, we'd use context or prop drilling.
-        // Since we can't modify App.tsx props easily, we'll rely on the user clicking the header login button.
-        // For now, we'll just navigate to the home page and rely on the user to click the login button.
-        // A better solution is to use a global state/event system, but sticking to context rules:
-        alert("Please use the 'User' icon in the header to log in.");
-    };
 
     const TABS = [
         { id: 'description', title: 'Description' },
@@ -344,7 +334,7 @@ const ProductPage: React.FC<{onProductClick: (id: string) => void}> = ({ onProdu
             case 'custom':
                 return <div dangerouslySetInnerHTML={{ __html: '<p>Content for custom tab goes here.</p>' }} />;
             case 'reviews':
-                return <ReviewsTab productId={product.id} productName={product.name} onLoginClick={handleLoginToReview} setReviewCount={setApprovedReviewCount} />;
+                return <ReviewsTab productId={product.id} productName={product.name} onLoginClick={onLoginClick} setReviewCount={setApprovedReviewCount} />;
             default:
                 return null;
         }
@@ -357,7 +347,7 @@ const ProductPage: React.FC<{onProductClick: (id: string) => void}> = ({ onProdu
             case 'custom':
                 return <div className="text-gray-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: '<p>Content for custom tab goes here.</p>' }} />;
             case 'reviews':
-                return <ReviewsTab productId={product.id} productName={product.name} onLoginClick={handleLoginToReview} setReviewCount={setApprovedReviewCount} />;
+                return <ReviewsTab productId={product.id} productName={product.name} onLoginClick={onLoginClick} setReviewCount={setApprovedReviewCount} />;
             default:
                 return null;
         }

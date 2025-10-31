@@ -25,7 +25,7 @@ import ContactPage from './ContactPage';
 import AboutPage from './AboutPage';
 import TermsPage from './TermsPage';
 import ReturnsPage from './ReturnsPage';
-import ShippingPage from './ShippingPage';
+import ShippingPage from '././ShippingPage';
 import DashboardLayout from './dashboard/DashboardLayout';
 import DashboardPage from './dashboard/DashboardPage';
 import OrdersPage from './dashboard/OrdersPage';
@@ -48,7 +48,10 @@ import AuthModal from './AuthModal';
 import { useSession } from '../contexts/SessionContext';
 import AdminRouteGuard from './admin/AdminRouteGuard';
 import AdminPendingUsersPage from './admin/AdminPendingUsersPage';
-// import { ProductProvider } from '../contexts/ProductContext'; // Removed import
+import { ProductProvider } from '../contexts/ProductContext';
+import useVisitorTracker from './src/hooks/useVisitorTracker'; // Corrected import path
+import AdminVisitorsPage from './components/admin/AdminVisitorsPage'; // Import new Admin page
+import AdminSettingsPage from './components/admin/AdminSettingsPage'; // Import new Admin Settings page
 
 
 const HomePage = ({ onProductQuickView, onProductClick }: { onProductQuickView: (product: Product) => void, onProductClick: (id: string) => void }) => (
@@ -71,6 +74,9 @@ const App: React.FC = () => {
   const { isLoggedIn, isLoadingUser, user } = useUser();
   const { isLoading: isLoadingSession } = useSession();
   
+  // --- Visitor Tracking Hook ---
+  useVisitorTracker();
+  
   // Check if the current user is an admin
   const isAdmin = user?.role === 'admin';
 
@@ -84,6 +90,10 @@ const App: React.FC = () => {
 
   const handleProductClick = (id: string) => {
     navigate(`/product/${id}`);
+  };
+
+  const handleOpenLogin = () => {
+    setLoginOpen(true);
   };
 
   const handleLoginSuccess = () => {
@@ -112,37 +122,41 @@ const App: React.FC = () => {
   }
 
   return (
-    <> {/* Removed ProductProvider wrapper */}
-      <Routes>
-        {/* Admin Login/Entry Point */}
-        <Route 
-          path="/adminpanel" 
-          element={
-              isAdmin 
-                  ? <Navigate to="/adminpanel/dashboard" replace /> 
-                  : <AdminLoginPage />
-          } 
-        />
-        
-        {/* Admin Protected Routes */}
-        <Route path="/adminpanel" element={<AdminRouteGuard />}>
-          <Route element={<AdminLayout onLogout={handleAdminLogout} />}>
-            <Route path="dashboard" element={<AdminDashboardPage />} />
-            <Route path="products" element={<AdminProductsPage />} />
-            <Route path="products/new" element={<AdminProductFormPage />} />
-            <Route path="products/edit/:productId" element={<AdminProductFormPage />} />
-            <Route path="orders" element={<AdminOrdersPage />} />
-            <Route path="orders/:orderId" element={<AdminOrderDetailPage />} />
-            <Route path="reviews" element={<AdminReviewsPage />} /> {/* New Admin Route */}
-            <Route path="users" element={<AdminUsersPage />} />
-            <Route path="users/:userId" element={<AdminUserDetailPage />} />
-            <Route path="pending-admins" element={<AdminPendingUsersPage />} />
+    <ProductProvider>
+      <>
+        <Routes>
+          {/* Admin Login/Entry Point */}
+          <Route 
+            path="/adminpanel" 
+            element={
+                isAdmin 
+                    ? <Navigate to="/adminpanel/dashboard" replace /> 
+                    : <AdminLoginPage />
+            } 
+          />
+          
+          {/* Admin Protected Routes */}
+          <Route path="/adminpanel" element={<AdminRouteGuard />}>
+            <Route element={<AdminLayout onLogout={handleAdminLogout} />}>
+              <Route path="dashboard" element={<AdminDashboardPage />} />
+              <Route path="products" element={<AdminProductsPage />} />
+              <Route path="products/new" element={<AdminProductFormPage />} />
+              <Route path="products/edit/:productId" element={<AdminProductFormPage />} />
+              <Route path="orders" element={<AdminOrdersPage />} />
+              <Route path="orders/:orderId" element={<AdminOrderDetailPage />} />
+              <Route path="reviews" element={<AdminReviewsPage />} />
+              <Route path="users" element={<AdminUsersPage />} />
+              <Route path="users/:userId" element={<AdminUserDetailPage />} />
+              <Route path="pending-admins" element={<AdminPendingUsersPage />} />
+              <Route path="visitors" element={<AdminVisitorsPage />} />
+              <Route path="settings" element={<AdminSettingsPage />} /> {/* New Admin Route */}
+            </Route>
           </Route>
-        </Route>
 
-        <Route path="/*" element={<MainApp />} />
-      </Routes>
-    </>
+          <Route path="/*" element={<MainApp />} />
+        </Routes>
+      </>
+    </ProductProvider>
   );
 
   function MainApp() {
@@ -150,7 +164,7 @@ const App: React.FC = () => {
       <div className="bg-white font-sans pb-16 lg:pb-0">
         <Header 
           onSearchClick={() => setSearchOpen(true)} 
-          onLoginClick={() => setLoginOpen(true)}
+          onLoginClick={handleOpenLogin}
         />
         <main>
           <Routes>
@@ -191,7 +205,7 @@ const App: React.FC = () => {
                 </>
               }
             />
-            <Route path="/product/:id" element={<ProductPage onProductClick={handleProductClick} />} />
+            <Route path="/product/:id" element={<ProductPage onProductClick={handleProductClick} onLoginClick={handleOpenLogin} />} />
             <Route
               path="/cart"
               element={
@@ -298,7 +312,7 @@ const App: React.FC = () => {
                   <Route index element={<DashboardPage />} />
                   <Route path="orders" element={<OrdersPage />} />
                   <Route path="orders/:orderId" element={<OrderTrackingPage />} />
-                  <Route path="reviews" element={<UserReviewsPage />} /> {/* New User Route */}
+                  <Route path="reviews" element={<UserReviewsPage />} />
                   <Route path="addresses" element={<AddressesPage />} />
                   <Route path="details" element={<AccountDetailsPage />} />
               </Route>
@@ -308,14 +322,14 @@ const App: React.FC = () => {
              )}
           </Routes>
         </main>
-        <Footer onLoginClick={() => setLoginOpen(true)} />
+        <Footer onLoginClick={handleOpenLogin} />
         <QuickViewModal product={quickViewProduct} onClose={handleCloseQuickView} />
         <CartModal isOpen={isCartOpen} onClose={closeCart} onProductClick={handleProductClick} />
         <SearchOverlay isOpen={isSearchOpen} onClose={() => setSearchOpen(false)} onProductClick={handleProductClick} />
         <AuthModal isOpen={isLoginOpen} onClose={() => setLoginOpen(false)} onLoginSuccess={handleLoginSuccess} />
         <MobileBottomNav 
           onSearchClick={() => setSearchOpen(true)} 
-          onAccountClick={() => isLoggedIn ? navigate('/account') : setLoginOpen(true)} 
+          onAccountClick={() => isLoggedIn ? navigate('/account') : handleOpenLogin()} 
         />
       </div>
     );
