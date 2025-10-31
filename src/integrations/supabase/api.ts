@@ -681,13 +681,21 @@ export const fetchSettings = async (): Promise<GlobalSettings> => {
     };
 };
 
-export const updateSettings = async (settings: Partial<GlobalSettings>) => {
-    const { error } = await supabase
+export const updateSettings = async (settings: Partial<GlobalSettings>): Promise<GlobalSettings> => {
+    const { data, error } = await supabase
         .from('settings')
-        .upsert({ id: 1, ...settings }, { onConflict: 'id' });
+        .upsert({ id: 1, ...settings }, { onConflict: 'id' })
+        .select()
+        .single(); // Select the updated row
 
     if (error) {
         console.error('Error updating settings:', error);
         throw error;
     }
+    
+    // Return the fetched data to confirm the update
+    return {
+        id: data.id,
+        visitor_limit: data.visitor_limit || 1000,
+    };
 };
