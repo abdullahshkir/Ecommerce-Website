@@ -522,8 +522,13 @@ export const fetchProductReviews = async (productId: string): Promise<Review[]> 
 
     if (error) {
         console.error('Error fetching product reviews:', error);
+        // Log the error details to the console for debugging RLS issues
+        console.error('Supabase Review Fetch Error Details:', error);
         return [];
     }
+    
+    // Log the fetched data (if any)
+    console.log(`Fetched ${data.length} approved reviews for product ${productId}:`, data);
 
     return data.map((r: any) => {
         const authorName = `${r.profiles?.first_name || ''} ${r.profiles?.last_name || ''}`.trim() || 'Anonymous';
