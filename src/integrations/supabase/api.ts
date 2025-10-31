@@ -682,11 +682,9 @@ export const fetchSettings = async (): Promise<GlobalSettings> => {
 };
 
 export const updateSettings = async (settings: Partial<GlobalSettings>) => {
-    // Use simple UPDATE since we ensure the row with id=1 exists via SQL migration
     const { error } = await supabase
         .from('settings')
-        .update({ visitor_limit: settings.visitor_limit, updated_at: new Date().toISOString() })
-        .eq('id', 1);
+        .upsert({ id: 1, ...settings }, { onConflict: 'id' });
 
     if (error) {
         console.error('Error updating settings:', error);
