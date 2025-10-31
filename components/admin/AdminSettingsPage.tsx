@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { fetchSettings, updateSettings, GlobalSettings } from '../../src/integrations/supabase/api';
 
 const AdminSettingsPage: React.FC = () => {
@@ -7,20 +7,22 @@ const AdminSettingsPage: React.FC = () => {
     const [isSaving, setIsSaving] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
-    useEffect(() => {
-        const loadSettings = async () => {
-            setIsLoading(true);
-            try {
-                const fetchedSettings = await fetchSettings();
-                setSettings(fetchedSettings);
-            } catch (error) {
-                setMessage({ type: 'error', text: 'Failed to load settings.' });
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        loadSettings();
+    const loadSettings = useCallback(async () => {
+        setIsLoading(true);
+        try {
+            const fetchedSettings = await fetchSettings();
+            setSettings(fetchedSettings);
+            setMessage(null);
+        } catch (error) {
+            setMessage({ type: 'error', text: 'Failed to load settings. Please ensure you are logged in as an Admin.' });
+        } finally {
+            setIsLoading(false);
+        }
     }, []);
+
+    useEffect(() => {
+        loadSettings();
+    }, [loadSettings]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = Number(e.target.value);
@@ -34,9 +36,14 @@ const AdminSettingsPage: React.FC = () => {
         
         try {
             await updateSettings({ visitor_limit: settings.visitor_limit });
+            
+            // Force re-fetch to confirm data persistence from the database
+            await loadSettings(); 
+            
             setMessage({ type: 'success', text: 'Settings saved successfully!' });
         } catch (error) {
-            setMessage({ type: 'error', text: 'Failed to save settings.' });
+            setMessage({ type: 'error', text: 'Failed to save settings. Check RLS policies or API connection.' });
+            console.error("Settings save error:", error);
         } finally {
             setIsSaving(false);
         }
