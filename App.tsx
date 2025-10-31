@@ -49,7 +49,7 @@ import { useSession } from './contexts/SessionContext';
 import AdminRouteGuard from './components/admin/AdminRouteGuard';
 import AdminPendingUsersPage from './components/admin/AdminPendingUsersPage';
 import { ProductProvider } from './contexts/ProductContext';
-import useVisitorTracker from './hooks/useVisitorTracker'; // Import the new hook
+import useVisitorTracker from './src/hooks/useVisitorTracker'; // Corrected import path
 import AdminVisitorsPage from './components/admin/AdminVisitorsPage'; // Import new Admin page
 
 
