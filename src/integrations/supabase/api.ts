@@ -584,3 +584,50 @@ export const deleteReview = async (reviewId: string) => {
         throw error;
     }
 };
+
+// --- Visitor Tracking ---
+
+export const trackVisitor = async () => {
+    try {
+        // We use the invoke method to call the Edge Function
+        const { data, error } = await supabase.functions.invoke('track-visitor');
+
+        if (error) {
+            console.error('Error invoking track-visitor function:', error);
+            // We don't throw an error here as tracking failure shouldn't break the app
+            return false;
+        }
+        // console.log('Visitor tracked:', data);
+        return true;
+    } catch (error) {
+        console.error('General error during visitor tracking:', error);
+        return false;
+    }
+};
+
+// --- Admin Visitor Fetching ---
+
+export interface Visitor {
+    id: string;
+    created_at: string;
+    ip_address: string;
+    user_agent: string;
+    referrer: string;
+    device_type: string;
+    browser: string;
+    os: string;
+}
+
+export const fetchVisitors = async (): Promise<Visitor[]> => {
+    const { data, error } = await supabase
+        .from('visitors')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(100); // Limit to 100 recent visitors
+
+    if (error) {
+        console.error('Error fetching visitors:', error);
+        throw error;
+    }
+    return data as Visitor[];
+};

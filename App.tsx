@@ -48,7 +48,9 @@ import AuthModal from './components/AuthModal';
 import { useSession } from './contexts/SessionContext';
 import AdminRouteGuard from './components/admin/AdminRouteGuard';
 import AdminPendingUsersPage from './components/admin/AdminPendingUsersPage';
-import { ProductProvider } from './contexts/ProductContext'; // Import ProductProvider
+import { ProductProvider } from './contexts/ProductContext';
+import useVisitorTracker from './hooks/useVisitorTracker'; // Import the new hook
+import AdminVisitorsPage from './components/admin/AdminVisitorsPage'; // Import new Admin page
 
 
 const HomePage = ({ onProductQuickView, onProductClick }: { onProductQuickView: (product: Product) => void, onProductClick: (id: string) => void }) => (
@@ -70,6 +72,9 @@ const App: React.FC = () => {
   const { isCartOpen, closeCart } = useCart();
   const { isLoggedIn, isLoadingUser, user } = useUser();
   const { isLoading: isLoadingSession } = useSession();
+  
+  // --- Visitor Tracking Hook ---
+  useVisitorTracker();
   
   // Check if the current user is an admin
   const isAdmin = user?.role === 'admin';
@@ -112,7 +117,7 @@ const App: React.FC = () => {
   }
 
   return (
-    <ProductProvider> {/* Wrap the entire app with ProductProvider */}
+    <ProductProvider>
       <>
         <Routes>
           {/* Admin Login/Entry Point */}
@@ -134,10 +139,11 @@ const App: React.FC = () => {
               <Route path="products/edit/:productId" element={<AdminProductFormPage />} />
               <Route path="orders" element={<AdminOrdersPage />} />
               <Route path="orders/:orderId" element={<AdminOrderDetailPage />} />
-              <Route path="reviews" element={<AdminReviewsPage />} /> {/* New Admin Route */}
+              <Route path="reviews" element={<AdminReviewsPage />} />
               <Route path="users" element={<AdminUsersPage />} />
               <Route path="users/:userId" element={<AdminUserDetailPage />} />
               <Route path="pending-admins" element={<AdminPendingUsersPage />} />
+              <Route path="visitors" element={<AdminVisitorsPage />} /> {/* New Admin Route */}
             </Route>
           </Route>
 
@@ -300,7 +306,7 @@ const App: React.FC = () => {
                   <Route index element={<DashboardPage />} />
                   <Route path="orders" element={<OrdersPage />} />
                   <Route path="orders/:orderId" element={<OrderTrackingPage />} />
-                  <Route path="reviews" element={<UserReviewsPage />} /> {/* New User Route */}
+                  <Route path="reviews" element={<UserReviewsPage />} />
                   <Route path="addresses" element={<AddressesPage />} />
                   <Route path="details" element={<AccountDetailsPage />} />
               </Route>

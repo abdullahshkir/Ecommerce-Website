@@ -45,6 +45,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ onLogout, isOpen, onClose }
                 <NavItem to="/adminpanel/reviews" icon={<StarIcon className="w-5 h-5"/>}>Reviews</NavItem>
                 <NavItem to="/adminpanel/users" icon={<UsersIcon className="w-5 h-5"/>}>Customers</NavItem>
                 <NavItem to="/adminpanel/pending-admins" icon={<UsersIcon className="w-5 h-5"/>}>Pending Admins</NavItem>
+                <NavItem to="/adminpanel/visitors" icon={<UsersIcon className="w-5 h-5"/>}>Live Visitors</NavItem>
             </nav>
         </div>
         <div className="p-4 border-t border-gray-200">
