@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, ReactNode, useEffect, useRef } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useEffect, useRef, useCallback } from 'react';
 import { User, Address, Order } from '../types';
 import { useSession } from './SessionContext';
 import { 
@@ -29,6 +29,7 @@ interface UserContextType {
   removeAddress: (addressId: string) => Promise<void>;
   setDefaultAddress: (addressId: string) => Promise<void>;
   addOrder: (newOrder: Pick<Order, 'items' | 'total' | 'shipping_address'>) => Promise<void>;
+  refreshUser: () => Promise<void>; // Added refreshUser
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -40,90 +41,82 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [orders, setOrders] = useState<Order[]>([]);
     const [isLoadingUser, setIsLoadingUser] = useState(true);
     
-    // Use a ref to track the last loaded user ID to prevent redundant reloads on token refresh
     const lastLoadedUserId = useRef<string | null>(null);
 
     const isLoggedIn = !!user;
+    
+    const loadUserData = useCallback(async (currentSupabaseUser: SupabaseUser | null) => {
+        if (!currentSupabaseUser) {
+            setUser(null);
+            setAddresses([]);
+            setOrders([]);
+            lastLoadedUserId.current = null;
+            setIsLoadingUser(false);
+            return;
+        }
+        
+        setIsLoadingUser(true);
+        try {
+            const profile = await getProfile(currentSupabaseUser);
+            const userAddresses = profile ? await fetchAddresses(currentSupabaseUser.id) : [];
+            const userOrders = profile ? await fetchOrders(currentSupabaseUser.id) : [];
+            
+            setUser(profile);
+            setAddresses(userAddresses);
+            setOrders(userOrders);
+            lastLoadedUserId.current = currentSupabaseUser.id;
+        } catch (error) {
+            console.error('Failed to load user data:', error);
+            setUser({
+                id: currentSupabaseUser.id,
+                first_name: currentSupabaseUser.email?.split('@')[0] || 'Guest',
+                last_name: '',
+                display_name: currentSupabaseUser.email?.split('@')[0] || 'Guest',
+                email: currentSupabaseUser.email || '',
+                role: 'user',
+            });
+            setAddresses([]);
+            setOrders([]);
+        } finally {
+            setIsLoadingUser(false);
+        }
+    }, []);
 
     useEffect(() => {
-        let isMounted = true;
-        
         if (isLoadingSession) {
-            if (isMounted) setIsLoadingUser(true);
+            setIsLoadingUser(true);
             return;
         }
 
-        if (!supabaseUser) {
-            // Logged out state
-            if (isMounted) {
-                setUser(null);
-                setAddresses([]);
-                setOrders([]);
-                lastLoadedUserId.current = null;
-                setIsLoadingUser(false);
-            }
-            return;
+        // Only reload if the user ID changes or if we are transitioning from logged out to logged in
+        if (supabaseUser && lastLoadedUserId.current !== supabaseUser.id) {
+            loadUserData(supabaseUser);
+        } else if (!supabaseUser && lastLoadedUserId.current !== null) {
+            // Handle logout cleanup
+            loadUserData(null);
+        } else if (!supabaseUser && lastLoadedUserId.current === null) {
+             // Initial load, already logged out
+             setIsLoadingUser(false);
+        } else if (supabaseUser && lastLoadedUserId.current === supabaseUser.id) {
+             // Session refreshed, but user data is the same
+             setIsLoadingUser(false);
         }
         
-        // User is present. Check if we already loaded this user.
-        if (lastLoadedUserId.current === supabaseUser.id) {
-            if (isMounted) setIsLoadingUser(false);
-            return;
-        }
-
-        // Start loading new user data
-        if (isMounted) setIsLoadingUser(true);
-
-        const loadUserData = async () => {
-            try {
-                // 1. Fetch the latest profile data from the database
-                const profile = await getProfile(supabaseUser);
-                
-                // 2. Fetch addresses (only if profile exists, though RLS should handle this)
-                const userAddresses = profile ? await fetchAddresses(supabaseUser.id) : [];
-                
-                // 3. Fetch orders (only if profile exists)
-                const userOrders = profile ? await fetchOrders(supabaseUser.id) : [];
-                
-                if (isMounted) {
-                    setUser(profile);
-                    setAddresses(userAddresses);
-                    setOrders(userOrders);
-                    lastLoadedUserId.current = supabaseUser.id;
-                }
-            } catch (error) {
-                console.error('Failed to load user data:', error);
-                if (isMounted) {
-                    // If fetching fails, set user to a basic object to prevent infinite loading/logout loop
-                    setUser({
-                        id: supabaseUser.id,
-                        first_name: supabaseUser.email?.split('@')[0] || 'Guest',
-                        last_name: '',
-                        display_name: supabaseUser.email?.split('@')[0] || 'Guest',
-                        email: supabaseUser.email || '',
-                        role: 'user', // Default to 'user' on failure
-                    });
-                    setAddresses([]);
-                    setOrders([]);
-                }
-            } finally {
-                if (isMounted) {
-                    setIsLoadingUser(false);
-                }
-            }
-        };
-
-        loadUserData();
-
-        return () => {
-            isMounted = false;
-        };
-    }, [supabaseUser, isLoadingSession]);
+    }, [supabaseUser, isLoadingSession, loadUserData]);
 
     
     const logout = async () => {
         await supabase.auth.signOut();
-        // State cleanup handled by useEffect listening to supabaseUser change
+    };
+    
+    const refreshUser = async () => {
+        // Force a refresh of the session and then reload user data
+        const { data: { user: refreshedUser } } = await supabase.auth.getUser();
+        if (refreshedUser) {
+            await loadUserData(refreshedUser);
+        } else {
+            await loadUserData(null);
+        }
     };
 
     const updateUserDetails = async (newDetails: Partial<Omit<User, 'id' | 'email' | 'display_name'>>) => {
@@ -145,7 +138,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         if (!user) return;
         const savedAddress = await saveAddress(user.id, newAddressData);
         if (savedAddress) {
-            // Reload all addresses to ensure default status is correct
             const updatedAddresses = await fetchAddresses(user.id);
             setAddresses(updatedAddresses);
         }
@@ -155,7 +147,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         if (!user) return;
         const savedAddress = await saveAddress(user.id, updatedAddress, updatedAddress.id);
         if (savedAddress) {
-            // Reload all addresses to ensure default status is correct
             const updatedAddresses = await fetchAddresses(user.id);
             setAddresses(updatedAddresses);
         }
@@ -170,7 +161,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const setDefaultAddress = async (addressId: string) => {
         if (!user) return;
         await setDefaultAddressDB(user.id, addressId);
-        // Reload all addresses to ensure default status is correct
         const updatedAddresses = await fetchAddresses(user.id);
         setAddresses(updatedAddresses);
     };
@@ -188,7 +178,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isLoadingUser,
         logout, updateUserDetails,
         addAddress, updateAddress, removeAddress, setDefaultAddress,
-        addOrder
+        addOrder,
+        refreshUser, // Exposed refresh function
     };
 
     return (

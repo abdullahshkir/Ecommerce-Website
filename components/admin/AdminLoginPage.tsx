@@ -6,7 +6,7 @@ import { EyeIcon, EyeOffIcon } from '../icons';
 
 const AdminLoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const { user, isLoggedIn, logout, isLoadingUser } = useUser();
+  const { user, isLoggedIn, logout, isLoadingUser, refreshUser } = useUser();
   const [view, setView] = useState<'sign_in' | 'sign_up'>('sign_in');
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -59,7 +59,9 @@ const AdminLoginPage: React.FC = () => {
     if (error) {
         setMessage({ type: 'error', text: error.message });
     } else {
-        // Success: The useEffect hook will handle redirection once the user profile loads.
+        // Crucial step: Force refresh user data to get the latest role from DB
+        await refreshUser();
+        // The useEffect hook will now handle redirection based on the refreshed role.
         setMessage({ type: 'success', text: 'Login successful. Verifying role...' });
     }
     setIsSubmitting(false);
