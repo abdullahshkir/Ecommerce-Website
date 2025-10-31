@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { fetchVisitors, Visitor } from '../../src/integrations/supabase/api';
-import { UsersIcon } from '../icons';
+import { fetchVisitors, Visitor, clearAllVisitors } from '../../src/integrations/supabase/api';
+import { UsersIcon, TrashIcon } from '../icons';
 
 const AdminVisitorsPage: React.FC = () => {
     const [visitors, setVisitors] = useState<Visitor[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [isClearing, setIsClearing] = useState(false);
 
     const loadVisitors = async () => {
         setIsLoading(true);
@@ -24,6 +25,22 @@ const AdminVisitorsPage: React.FC = () => {
         const interval = setInterval(loadVisitors, 30000); 
         return () => clearInterval(interval);
     }, []);
+    
+    const handleClearData = async () => {
+        if (window.confirm("Are you sure you want to delete ALL visitor data? This action cannot be undone.")) {
+            setIsClearing(true);
+            try {
+                await clearAllVisitors();
+                alert("All visitor data cleared successfully.");
+                loadVisitors();
+            } catch (error) {
+                alert("Failed to clear visitor data. Check console for details.");
+                console.error(error);
+            } finally {
+                setIsClearing(false);
+            }
+        }
+    };
 
     const formatTime = (timestamp: string) => {
         return new Date(timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -39,9 +56,19 @@ const AdminVisitorsPage: React.FC = () => {
                 <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
                     <UsersIcon className="w-6 h-6"/> Live Visitors ({visitors.length})
                 </h2>
-                <button onClick={loadVisitors} className="bg-gray-200 text-gray-800 py-2 px-4 rounded-full font-semibold text-sm hover:bg-gray-300 transition-colors">
-                    Refresh
-                </button>
+                <div className="flex space-x-3">
+                    <button 
+                        onClick={handleClearData} 
+                        disabled={isClearing}
+                        className="flex items-center gap-1 bg-red-100 text-red-700 py-2 px-4 rounded-full font-semibold text-sm hover:bg-red-200 transition-colors disabled:opacity-50"
+                    >
+                        <TrashIcon className="w-4 h-4"/>
+                        {isClearing ? 'Clearing...' : 'Clear Data'}
+                    </button>
+                    <button onClick={loadVisitors} className="bg-gray-200 text-gray-800 py-2 px-4 rounded-full font-semibold text-sm hover:bg-gray-300 transition-colors">
+                        Refresh
+                    </button>
+                </div>
             </div>
 
             {visitors.length === 0 ? (

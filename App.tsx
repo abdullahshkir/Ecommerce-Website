@@ -51,6 +51,7 @@ import AdminPendingUsersPage from './components/admin/AdminPendingUsersPage';
 import { ProductProvider } from './contexts/ProductContext';
 import useVisitorTracker from './src/hooks/useVisitorTracker'; // Corrected import path
 import AdminVisitorsPage from './components/admin/AdminVisitorsPage'; // Import new Admin page
+import AdminSettingsPage from './components/admin/AdminSettingsPage'; // Import new Admin Settings page
 
 
 const HomePage = ({ onProductQuickView, onProductClick }: { onProductQuickView: (product: Product) => void, onProductClick: (id: string) => void }) => (
@@ -143,7 +144,8 @@ const App: React.FC = () => {
               <Route path="users" element={<AdminUsersPage />} />
               <Route path="users/:userId" element={<AdminUserDetailPage />} />
               <Route path="pending-admins" element={<AdminPendingUsersPage />} />
-              <Route path="visitors" element={<AdminVisitorsPage />} /> {/* New Admin Route */}
+              <Route path="visitors" element={<AdminVisitorsPage />} />
+              <Route path="settings" element={<AdminSettingsPage />} /> {/* New Admin Route */}
             </Route>
           </Route>
 

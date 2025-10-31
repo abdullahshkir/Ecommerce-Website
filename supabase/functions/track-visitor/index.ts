@@ -35,6 +35,59 @@ function parseUserAgent(userAgent: string | null) {
     return { device_type, browser, os };
 }
 
+// Function to perform cleanup if the visitor count exceeds the limit
+async function performCleanup(supabaseClient: any) {
+    // 1. Fetch the configured limit
+    const { data: settingsData } = await supabaseClient
+        .from('settings')
+        .select('visitor_limit')
+        .eq('id', 1)
+        .single();
+        
+    const limit = settingsData?.visitor_limit || 1000;
+
+    // 2. Count current visitors
+    const { count: totalCount, error: countError } = await supabaseClient
+        .from('visitors')
+        .select('id', { count: 'exact', head: true });
+
+    if (countError) {
+        console.error('Error counting visitors:', countError);
+        return;
+    }
+
+    if (totalCount && totalCount > limit) {
+        const recordsToDelete = totalCount - limit;
+        
+        // 3. Find the IDs of the oldest records to delete
+        const { data: oldestVisitors, error: fetchError } = await supabaseClient
+            .from('visitors')
+            .select('id')
+            .order('created_at', { ascending: true })
+            .limit(recordsToDelete);
+
+        if (fetchError) {
+            console.error('Error fetching oldest visitors:', fetchError);
+            return;
+        }
+        
+        const idsToDelete = oldestVisitors.map((v: { id: string }) => v.id);
+
+        // 4. Delete the oldest records
+        const { error: deleteError } = await supabaseClient
+            .from('visitors')
+            .delete()
+            .in('id', idsToDelete);
+
+        if (deleteError) {
+            console.error(`Error deleting ${recordsToDelete} old visitors:`, deleteError);
+        } else {
+            console.log(`Successfully deleted ${recordsToDelete} old visitor records.`);
+        }
+    }
+}
+
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -55,7 +108,8 @@ serve(async (req) => {
         Deno.env.get('SUPABASE_ANON_KEY')! // Using anon key as RLS allows public insert
     );
 
-    const { error } = await supabaseClient
+    // 1. Insert new visitor record
+    const { error: insertError } = await supabaseClient
       .from('visitors')
       .insert({
         ip_address,
@@ -66,13 +120,16 @@ serve(async (req) => {
         os,
       });
 
-    if (error) {
-      console.error('Supabase Insert Error:', error);
+    if (insertError) {
+      console.error('Supabase Insert Error:', insertError);
       return new Response(JSON.stringify({ error: 'Database insert failed' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+    
+    // 2. Perform cleanup asynchronously (we don't wait for it to finish)
+    performCleanup(supabaseClient);
 
     return new Response(JSON.stringify({ message: 'Visitor tracked successfully' }), {
       status: 200,

@@ -1,6 +1,6 @@
 import { supabase } from './client';
 import { User as SupabaseUser } from '@supabase/supabase-js';
-import { User, Address, Order, Product, Review } from '../../types';
+import { User, Address, Order, Product, Review, Visitor } from '../../types';
 
 // --- Profile Management ---
 
@@ -605,7 +605,7 @@ export const trackVisitor = async () => {
     }
 };
 
-// --- Admin Visitor Fetching ---
+// --- Admin Visitor Fetching & Management ---
 
 export interface Visitor {
     id: string;
@@ -630,4 +630,64 @@ export const fetchVisitors = async (): Promise<Visitor[]> => {
         throw error;
     }
     return data as Visitor[];
+};
+
+export const clearAllVisitors = async () => {
+    // WARNING: This deletes ALL records in the visitors table.
+    // RLS policy ensures only admins can perform this action.
+    const { error } = await supabase
+        .from('visitors')
+        .delete()
+        .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all rows
+
+    if (error) {
+        console.error('Error clearing all visitors:', error);
+        throw error;
+    }
+};
+
+// --- Settings Management (for Visitor Limit) ---
+
+// We need a table to store simple key-value settings, like the visitor limit.
+// Since we don't have a settings table yet, we'll create one.
+// We will use a single row for global settings.
+
+export interface GlobalSettings {
+    id: number;
+    visitor_limit: number;
+}
+
+export const fetchSettings = async (): Promise<GlobalSettings> => {
+    const { data, error } = await supabase
+        .from('settings')
+        .select('*')
+        .eq('id', 1)
+        .single();
+
+    if (error && error.code !== 'PGRST116') {
+        console.error('Error fetching settings:', error);
+        // If table exists but row doesn't, return default
+        return { id: 1, visitor_limit: 1000 };
+    }
+    
+    // If no row found, return default
+    if (!data) {
+        return { id: 1, visitor_limit: 1000 };
+    }
+
+    return {
+        id: data.id,
+        visitor_limit: data.visitor_limit || 1000,
+    };
+};
+
+export const updateSettings = async (settings: Partial<GlobalSettings>) => {
+    const { error } = await supabase
+        .from('settings')
+        .upsert({ id: 1, ...settings }, { onConflict: 'id' });
+
+    if (error) {
+        console.error('Error updating settings:', error);
+        throw error;
+    }
 };
