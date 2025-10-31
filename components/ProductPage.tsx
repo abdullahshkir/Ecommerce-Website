@@ -55,9 +55,10 @@ interface ReviewsTabProps {
     productId: string;
     productName: string;
     onLoginClick: () => void;
+    setReviewCount: (count: number) => void; // New prop to update count in parent
 }
 
-const ReviewsTab: React.FC<ReviewsTabProps> = ({ productId, productName, onLoginClick }) => {
+const ReviewsTab: React.FC<ReviewsTabProps> = ({ productId, productName, onLoginClick, setReviewCount }) => {
     const { isLoggedIn, user } = useUser();
     const [reviews, setReviews] = useState<Review[]>([]);
     const [newReview, setNewReview] = useState({ rating: 0, text: '' });
@@ -69,12 +70,13 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ productId, productName, onLogin
         try {
             const fetchedReviews = await fetchProductReviews(productId);
             setReviews(fetchedReviews);
+            setReviewCount(fetchedReviews.length); // Update count in parent
             setFetchError(null);
         } catch (error) {
             setFetchError('Failed to load reviews.');
             console.error(error);
         }
-    }, [productId]);
+    }, [productId, setReviewCount]);
 
     useEffect(() => {
         loadReviews();
@@ -96,8 +98,7 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ productId, productName, onLogin
             setReviewSubmitted(true);
             setNewReview({ rating: 0, text: '' });
             
-            // Optionally reload reviews after a delay if we expect immediate approval, 
-            // but since it requires admin approval, we just show the success message.
+            // Note: We don't reload reviews immediately because they need admin approval first.
             
         } catch (error) {
             alert('Failed to submit review. Please try again.');
@@ -111,7 +112,7 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ productId, productName, onLogin
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <div>
-                <h3 className="text-xl font-semibold mb-6">{reviews.length} review{reviews.length !== 1 ? 's' : ''} for "{productName}"</h3>
+                <h3 className="text-xl font-semibold mb-6">{reviews.length} approved review{reviews.length !== 1 ? 's' : ''} for "{productName}"</h3>
                 {fetchError && <div className="p-4 bg-red-100 text-red-800 rounded-md">{fetchError}</div>}
                 <div className="space-y-6">
                     {reviews.length > 0 ? (
@@ -193,6 +194,7 @@ const ProductPage: React.FC<{onProductClick: (id: string) => void}> = ({ onProdu
     const [activeImageIndex, setActiveImageIndex] = useState(0);
     const [activeTab, setActiveTab] = useState('description');
     const [openAccordion, setOpenAccordion] = useState<string | null>('description');
+    const [approvedReviewCount, setApprovedReviewCount] = useState(0); // New state for review count
     const { formatPrice } = useCurrency();
     const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
     const { addToCart, openCart } = useCart();
@@ -256,7 +258,7 @@ const ProductPage: React.FC<{onProductClick: (id: string) => void}> = ({ onProdu
     const TABS = [
         { id: 'description', title: 'Description' },
         { id: 'custom', title: 'Custom tab' },
-        { id: 'reviews', title: `Reviews` } // Review count will be dynamic inside ReviewsTab
+        { id: 'reviews', title: `Reviews (${approvedReviewCount})` } // Use dynamic count
     ];
 
     const isOutOfStock = product.availability === 'Out of Stock';
@@ -342,7 +344,7 @@ const ProductPage: React.FC<{onProductClick: (id: string) => void}> = ({ onProdu
             case 'custom':
                 return <div dangerouslySetInnerHTML={{ __html: '<p>Content for custom tab goes here.</p>' }} />;
             case 'reviews':
-                return <ReviewsTab productId={product.id} productName={product.name} onLoginClick={handleLoginToReview} />;
+                return <ReviewsTab productId={product.id} productName={product.name} onLoginClick={handleLoginToReview} setReviewCount={setApprovedReviewCount} />;
             default:
                 return null;
         }
@@ -355,7 +357,7 @@ const ProductPage: React.FC<{onProductClick: (id: string) => void}> = ({ onProdu
             case 'custom':
                 return <div className="text-gray-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: '<p>Content for custom tab goes here.</p>' }} />;
             case 'reviews':
-                return <ReviewsTab productId={product.id} productName={product.name} onLoginClick={handleLoginToReview} />;
+                return <ReviewsTab productId={product.id} productName={product.name} onLoginClick={handleLoginToReview} setReviewCount={setApprovedReviewCount} />;
             default:
                 return null;
         }
