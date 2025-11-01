@@ -43,7 +43,7 @@ const SupabaseAuth: React.FC<SupabaseAuthProps> = ({ onSuccess, view = 'sign_in'
                                 input: '1px',
                             },
                             radii: {
-                                button: '9999px', // rounded-full
+                                button: '9999px', // rounded-full <-- UPDATED
                                 input: '0.375rem', // rounded-md
                             },
                         },
