@@ -124,8 +124,8 @@ const MobileMenu: FC<MobileMenuProps> = ({ isOpen, onClose, onSearchClick, onLog
     const categories = ['Accesories', 'Smart TV', 'Camera', 'Digital'];
 
     const handleAction = (item: MenuItem) => {
-        if (item.action === 'search') onSearchClick();
-        if (item.action === 'login') onLoginClick();
+        if (item.action === 'search') onClose(); onSearchClick();
+        if (item.action === 'login') onClose(); onLoginClick();
     };
     
     if (!isMounted) return null;

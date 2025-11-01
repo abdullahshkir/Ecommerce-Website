@@ -143,21 +143,21 @@ const QuickViewModal: FC<QuickViewModalProps> = ({ product, onClose }) => {
           <p className="text-gray-600 mb-6 leading-relaxed">{product?.description || 'No description available.'}</p>
 
           {isOutOfStock ? (
-             <span className="inline-block mb-6 px-4 py-2 rounded-md bg-red-100 text-red-700 font-semibold">Out of Stock</span>
+             <span className="inline-block mb-6 px-4 py-2 rounded-full bg-red-100 text-red-700 font-semibold">Out of Stock</span>
           ) : (
             <>
               <div className="flex items-center space-x-4 mb-6">
-                <div className="flex items-center border border-gray-300 rounded-md">
-                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-l-md"><MinusIcon className="w-4 h-4"/></button>
+                <div className="flex items-center border border-gray-300 rounded-full">
+                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-l-full"><MinusIcon className="w-4 h-4"/></button>
                   <input type="text" value={quantity} readOnly className="w-12 text-center border-0 p-0 text-base focus:outline-none focus:ring-0 bg-transparent"/>
-                  <button onClick={() => setQuantity(quantity + 1)} className="px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-r-md"><PlusIcon className="w-4 h-4"/></button>
+                  <button onClick={() => setQuantity(quantity + 1)} className="px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-r-full"><PlusIcon className="w-4 h-4"/></button>
                 </div>
-                <button onClick={handleAddToCart} className="flex-grow bg-blue-600 text-white py-3 px-6 rounded-md font-semibold hover:bg-blue-700 transition-colors">ADD TO CART</button>
-                <button onClick={handleWishlistClick} className={`p-3 border rounded-md transition-colors ${isWishlisted ? 'bg-red-50 text-red-500 border-red-200' : 'border-gray-300 hover:bg-gray-100'}`}>
+                <button onClick={handleAddToCart} className="flex-grow bg-blue-600 text-white py-3 px-6 rounded-full font-semibold hover:bg-blue-700 transition-colors">ADD TO CART</button>
+                <button onClick={handleWishlistClick} className={`p-3 border rounded-full transition-colors ${isWishlisted ? 'bg-red-50 text-red-500 border-red-200' : 'border-gray-300 hover:bg-gray-100'}`}>
                   <HeartIcon filled={isWishlisted} className={`w-5 h-5 ${isWishlisted ? 'text-red-500' : 'text-gray-700'}`}/>
                 </button>
               </div>
-              <button onClick={handleBuyNow} className="w-full bg-gray-900 text-white py-3 px-6 rounded-md font-semibold hover:bg-gray-800 mb-6 transition-colors">BUY IT NOW</button>
+              <button onClick={handleBuyNow} className="w-full bg-gray-900 text-white py-3 px-6 rounded-full font-semibold hover:bg-gray-800 mb-6 transition-colors">BUY IT NOW</button>
             </>
           )}
           

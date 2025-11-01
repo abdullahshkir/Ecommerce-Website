@@ -156,7 +156,7 @@ const AdminLoginPage: React.FC = () => {
                                 required 
                                 value={signInData.email}
                                 onChange={handleSignInChange}
-                                className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition" 
+                                className="w-full p-3 border border-gray-300 rounded-full focus:ring-blue-500 focus:border-blue-500 transition" 
                                 placeholder="Your email address" 
                             />
                         </div>
@@ -169,7 +169,7 @@ const AdminLoginPage: React.FC = () => {
                                 required 
                                 value={signInData.password}
                                 onChange={handleSignInChange}
-                                className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition pr-10" 
+                                className="w-full p-3 border border-gray-300 rounded-full focus:ring-blue-500 focus:border-blue-500 transition pr-10" 
                                 placeholder="Your password" 
                             />
                             <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 mt-1.5 text-gray-500 hover:text-gray-700">
@@ -197,27 +197,27 @@ const AdminLoginPage: React.FC = () => {
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <label htmlFor="first_name" className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-                                <input type="text" id="first_name" name="first_name" required className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition" placeholder="First Name" />
+                                <input type="text" id="first_name" name="first_name" required className="w-full p-3 border border-gray-300 rounded-full focus:ring-blue-500 focus:border-blue-500 transition" placeholder="First Name" />
                             </div>
                             <div>
                                 <label htmlFor="last_name" className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-                                <input type="text" id="last_name" name="last_name" required className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition" placeholder="Last Name" />
+                                <input type="text" id="last_name" name="last_name" required className="w-full p-3 border border-gray-300 rounded-full focus:ring-blue-500 focus:border-blue-500 transition" placeholder="Last Name" />
                             </div>
                         </div>
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email address</label>
-                            <input type="email" id="email" name="email" required className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition" placeholder="Your email address" />
+                            <input type="email" id="email" name="email" required className="w-full p-3 border border-gray-300 rounded-full focus:ring-blue-500 focus:border-blue-500 transition" placeholder="Your email address" />
                         </div>
                         <div className="relative">
                             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                            <input type={showPassword ? 'text' : 'password'} id="password" name="password" required className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition pr-10" placeholder="Create a password" />
+                            <input type={showPassword ? 'text' : 'password'} id="password" name="password" required className="w-full p-3 border border-gray-300 rounded-full focus:ring-blue-500 focus:border-blue-500 transition pr-10" placeholder="Create a password" />
                             <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 mt-1.5 text-gray-500 hover:text-gray-700">
                                 {showPassword ? <EyeOffIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
                             </button>
                         </div>
                         <div className="relative">
                             <label htmlFor="confirm_password" className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-                            <input type={showPassword ? 'text' : 'password'} id="confirm_password" name="confirm_password" required className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition pr-10" placeholder="Confirm your password" />
+                            <input type={showPassword ? 'text' : 'password'} id="confirm_password" name="confirm_password" required className="w-full p-3 border border-gray-300 rounded-full focus:ring-blue-500 focus:border-blue-500 transition pr-10" placeholder="Confirm your password" />
                             <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 mt-1.5 text-gray-500 hover:text-gray-700">
                                 {showPassword ? <EyeOffIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
                             </button>

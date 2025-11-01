@@ -410,7 +410,7 @@ const ProductPage: React.FC<{onProductClick: (id: string) => void, onLoginClick:
                             <p className="text-4xl font-bold text-gray-900 mb-4">{formatPrice(product.price)}</p>
                             <p className="text-gray-600 mb-6">{product.description}</p>
                             
-                            {isOutOfStock && <span className="block mb-4 text-lg font-semibold text-red-500 bg-red-50 p-3 rounded-md">Out of Stock</span>}
+                            {isOutOfStock && <span className="block mb-4 text-lg font-semibold text-red-500 bg-red-50 p-3 rounded-full">Out of Stock</span>}
 
                             {!isOutOfStock && (
                                 <>
@@ -480,7 +480,7 @@ const ProductPage: React.FC<{onProductClick: (id: string) => void, onLoginClick:
                                         className="w-full flex justify-between items-center p-4 text-left bg-white hover:bg-gray-50 transition-colors"
                                     >
                                         <span className="font-semibold text-gray-900 text-lg">{tab.title}</span>
-                                        <span className="bg-gray-800 text-white w-8 h-8 flex items-center justify-center shrink-0 rounded-sm">
+                                        <span className="bg-gray-800 text-white w-8 h-8 flex items-center justify-center shrink-0 rounded-full">
                                             {openAccordion === tab.id ? <MinusIcon className="w-5 h-5" /> : <PlusIcon className="w-5 h-5" />}
                                         </span>
                                     </button>

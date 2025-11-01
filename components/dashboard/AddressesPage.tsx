@@ -69,15 +69,15 @@ const AddressForm: React.FC<{ onCancel: () => void; editingAddress: Address | nu
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <input name="first_name" value={formData.first_name} onChange={handleChange} type="text" placeholder="First name *" required className="w-full p-3 border rounded-md" />
-                <input name="last_name" value={formData.last_name} onChange={handleChange} type="text" placeholder="Last name *" required className="w-full p-3 border rounded-md" />
+                <input name="first_name" value={formData.first_name} onChange={handleChange} type="text" placeholder="First name *" required className="w-full p-3 border rounded-full" />
+                <input name="last_name" value={formData.last_name} onChange={handleChange} type="text" placeholder="Last name *" required className="w-full p-3 border rounded-full" />
             </div>
-            <input name="address" value={formData.address} onChange={handleChange} type="text" placeholder="Address *" required className="w-full p-3 border rounded-md" />
-            <input name="apartment" value={formData.apartment} onChange={handleChange} type="text" placeholder="Apartment, suite, etc. (optional)" className="w-full p-3 border rounded-md" />
+            <input name="address" value={formData.address} onChange={handleChange} type="text" placeholder="Address *" required className="w-full p-3 border rounded-full" />
+            <input name="apartment" value={formData.apartment} onChange={handleChange} type="text" placeholder="Apartment, suite, etc. (optional)" className="w-full p-3 border rounded-full" />
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <input name="city" value={formData.city} onChange={handleChange} type="text" placeholder="City *" required className="w-full p-3 border rounded-md" />
-                <input name="state" value={formData.state} onChange={handleChange} type="text" placeholder="State/Province *" required className="w-full p-3 border rounded-md" />
-                <input name="zip" value={formData.zip} onChange={handleChange} type="text" placeholder="ZIP code *" required className="w-full p-3 border rounded-md" />
+                <input name="city" value={formData.city} onChange={handleChange} type="text" placeholder="City *" required className="w-full p-3 border rounded-full" />
+                <input name="state" value={formData.state} onChange={handleChange} type="text" placeholder="State/Province *" required className="w-full p-3 border rounded-full" />
+                <input name="zip" value={formData.zip} onChange={handleChange} type="text" placeholder="ZIP code *" required className="w-full p-3 border rounded-full" />
             </div>
             <div className="flex items-center">
                 <input id="is_default" name="is_default" type="checkbox" checked={formData.is_default} onChange={handleChange} className="h-4 w-4 rounded border-gray-300 text-blue-600" />

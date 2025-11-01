@@ -116,7 +116,7 @@ const WishlistPage: React.FC = () => {
                              <button
                                 key={option.cols}
                                 onClick={() => setGridCols(option.cols)}
-                                className={`p-2 rounded-md transition-colors ${gridCols === option.cols ? 'bg-black text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                                className={`p-2 rounded-full transition-colors ${gridCols === option.cols ? 'bg-black text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
                                 aria-label={`Set grid to ${option.cols} columns`}
                             >
                                 {option.icon}
@@ -146,7 +146,7 @@ const WishlistPage: React.FC = () => {
             {showScrollTop && (
                 <button
                     onClick={scrollToTop}
-                    className="fixed bottom-8 right-8 bg-black text-white w-12 h-12 rounded-md flex items-center justify-center shadow-lg hover:bg-gray-800 transition-all duration-300 transform hover:-translate-y-1"
+                    className="fixed bottom-8 right-8 bg-black text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:bg-gray-800 transition-all duration-300 transform hover:-translate-y-1"
                     aria-label="Scroll to top"
                 >
                     <ChevronUpIcon className="w-6 h-6" />
