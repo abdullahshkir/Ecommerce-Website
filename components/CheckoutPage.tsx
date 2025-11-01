@@ -195,7 +195,7 @@ const CheckoutPage: React.FC = () => {
                             <div className="py-6 border-t border-b my-6">
                                 <div className="flex items-center space-x-3">
                                     <input type="text" placeholder="Gift card or discount code" className="flex-grow p-3 border-b border-gray-300 bg-transparent focus:outline-none focus:border-black transition-colors" />
-                                    <button className="bg-gray-300 text-gray-700 py-3 px-5 rounded-full font-semibold hover:bg-gray-400 transition-colors">Apply</button>
+                                    <button className="flex-shrink-0 bg-gray-300 text-gray-700 py-3 px-5 rounded-full font-semibold hover:bg-gray-400 transition-colors">Apply</button>
                                 </div>
                             </div>
 
