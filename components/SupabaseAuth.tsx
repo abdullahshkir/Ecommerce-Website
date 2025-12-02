@@ -43,7 +43,7 @@ const SupabaseAuth: React.FC<SupabaseAuthProps> = ({ onSuccess, view = 'sign_in'
                                 input: '1px',
                             },
                             radii: {
-                                button: '9999px', // rounded-full <-- UPDATED
+                                button: '9999px', // rounded-full
                                 input: '0.375rem', // rounded-md
                             },
                         },
@@ -54,6 +54,9 @@ const SupabaseAuth: React.FC<SupabaseAuthProps> = ({ onSuccess, view = 'sign_in'
                 view={view}
                 // Set default customer redirect to /#/account
                 redirectTo={redirectTo || window.location.origin + '/#/account'}
+                // Disable magic link and confirmation message for development ease
+                showLinks={true}
+                magicLink={false}
                 localization={{
                     variables: {
                         sign_in: {
@@ -74,7 +77,8 @@ const SupabaseAuth: React.FC<SupabaseAuthProps> = ({ onSuccess, view = 'sign_in'
                             loading_button_label: 'Creating Account...',
                             link_text: 'Don\'t have an account? Sign Up',
                             social_provider_text: 'Sign up with {{provider}}',
-                            confirmation_text: 'Check your email for the confirmation link',
+                            // Removing confirmation text to prevent confusion if email is disabled
+                            confirmation_text: 'Account created successfully. Please sign in.', 
                         },
                         forgotten_password: {
                             email_label: 'Email address',
