@@ -52,8 +52,8 @@ const AuthModal: FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
         // Check if the user just transitioned to logged in state
         const justLoggedIn = isLoggedIn && !wasLoggedInRef.current;
         
-        if (justLoggedIn) {
-            // Wait for user profile data to load before checking role
+        if (justLoggedIn || (isLoggedIn && user && wasLoggedInRef.current)) {
+            // If session is active, wait for user profile data to load before checking role
             if (isLoadingUser) return; 
             
             if (user?.role === 'admin') {
@@ -64,8 +64,8 @@ const AuthModal: FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
                  // If a pending admin logs in via the customer modal, log them out immediately
                 setErrorMessage('Your admin access request is pending approval. Please use the Admin Panel login page.');
                 logout();
-            } else {
-                // Successful customer login (role is 'user' or profile was missing but basic user loaded): navigate away and close modal
+            } else if (user?.role === 'user') {
+                // Successful customer login: navigate away and close modal
                 onLoginSuccess();
             }
         }
