@@ -51,7 +51,7 @@ const CheckoutPage: React.FC = () => {
     const [buyNowItem, setBuyNowItem] = useState<CartItem | undefined>(initialBuyNowItem);
 
     const itemsToDisplay = buyNowItem ? [buyNowItem] : contextCartItems;
-    const subtotalToDisplay = itemsToToDisplay.reduce((total, item) => total + item.price * item.quantity, 0);
+    const subtotalToDisplay = itemsToDisplay.reduce((total, item) => total + item.price * item.quantity, 0);
     
     const [formData, setFormData] = useState({
         email: user?.email || '',
